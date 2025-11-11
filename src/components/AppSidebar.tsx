@@ -1,5 +1,6 @@
-import { Home, BarChart3, Users, UserCog, Briefcase, Stethoscope, Calendar, ClipboardCheck, Phone, UserCheck, Settings, DollarSign } from "lucide-react";
+import { Home, BarChart3, Users, UserCog, Briefcase, Stethoscope, Calendar, ClipboardCheck, Phone, UserCheck, Settings, DollarSign, Cog } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import { useModules } from "@/contexts/ModulesContext";
 import {
   Sidebar,
   SidebarContent,
@@ -10,45 +11,46 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import orthoLogo from "@/assets/ortho-logo.png";
+import { Button } from "@/components/ui/button";
 
-const menuSections = [
-  {
-    label: "DASHBOARD",
-    items: [
-      { title: "Página Inicial", url: "/", icon: Home },
-      { title: "Resumo Gerencial", url: "/resumo", icon: BarChart3 },
-    ],
-  },
-  {
-    label: "CADASTROS",
-    items: [
-      { title: "Pacientes", url: "/pacientes", icon: Users, badge: "1.247" },
-      { title: "Dentistas", url: "/dentistas", icon: UserCog },
-      { title: "Funcionários", url: "/funcionarios", icon: Briefcase },
-      { title: "Procedimentos", url: "/procedimentos", icon: Stethoscope },
-    ],
-  },
-  {
-    label: "AGENDA",
-    items: [
-      { title: "Agenda Clínica", url: "/agenda-clinica", icon: Calendar, badge: "28" },
-      { title: "Agenda de Avaliação", url: "/agenda-avaliacao", icon: ClipboardCheck },
-      { title: "Controle de Chegada", url: "/controle-chegada", icon: UserCheck },
-      { title: "Confirmação Agenda", url: "/confirmacao-agenda", icon: Phone },
-      { title: "Gestão de Dentistas", url: "/gestao-dentistas", icon: Settings },
-    ],
-  },
-  {
-    label: "COMERCIAL",
-    items: [
-      { title: "Financeiro", url: "/financeiro", icon: DollarSign },
-    ],
-  },
-];
+// Map icons to module IDs
+const iconMap: Record<string, any> = {
+  'home': Home,
+  'resumo': BarChart3,
+  'pacientes': Users,
+  'dentistas': UserCog,
+  'funcionarios': Briefcase,
+  'procedimentos': Stethoscope,
+  'agenda-clinica': Calendar,
+  'agenda-avaliacao': ClipboardCheck,
+  'controle-chegada': UserCheck,
+  'confirmacao-agenda': Phone,
+  'gestao-dentistas': Settings,
+  'financeiro': DollarSign,
+};
 
 export function AppSidebar() {
+  const { modules } = useModules();
+  
+  // Get enabled modules grouped by category
+  const enabledModules = modules.filter(m => m.enabled);
+  const categories = Array.from(new Set(enabledModules.map(m => m.category)));
+  
+  const menuSections = categories.map(category => ({
+    label: category,
+    items: enabledModules
+      .filter(m => m.category === category)
+      .map(m => ({
+        title: m.name,
+        url: m.path,
+        icon: iconMap[m.id] || Settings,
+        badge: m.badge,
+      })),
+  }));
+
   return (
     <Sidebar className="border-r border-sidebar-border">
       <SidebarHeader className="p-4 border-b border-sidebar-border">
@@ -95,6 +97,15 @@ export function AppSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
+
+      <SidebarFooter className="p-4 border-t border-sidebar-border">
+        <NavLink to="/modulos">
+          <Button variant="outline" className="w-full gap-2 justify-start" size="sm">
+            <Cog className="h-4 w-4" />
+            Gerenciar Módulos
+          </Button>
+        </NavLink>
+      </SidebarFooter>
     </Sidebar>
   );
 }
