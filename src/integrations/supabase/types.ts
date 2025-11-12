@@ -59,6 +59,59 @@ export type Database = {
           },
         ]
       }
+      backup_history: {
+        Row: {
+          backup_type: string
+          clinic_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          error_message: string | null
+          file_path: string | null
+          file_size_bytes: number | null
+          format: string | null
+          id: string
+          metadata: Json | null
+          status: string
+        }
+        Insert: {
+          backup_type: string
+          clinic_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          file_path?: string | null
+          file_size_bytes?: number | null
+          format?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+        }
+        Update: {
+          backup_type?: string
+          clinic_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          file_path?: string | null
+          file_size_bytes?: number | null
+          format?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_history_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinic_modules: {
         Row: {
           clinic_id: string
@@ -121,6 +174,50 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      historico_clinico: {
+        Row: {
+          created_at: string
+          created_by: string
+          dados_estruturados: Json | null
+          descricao: string
+          id: string
+          prontuario_id: string
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          dados_estruturados?: Json | null
+          descricao: string
+          id?: string
+          prontuario_id: string
+          tipo: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          dados_estruturados?: Json | null
+          descricao?: string
+          id?: string
+          prontuario_id?: string
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_clinico_prontuario_id_fkey"
+            columns: ["prontuario_id"]
+            isOneToOne: false
+            referencedRelation: "prontuarios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       module_catalog: {
         Row: {
@@ -188,6 +285,255 @@ export type Database = {
           },
         ]
       }
+      pep_anexos: {
+        Row: {
+          caminho_storage: string
+          created_at: string
+          descricao: string | null
+          historico_id: string | null
+          id: string
+          mime_type: string
+          nome_arquivo: string
+          prontuario_id: string
+          tamanho_bytes: number
+          tipo_arquivo: string
+          uploaded_by: string
+        }
+        Insert: {
+          caminho_storage: string
+          created_at?: string
+          descricao?: string | null
+          historico_id?: string | null
+          id?: string
+          mime_type: string
+          nome_arquivo: string
+          prontuario_id: string
+          tamanho_bytes: number
+          tipo_arquivo: string
+          uploaded_by: string
+        }
+        Update: {
+          caminho_storage?: string
+          created_at?: string
+          descricao?: string | null
+          historico_id?: string | null
+          id?: string
+          mime_type?: string
+          nome_arquivo?: string
+          prontuario_id?: string
+          tamanho_bytes?: number
+          tipo_arquivo?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pep_anexos_historico_id_fkey"
+            columns: ["historico_id"]
+            isOneToOne: false
+            referencedRelation: "historico_clinico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pep_anexos_prontuario_id_fkey"
+            columns: ["prontuario_id"]
+            isOneToOne: false
+            referencedRelation: "prontuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pep_assinaturas: {
+        Row: {
+          assinatura_base64: string
+          historico_id: string | null
+          id: string
+          ip_address: string | null
+          prontuario_id: string
+          signed_at: string
+          signed_by: string
+          tipo_documento: string
+          user_agent: string | null
+        }
+        Insert: {
+          assinatura_base64: string
+          historico_id?: string | null
+          id?: string
+          ip_address?: string | null
+          prontuario_id: string
+          signed_at?: string
+          signed_by: string
+          tipo_documento: string
+          user_agent?: string | null
+        }
+        Update: {
+          assinatura_base64?: string
+          historico_id?: string | null
+          id?: string
+          ip_address?: string | null
+          prontuario_id?: string
+          signed_at?: string
+          signed_by?: string
+          tipo_documento?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pep_assinaturas_historico_id_fkey"
+            columns: ["historico_id"]
+            isOneToOne: false
+            referencedRelation: "historico_clinico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pep_assinaturas_prontuario_id_fkey"
+            columns: ["prontuario_id"]
+            isOneToOne: false
+            referencedRelation: "prontuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pep_evolucoes: {
+        Row: {
+          created_at: string
+          created_by: string
+          data_evolucao: string
+          descricao: string
+          id: string
+          tipo: string
+          tratamento_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          data_evolucao?: string
+          descricao: string
+          id?: string
+          tipo: string
+          tratamento_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          data_evolucao?: string
+          descricao?: string
+          id?: string
+          tipo?: string
+          tratamento_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pep_evolucoes_tratamento_id_fkey"
+            columns: ["tratamento_id"]
+            isOneToOne: false
+            referencedRelation: "pep_tratamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pep_odontograma: {
+        Row: {
+          created_at: string
+          created_by: string
+          dente_codigo: string
+          faces_afetadas: string[] | null
+          id: string
+          observacoes: string | null
+          prontuario_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          dente_codigo: string
+          faces_afetadas?: string[] | null
+          id?: string
+          observacoes?: string | null
+          prontuario_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          dente_codigo?: string
+          faces_afetadas?: string[] | null
+          id?: string
+          observacoes?: string | null
+          prontuario_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pep_odontograma_prontuario_id_fkey"
+            columns: ["prontuario_id"]
+            isOneToOne: false
+            referencedRelation: "prontuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pep_tratamentos: {
+        Row: {
+          created_at: string
+          created_by: string
+          data_conclusao: string | null
+          data_inicio: string
+          dente_codigo: string | null
+          descricao: string
+          id: string
+          observacoes: string | null
+          procedimento_id: string | null
+          prontuario_id: string
+          status: string
+          titulo: string
+          updated_at: string
+          valor_estimado: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          data_conclusao?: string | null
+          data_inicio: string
+          dente_codigo?: string | null
+          descricao: string
+          id?: string
+          observacoes?: string | null
+          procedimento_id?: string | null
+          prontuario_id: string
+          status?: string
+          titulo: string
+          updated_at?: string
+          valor_estimado?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          data_conclusao?: string | null
+          data_inicio?: string
+          dente_codigo?: string | null
+          descricao?: string
+          id?: string
+          observacoes?: string | null
+          procedimento_id?: string | null
+          prontuario_id?: string
+          status?: string
+          titulo?: string
+          updated_at?: string
+          valor_estimado?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pep_tratamentos_prontuario_id_fkey"
+            columns: ["prontuario_id"]
+            isOneToOne: false
+            referencedRelation: "prontuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -216,6 +562,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "profiles_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prontuarios: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          created_by: string
+          id: string
+          patient_id: string
+          patient_name: string
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          patient_id: string
+          patient_name: string
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          patient_id?: string
+          patient_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prontuarios_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"

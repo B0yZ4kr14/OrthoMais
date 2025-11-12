@@ -29,25 +29,11 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Verificar se é ADMIN
-    const { data: roles } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .single();
+    const { backup_id, clinic_id } = await req.json();
 
-    if (!roles || roles.role !== 'ADMIN') {
+    if (!backup_id || !clinic_id) {
       return new Response(
-        JSON.stringify({ error: 'Apenas administradores podem executar backups' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const { clinic_id } = await req.json();
-
-    if (!clinic_id) {
-      return new Response(
-        JSON.stringify({ error: 'clinic_id é obrigatório' }),
+        JSON.stringify({ error: 'backup_id e clinic_id são obrigatórios' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -66,45 +52,38 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Executar o backup de forma assíncrona
-    const backupData = {
-      backup_id: crypto.randomUUID(),
-      clinic_id: clinic_id,
-      created_at: new Date().toISOString(),
-      created_by: user.id,
-      type: 'manual'
-    };
+    // Buscar informações do backup
+    const { data: backup, error: backupError } = await supabase
+      .from('backup_history')
+      .select('*')
+      .eq('id', backup_id)
+      .eq('clinic_id', clinic_id)
+      .single();
 
-    // Criar registro no histórico
-    await supabase.from('backup_history').insert({
-      clinic_id: clinic_id,
-      backup_type: 'manual',
-      status: 'in_progress',
-      created_by: user.id,
-      metadata: backupData
+    if (backupError || !backup) {
+      return new Response(
+        JSON.stringify({ error: 'Backup não encontrado' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Para demonstração, vamos recriar o conteúdo do backup
+    // Em produção, você buscaria do storage
+    const { data: exportData, error: exportError } = await supabase.functions.invoke('export-clinic-data', {
+      body: { format: backup.format || 'json', clinic_id: clinic_id }
     });
 
-    // Log de auditoria
-    await supabase.from('audit_logs').insert({
-      user_id: user.id,
-      clinic_id: clinic_id,
-      action: 'MANUAL_BACKUP',
-      details: backupData
-    });
+    if (exportError) throw exportError;
 
-    console.log(`Backup manual iniciado para clinic_id: ${clinic_id}`);
+    console.log(`Download de backup ${backup_id} para clinic_id: ${clinic_id}`);
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'Backup manual iniciado com sucesso',
-        backup_id: crypto.randomUUID()
-      }),
+      JSON.stringify({ content: exportData.content }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Erro ao iniciar backup manual:', error);
+    console.error('Erro ao baixar backup:', error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Erro desconhecido' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

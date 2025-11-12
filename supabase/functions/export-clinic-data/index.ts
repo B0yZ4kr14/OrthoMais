@@ -123,6 +123,21 @@ Deno.serve(async (req) => {
 
     console.log(`Exportação concluída para clinic_id: ${clinic_id}, formato: ${format}`);
 
+    // Registrar no histórico de backups
+    await supabase.from('backup_history').insert({
+      clinic_id: clinic_id,
+      backup_type: 'manual',
+      status: 'success',
+      file_size_bytes: content.length,
+      format: format,
+      created_by: user.id,
+      completed_at: new Date().toISOString(),
+      metadata: {
+        tables_exported: Object.keys(exportData.tables),
+        records_count: Object.values(exportData.tables).reduce((acc: number, table: any) => acc + table.length, 0)
+      }
+    });
+
     return new Response(
       JSON.stringify({ content, size: content.length }),
       { 

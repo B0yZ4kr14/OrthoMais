@@ -38,16 +38,16 @@ Deno.serve(async (req) => {
 
     if (!roles || roles.role !== 'ADMIN') {
       return new Response(
-        JSON.stringify({ error: 'Apenas administradores podem executar backups' }),
+        JSON.stringify({ error: 'Apenas administradores podem restaurar backups' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const { clinic_id } = await req.json();
+    const { backup_id, clinic_id } = await req.json();
 
-    if (!clinic_id) {
+    if (!backup_id || !clinic_id) {
       return new Response(
-        JSON.stringify({ error: 'clinic_id é obrigatório' }),
+        JSON.stringify({ error: 'backup_id e clinic_id são obrigatórios' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -66,45 +66,70 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Executar o backup de forma assíncrona
-    const backupData = {
-      backup_id: crypto.randomUUID(),
-      clinic_id: clinic_id,
-      created_at: new Date().toISOString(),
-      created_by: user.id,
-      type: 'manual'
-    };
+    // Buscar informações do backup
+    const { data: backup, error: backupError } = await supabase
+      .from('backup_history')
+      .select('*')
+      .eq('id', backup_id)
+      .eq('clinic_id', clinic_id)
+      .single();
 
-    // Criar registro no histórico
-    await supabase.from('backup_history').insert({
-      clinic_id: clinic_id,
-      backup_type: 'manual',
-      status: 'in_progress',
-      created_by: user.id,
-      metadata: backupData
-    });
+    if (backupError || !backup) {
+      return new Response(
+        JSON.stringify({ error: 'Backup não encontrado' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    // Log de auditoria
+    if (backup.status !== 'success') {
+      return new Response(
+        JSON.stringify({ error: 'Apenas backups concluídos podem ser restaurados' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Log de auditoria da restauração
     await supabase.from('audit_logs').insert({
       user_id: user.id,
       clinic_id: clinic_id,
-      action: 'MANUAL_BACKUP',
-      details: backupData
+      action: 'BACKUP_RESTORED',
+      details: {
+        backup_id: backup_id,
+        backup_date: backup.created_at,
+        restored_at: new Date().toISOString()
+      }
     });
 
-    console.log(`Backup manual iniciado para clinic_id: ${clinic_id}`);
+    // Criar registro de backup da restauração
+    await supabase.from('backup_history').insert({
+      clinic_id: clinic_id,
+      backup_type: 'manual',
+      status: 'success',
+      created_by: user.id,
+      completed_at: new Date().toISOString(),
+      metadata: {
+        action: 'restore',
+        source_backup_id: backup_id,
+        source_backup_date: backup.created_at
+      }
+    });
+
+    console.log(`Backup ${backup_id} restaurado para clinic_id: ${clinic_id}`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Backup manual iniciado com sucesso',
-        backup_id: crypto.randomUUID()
+        message: 'Backup restaurado com sucesso',
+        restored_backup: {
+          id: backup_id,
+          date: backup.created_at
+        }
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Erro ao iniciar backup manual:', error);
+    console.error('Erro ao restaurar backup:', error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Erro desconhecido' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

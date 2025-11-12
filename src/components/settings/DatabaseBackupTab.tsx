@@ -1,14 +1,29 @@
-import { useState } from 'react';
-import { Database, Download, Upload, Clock, Play, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Database, Download, Upload, Clock, Play, AlertCircle, CheckCircle, XCircle, Loader2, RotateCcw } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+
+interface BackupHistory {
+  id: string;
+  backup_type: 'manual' | 'automatic' | 'scheduled';
+  status: 'pending' | 'success' | 'failed' | 'in_progress';
+  file_size_bytes: number | null;
+  file_path: string | null;
+  format: 'json' | 'csv' | null;
+  created_at: string;
+  completed_at: string | null;
+  error_message: string | null;
+  metadata: any;
+}
 
 export function DatabaseBackupTab() {
   const { clinicId } = useAuth();
@@ -17,6 +32,38 @@ export function DatabaseBackupTab() {
   const [exportFormat, setExportFormat] = useState<'csv' | 'json'>('json');
   const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
   const [backupFrequency, setBackupFrequency] = useState('daily');
+  const [backupHistory, setBackupHistory] = useState<BackupHistory[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+
+  // Buscar histórico de backups
+  useEffect(() => {
+    if (clinicId) {
+      fetchBackupHistory();
+    }
+  }, [clinicId]);
+
+  const fetchBackupHistory = async () => {
+    if (!clinicId) return;
+
+    setIsLoadingHistory(true);
+    try {
+      const { data, error } = await supabase
+        .from('backup_history')
+        .select('*')
+        .eq('clinic_id', clinicId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      setBackupHistory((data || []) as BackupHistory[]);
+    } catch (error: any) {
+      console.error('Erro ao buscar histórico:', error);
+      toast.error('Erro ao carregar histórico de backups');
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
 
   const handleExportData = async () => {
     if (!clinicId) {
@@ -46,6 +93,9 @@ export function DatabaseBackupTab() {
       document.body.removeChild(a);
 
       toast.success('Dados exportados com sucesso!');
+      
+      // Atualizar histórico após exportação bem-sucedida
+      await fetchBackupHistory();
     } catch (error: any) {
       console.error('Erro ao exportar dados:', error);
       toast.error('Erro ao exportar dados', { 
@@ -109,6 +159,9 @@ export function DatabaseBackupTab() {
       toast.success('Backup manual iniciado!', {
         description: 'Você receberá uma notificação quando concluído'
       });
+
+      // Atualizar histórico
+      await fetchBackupHistory();
     } catch (error: any) {
       console.error('Erro ao iniciar backup:', error);
       toast.error('Erro ao iniciar backup', { 
@@ -116,6 +169,70 @@ export function DatabaseBackupTab() {
       });
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleDownloadBackup = async (backup: BackupHistory) => {
+    if (!backup.file_path) {
+      toast.error('Arquivo de backup não disponível');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('download-backup', {
+        body: { backup_id: backup.id, clinic_id: clinicId }
+      });
+
+      if (error) throw error;
+
+      // Criar arquivo para download
+      const blob = new Blob([data.content], { 
+        type: backup.format === 'json' ? 'application/json' : 'text/csv' 
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `backup-${backup.created_at.split('T')[0]}.${backup.format}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success('Backup baixado com sucesso!');
+    } catch (error: any) {
+      console.error('Erro ao baixar backup:', error);
+      toast.error('Erro ao baixar backup', { description: error.message });
+    }
+  };
+
+  const handleRestoreBackup = async (backup: BackupHistory) => {
+    if (!backup.file_path) {
+      toast.error('Arquivo de backup não disponível para restauração');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      'Tem certeza que deseja restaurar este backup? Esta ação irá sobrescrever os dados atuais.'
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const { error } = await supabase.functions.invoke('restore-backup', {
+        body: { backup_id: backup.id, clinic_id: clinicId }
+      });
+
+      if (error) throw error;
+
+      toast.success('Backup restaurado com sucesso!', {
+        description: 'Os dados foram restaurados. Recarregue a página para ver as alterações.'
+      });
+
+      // Atualizar histórico
+      await fetchBackupHistory();
+    } catch (error: any) {
+      console.error('Erro ao restaurar backup:', error);
+      toast.error('Erro ao restaurar backup', { description: error.message });
     }
   };
 
@@ -144,6 +261,55 @@ export function DatabaseBackupTab() {
         description: error.message 
       });
     }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'success':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'failed':
+        return <XCircle className="h-4 w-4 text-red-500" />;
+      case 'in_progress':
+        return <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />;
+      default:
+        return <Clock className="h-4 w-4 text-muted-foreground" />;
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+      success: 'default',
+      failed: 'destructive',
+      in_progress: 'secondary',
+      pending: 'outline'
+    };
+
+    const labels: Record<string, string> = {
+      success: 'Concluído',
+      failed: 'Falhou',
+      in_progress: 'Em Progresso',
+      pending: 'Pendente'
+    };
+
+    return <Badge variant={variants[status] || 'outline'}>{labels[status] || status}</Badge>;
+  };
+
+  const formatBytes = (bytes: number | null) => {
+    if (!bytes) return 'N/A';
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    if (bytes === 0) return '0 Bytes';
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+  };
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
@@ -221,6 +387,93 @@ export function DatabaseBackupTab() {
               <p className="text-xs text-muted-foreground">
                 Próximo backup agendado: {new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleString('pt-BR')}
               </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Histórico de Backups */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Database className="h-5 w-5" />
+            Histórico de Backups
+          </CardTitle>
+          <CardDescription>
+            Todos os backups executados nos últimos 90 dias
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoadingHistory ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : backupHistory.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Database className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>Nenhum backup encontrado</p>
+              <p className="text-sm">Execute seu primeiro backup para começar</p>
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead>Data/Hora</TableHead>
+                    <TableHead>Tamanho</TableHead>
+                    <TableHead>Formato</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {backupHistory.map((backup) => (
+                    <TableRow key={backup.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(backup.status)}
+                          {getStatusBadge(backup.status)}
+                        </div>
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {backup.backup_type === 'manual' ? 'Manual' : 
+                         backup.backup_type === 'automatic' ? 'Automático' : 'Agendado'}
+                      </TableCell>
+                      <TableCell>{formatDate(backup.created_at)}</TableCell>
+                      <TableCell>{formatBytes(backup.file_size_bytes)}</TableCell>
+                      <TableCell className="uppercase">{backup.format || 'N/A'}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {backup.status === 'success' && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDownloadBackup(backup)}
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleRestoreBackup(backup)}
+                              >
+                                <RotateCcw className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                          {backup.status === 'failed' && backup.error_message && (
+                            <span className="text-xs text-destructive max-w-[200px] truncate" title={backup.error_message}>
+                              {backup.error_message}
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           )}
         </CardContent>
