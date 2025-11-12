@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ReactFlow,
   Node,
@@ -17,8 +17,14 @@ import {
 import '@xyflow/react/dist/style.css';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, XCircle, AlertCircle, Lock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { CheckCircle2, XCircle, AlertCircle, Lock, Play, RotateCcw, Filter, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ModuleData {
   id: number;
@@ -38,19 +44,38 @@ interface ModuleDependencyGraphProps {
   modules: ModuleData[];
 }
 
-// Custom Node Component
+interface SimulationState {
+  active: boolean;
+  targetModule: string | null;
+  targetAction: 'activate' | 'deactivate' | null;
+  affectedModules: Set<string>;
+  wouldBlock: string[];
+  wouldEnable: string[];
+}
+
+// Custom Node Component with Simulation Support
 function ModuleNode({ data }: NodeProps) {
   const module = data.module as ModuleData;
+  const isSimulated = data.isSimulated as boolean;
+  const isAffected = data.isAffected as boolean;
+  const simulatedActive = data.simulatedActive as boolean;
+  const isTarget = data.isTarget as boolean;
   
   const getStatusColor = () => {
+    if (isTarget) return 'bg-primary/20 border-primary ring-2 ring-primary';
+    if (isAffected) return 'bg-warning/20 border-warning ring-2 ring-warning';
     if (!module.is_subscribed) return 'bg-muted border-muted-foreground/30';
-    if (module.is_active) return 'bg-success/10 border-success';
+    
+    const active = isSimulated ? simulatedActive : module.is_active;
+    if (active) return 'bg-success/10 border-success';
     return 'bg-background border-muted-foreground/50';
   };
 
   const getStatusIcon = () => {
     if (!module.is_subscribed) return <AlertCircle className="h-4 w-4 text-muted-foreground" />;
-    if (module.is_active) return <CheckCircle2 className="h-4 w-4 text-success" />;
+    
+    const active = isSimulated ? simulatedActive : module.is_active;
+    if (active) return <CheckCircle2 className="h-4 w-4 text-success" />;
     return <XCircle className="h-4 w-4 text-muted-foreground" />;
   };
 
@@ -83,11 +108,24 @@ function ModuleNode({ data }: NodeProps) {
         </div>
         
         <div className="flex flex-wrap gap-1">
+          {isTarget && (
+            <Badge className="text-xs h-5 bg-primary">
+              <Zap className="h-3 w-3 mr-1" />
+              Simulando
+            </Badge>
+          )}
+          
+          {isAffected && !isTarget && (
+            <Badge className="text-xs h-5 bg-warning text-warning-foreground">
+              Afetado
+            </Badge>
+          )}
+          
           <Badge 
-            variant={module.is_active ? 'default' : 'secondary'}
+            variant={(isSimulated ? simulatedActive : module.is_active) ? 'default' : 'secondary'}
             className="text-xs h-5"
           >
-            {module.is_active ? 'Ativo' : 'Inativo'}
+            {(isSimulated ? simulatedActive : module.is_active) ? 'Ativo' : 'Inativo'}
           </Badge>
           
           {!module.is_subscribed && (
@@ -123,36 +161,114 @@ const nodeTypes = {
 };
 
 export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
-  // Build dependency map from modules
-  const dependencyMap = useMemo(() => {
-    const map: Record<string, string[]> = {};
-    
-    modules.forEach(module => {
-      // Combine both unmet and blocking to get full dependency picture
-      const allDeps = [...module.unmet_dependencies, ...module.blocking_dependencies];
-      if (allDeps.length > 0) {
-        map[module.module_key] = allDeps;
-      }
-    });
-    
-    return map;
+  const [simulationState, setSimulationState] = useState<SimulationState>({
+    active: false,
+    targetModule: null,
+    targetAction: null,
+    affectedModules: new Set(),
+    wouldBlock: [],
+    wouldEnable: [],
+  });
+
+  const [filters, setFilters] = useState({
+    category: 'all',
+    hideUnsubscribed: false,
+  });
+
+  // Get unique categories
+  const categories = useMemo(() => {
+    return ['all', ...Array.from(new Set(modules.map(m => m.category)))];
   }, [modules]);
 
-  // Create nodes from modules with hierarchical layout
+  // Filter modules based on filters
+  const filteredModules = useMemo(() => {
+    return modules.filter(module => {
+      if (filters.hideUnsubscribed && !module.is_subscribed) return false;
+      if (filters.category !== 'all' && module.category !== filters.category) return false;
+      return true;
+    });
+  }, [modules, filters]);
+
+  // Calculate cascade impact of toggling a module
+  const calculateImpact = useCallback((moduleKey: string, action: 'activate' | 'deactivate') => {
+    const affected = new Set<string>();
+    const wouldBlock: string[] = [];
+    const wouldEnable: string[] = [];
+
+    const module = modules.find(m => m.module_key === moduleKey);
+    if (!module) return { affected, wouldBlock, wouldEnable };
+
+    if (action === 'deactivate') {
+      // Find all modules that depend on this one
+      modules.forEach(m => {
+        if (m.is_active && m.unmet_dependencies.includes(moduleKey)) {
+          wouldBlock.push(m.module_key);
+          affected.add(m.module_key);
+        }
+        if (m.is_active && m.blocking_dependencies.includes(moduleKey)) {
+          wouldBlock.push(m.module_key);
+          affected.add(m.module_key);
+        }
+      });
+    } else {
+      // If activating, check what would become available
+      modules.forEach(m => {
+        if (!m.is_active && m.unmet_dependencies.includes(moduleKey)) {
+          // Check if this is the ONLY missing dependency
+          const otherDeps = m.unmet_dependencies.filter(d => d !== moduleKey);
+          const otherDepsActive = otherDeps.every(dep => 
+            modules.find(mod => mod.module_key === dep)?.is_active
+          );
+          
+          if (otherDepsActive) {
+            wouldEnable.push(m.module_key);
+            affected.add(m.module_key);
+          }
+        }
+      });
+    }
+
+    return { affected, wouldBlock, wouldEnable };
+  }, [modules]);
+
+  // Start simulation
+  const startSimulation = useCallback((moduleKey: string) => {
+    const module = modules.find(m => m.module_key === moduleKey);
+    if (!module || !module.is_subscribed) return;
+
+    const action = module.is_active ? 'deactivate' : 'activate';
+    const impact = calculateImpact(moduleKey, action);
+
+    setSimulationState({
+      active: true,
+      targetModule: moduleKey,
+      targetAction: action,
+      affectedModules: impact.affected,
+      wouldBlock: impact.wouldBlock,
+      wouldEnable: impact.wouldEnable,
+    });
+  }, [modules, calculateImpact]);
+
+  // Clear simulation
+  const clearSimulation = useCallback(() => {
+    setSimulationState({
+      active: false,
+      targetModule: null,
+      targetAction: null,
+      affectedModules: new Set(),
+      wouldBlock: [],
+      wouldEnable: [],
+    });
+  }, []);
+
+  // Create nodes with simulation support
   const initialNodes: Node[] = useMemo(() => {
     const categoryPositions: Record<string, number> = {};
-    const categoryCounts: Record<string, number> = {};
-    
-    // Count modules per category
-    modules.forEach(module => {
-      categoryCounts[module.category] = (categoryCounts[module.category] || 0) + 1;
-    });
-    
-    const categories = Array.from(new Set(modules.map(m => m.category)));
+    const categories = Array.from(new Set(filteredModules.map(m => m.category)));
     const categorySpacing = 400;
     const nodeSpacing = 180;
     
-    return modules.map((module, index) => {
+    return filteredModules.map((module) => {
       const category = module.category;
       
       if (!(category in categoryPositions)) {
@@ -166,6 +282,12 @@ export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
       
       const x = categoryIndex * categorySpacing;
       const y = positionInCategory * nodeSpacing;
+
+      const isTarget = simulationState.targetModule === module.module_key;
+      const isAffected = simulationState.affectedModules.has(module.module_key);
+      const simulatedActive = isTarget 
+        ? simulationState.targetAction === 'activate'
+        : module.is_active;
       
       return {
         id: module.module_key,
@@ -174,33 +296,46 @@ export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
         data: { 
           module,
           label: module.name,
+          isSimulated: simulationState.active,
+          isAffected,
+          isTarget,
+          simulatedActive,
         },
       };
     });
-  }, [modules]);
+  }, [filteredModules, simulationState]);
 
-  // Create edges from dependencies
+  // Create edges
   const initialEdges: Edge[] = useMemo(() => {
     const edges: Edge[] = [];
+    const moduleKeys = new Set(filteredModules.map(m => m.module_key));
     
-    modules.forEach(module => {
-      // For each dependency this module has, create an edge FROM the dependency TO this module
+    filteredModules.forEach(module => {
       module.unmet_dependencies.forEach(depKey => {
+        if (!moduleKeys.has(depKey)) return;
+        
         const depModule = modules.find(m => m.module_key === depKey);
         if (depModule) {
+          const isAffected = simulationState.affectedModules.has(module.module_key) || 
+                           simulationState.affectedModules.has(depKey);
+          
           edges.push({
             id: `${depKey}-${module.module_key}`,
             source: depKey,
             target: module.module_key,
             type: 'smoothstep',
-            animated: !depModule.is_active, // Animate if dependency is not met
+            animated: !depModule.is_active || isAffected,
             style: { 
-              stroke: depModule.is_active ? 'hsl(var(--success))' : 'hsl(var(--destructive))',
-              strokeWidth: 2,
+              stroke: isAffected 
+                ? 'hsl(var(--warning))' 
+                : depModule.is_active ? 'hsl(var(--success))' : 'hsl(var(--destructive))',
+              strokeWidth: isAffected ? 3 : 2,
             },
             markerEnd: {
               type: MarkerType.ArrowClosed,
-              color: depModule.is_active ? 'hsl(var(--success))' : 'hsl(var(--destructive))',
+              color: isAffected 
+                ? 'hsl(var(--warning))' 
+                : depModule.is_active ? 'hsl(var(--success))' : 'hsl(var(--destructive))',
             },
             label: depModule.is_active ? '' : 'Requer',
             labelStyle: {
@@ -216,30 +351,33 @@ export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
         }
       });
       
-      // For blocking dependencies (modules that depend on this one)
       module.blocking_dependencies.forEach(blockingKey => {
+        if (!moduleKeys.has(blockingKey)) return;
+        
         const blockingModule = modules.find(m => m.module_key === blockingKey);
         if (blockingModule) {
-          // Only add if we haven't already added this edge from unmet_dependencies
           const edgeExists = edges.some(
             e => e.source === module.module_key && e.target === blockingKey
           );
           
           if (!edgeExists) {
+            const isAffected = simulationState.affectedModules.has(module.module_key) || 
+                             simulationState.affectedModules.has(blockingKey);
+            
             edges.push({
               id: `${module.module_key}-${blockingKey}`,
               source: module.module_key,
               target: blockingKey,
               type: 'smoothstep',
-              animated: false,
+              animated: isAffected,
               style: { 
-                stroke: 'hsl(var(--primary))',
-                strokeWidth: 2,
+                stroke: isAffected ? 'hsl(var(--warning))' : 'hsl(var(--primary))',
+                strokeWidth: isAffected ? 3 : 2,
                 strokeDasharray: '5,5',
               },
               markerEnd: {
                 type: MarkerType.ArrowClosed,
-                color: 'hsl(var(--primary))',
+                color: isAffected ? 'hsl(var(--warning))' : 'hsl(var(--primary))',
               },
             });
           }
@@ -248,57 +386,115 @@ export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
     });
     
     return edges;
-  }, [modules]);
+  }, [filteredModules, modules, simulationState]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     const module = node.data.module as ModuleData;
-    console.log('Module clicked:', module);
-  }, []);
+    if (!module.is_subscribed) return;
+    
+    if (simulationState.active && simulationState.targetModule === module.module_key) {
+      clearSimulation();
+    } else {
+      startSimulation(module.module_key);
+    }
+  }, [simulationState, startSimulation, clearSimulation]);
 
   // Stats
   const stats = useMemo(() => {
-    const total = modules.length;
-    const active = modules.filter(m => m.is_active).length;
-    const subscribed = modules.filter(m => m.is_subscribed).length;
-    const blocked = modules.filter(m => m.unmet_dependencies.length > 0 && !m.is_active).length;
+    const total = filteredModules.length;
+    const active = filteredModules.filter(m => m.is_active).length;
+    const subscribed = filteredModules.filter(m => m.is_subscribed).length;
+    const blocked = filteredModules.filter(m => m.unmet_dependencies.length > 0 && !m.is_active).length;
     
     return { total, active, subscribed, blocked };
-  }, [modules]);
+  }, [filteredModules]);
 
   return (
     <div className="h-full w-full flex flex-col bg-background">
-      {/* Stats Bar */}
-      <div className="flex items-center justify-between p-4 border-b bg-card">
-        <div className="flex items-center gap-6">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between gap-4 p-4 border-b bg-card">
+        <div className="flex items-center gap-4">
+          {/* Filters */}
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-success" />
-            <span className="text-sm text-muted-foreground">
-              Ativos: <strong className="text-foreground">{stats.active}</strong>
-            </span>
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Select value={filters.category} onValueChange={(value) => setFilters(prev => ({ ...prev, category: value }))}>
+              <SelectTrigger className="w-[180px] h-9">
+                <SelectValue placeholder="Categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(cat => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat === 'all' ? 'Todas as categorias' : cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              Inativos: <strong className="text-foreground">{stats.subscribed - stats.active}</strong>
-            </span>
+            <Switch 
+              checked={filters.hideUnsubscribed} 
+              onCheckedChange={(checked) => setFilters(prev => ({ ...prev, hideUnsubscribed: checked }))}
+            />
+            <Label className="text-sm cursor-pointer" onClick={() => setFilters(prev => ({ ...prev, hideUnsubscribed: !prev.hideUnsubscribed }))}>
+              Ocultar não contratados
+            </Label>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-destructive" />
-            <span className="text-sm text-muted-foreground">
-              Bloqueados: <strong className="text-foreground">{stats.blocked}</strong>
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-muted" />
-            <span className="text-sm text-muted-foreground">
-              Total: <strong className="text-foreground">{stats.total}</strong>
-            </span>
+
+          <Separator orientation="vertical" className="h-6" />
+
+          {/* Stats */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="h-3 w-3 rounded-full bg-success" />
+              <span className="text-sm text-muted-foreground">
+                <strong className="text-foreground">{stats.active}</strong> ativos
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-3 w-3 rounded-full bg-destructive" />
+              <span className="text-sm text-muted-foreground">
+                <strong className="text-foreground">{stats.blocked}</strong> bloqueados
+              </span>
+            </div>
           </div>
         </div>
+
+        {/* Simulation Controls */}
+        {simulationState.active && (
+          <Button variant="outline" size="sm" onClick={clearSimulation}>
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Limpar Simulação
+          </Button>
+        )}
       </div>
+
+      {/* Simulation Alert */}
+      {simulationState.active && (
+        <Alert className="mx-4 mt-4 border-warning bg-warning/10">
+          <Play className="h-4 w-4 text-warning" />
+          <AlertDescription className="text-sm">
+            <strong>Simulação Ativa:</strong> {simulationState.targetAction === 'activate' ? 'Ativando' : 'Desativando'}{' '}
+            <strong>{modules.find(m => m.module_key === simulationState.targetModule)?.name}</strong>
+            {simulationState.wouldBlock.length > 0 && (
+              <span className="block mt-1 text-destructive">
+                ⚠️ Bloquearia: {simulationState.wouldBlock.map(key => modules.find(m => m.module_key === key)?.name).join(', ')}
+              </span>
+            )}
+            {simulationState.wouldEnable.length > 0 && (
+              <span className="block mt-1 text-success">
+                ✓ Habilitaria: {simulationState.wouldEnable.map(key => modules.find(m => m.module_key === key)?.name).join(', ')}
+              </span>
+            )}
+            <span className="block mt-2 text-xs text-muted-foreground">
+              Clique no módulo novamente para sair da simulação
+            </span>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Graph */}
       <div className="flex-1 relative">
@@ -320,6 +516,11 @@ export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
           <MiniMap 
             nodeColor={(node) => {
               const module = node.data.module as ModuleData;
+              const isTarget = node.data.isTarget as boolean;
+              const isAffected = node.data.isAffected as boolean;
+              
+              if (isTarget) return 'hsl(var(--primary))';
+              if (isAffected) return 'hsl(var(--warning))';
               if (!module.is_subscribed) return 'hsl(var(--muted))';
               if (module.is_active) return 'hsl(var(--success))';
               return 'hsl(var(--muted-foreground))';
@@ -342,8 +543,16 @@ export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
             <span>Dependência não atendida</span>
           </div>
           <div className="flex items-center gap-2">
+            <div className="h-0.5 w-6 bg-warning animate-pulse" />
+            <span>Impacto da simulação</span>
+          </div>
+          <div className="flex items-center gap-2">
             <div className="h-0.5 w-6 bg-primary" style={{ backgroundImage: 'repeating-linear-gradient(90deg, currentColor 0, currentColor 3px, transparent 3px, transparent 6px)' }} />
             <span>É requerido por</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Play className="h-4 w-4 text-primary" />
+            <span>Clique em um módulo para simular ativação/desativação</span>
           </div>
         </div>
       </div>
