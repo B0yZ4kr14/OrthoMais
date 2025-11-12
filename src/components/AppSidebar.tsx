@@ -43,6 +43,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 
 const menuGroups = [
   {
@@ -83,7 +84,7 @@ const menuGroups = [
       { title: 'Requisições', url: '/estoque/requisicoes', icon: ClipboardList },
       { title: 'Movimentações', url: '/estoque/movimentacoes', icon: Package },
       { title: 'Pedidos', url: '/estoque/pedidos', icon: ShoppingCart },
-      { title: 'Integrações API', url: '/estoque/integracoes', icon: Webhook },
+      { title: 'Integrações API', url: '/estoque/integracoes', icon: Webhook, badge: 'Beta' },
       { title: 'Análise de Pedidos', url: '/estoque/analise-pedidos', icon: LineChart },
       { title: 'Análise de Consumo', url: '/estoque/analise-consumo', icon: BarChart3 },
     ]
@@ -92,8 +93,8 @@ const menuGroups = [
     label: 'Relatórios & BI',
     items: [
       { title: 'Relatórios', url: '/relatorios', icon: FileBarChart },
-      { title: 'Business Intelligence', url: '/business-intelligence', icon: TrendingUp },
-      { title: 'Análise Comportamental', url: '/analise-comportamental', icon: Activity },
+      { title: 'Business Intelligence', url: '/business-intelligence', icon: TrendingUp, badge: 'IA' },
+      { title: 'Análise Comportamental', url: '/analise-comportamental', icon: Activity, badge: 'Novo' },
       { title: 'Templates', url: '/report-templates', icon: ClipboardList },
     ]
   },
@@ -117,13 +118,13 @@ export function AppSidebar() {
 
   return (
     <Sidebar className={collapsed ? 'w-16' : 'w-72'} collapsible="icon">
-      <SidebarHeader className="border-b border-border p-4 bg-sidebar">
+      <SidebarHeader className="border-b border-border p-4 bg-gradient-to-b from-sidebar to-sidebar/95">
         {!collapsed ? (
           <div className="flex items-center justify-center px-2">
             <img 
               src="/src/assets/ortho-logo-full.png" 
               alt="Ortho +" 
-              className="h-20 w-auto object-contain"
+              className="h-20 w-auto object-contain drop-shadow-lg"
             />
           </div>
         ) : (
@@ -131,7 +132,7 @@ export function AppSidebar() {
             <img 
               src="/src/assets/ortho-logo-full.png" 
               alt="Ortho +" 
-              className="h-10 w-auto object-contain"
+              className="h-10 w-auto object-contain drop-shadow-md"
             />
           </div>
         )}
@@ -163,15 +164,25 @@ export function AppSidebar() {
                             <SidebarMenuButton 
                               asChild 
                               isActive={isActive(item.url)}
-                              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground transition-all duration-200 hover:translate-x-1"
+                              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md hover:border-l-2 hover:border-l-primary data-[active=true]:bg-gradient-to-r data-[active=true]:from-primary/20 data-[active=true]:to-transparent data-[active=true]:border-l-2 data-[active=true]:border-l-primary data-[active=true]:shadow-inner transition-all duration-300"
                             >
                               <NavLink 
                                 to={item.url} 
                                 end 
-                                className="flex items-center gap-3 px-3 py-2"
+                                className="flex items-center gap-3 px-3 py-3"
                               >
-                                <item.icon className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
-                                {!collapsed && <span className="text-sm animate-slide-in">{item.title}</span>}
+                                <item.icon className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                                {!collapsed && (
+                                  <span className="text-sm animate-slide-in flex-1">{item.title}</span>
+                                )}
+                                {!collapsed && item.badge && (
+                                  <Badge 
+                                    variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} 
+                                    className="ml-auto text-[10px] px-1.5 py-0.5"
+                                  >
+                                    {item.badge}
+                                  </Badge>
+                                )}
                               </NavLink>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
@@ -193,15 +204,25 @@ export function AppSidebar() {
                         <SidebarMenuButton 
                           asChild 
                           isActive={isActive(item.url)}
-                          className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground transition-all duration-200 hover:translate-x-1"
+                          className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md hover:border-l-2 hover:border-l-primary data-[active=true]:bg-gradient-to-r data-[active=true]:from-primary/20 data-[active=true]:to-transparent data-[active=true]:border-l-2 data-[active=true]:border-l-primary data-[active=true]:shadow-inner transition-all duration-300"
                         >
                           <NavLink 
                             to={item.url} 
                             end 
-                            className="flex items-center gap-3 px-3 py-2"
+                            className="flex items-center gap-3 px-3 py-3"
                           >
-                            <item.icon className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
-                            {!collapsed && <span className="text-sm animate-slide-in">{item.title}</span>}
+                            <item.icon className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                            {!collapsed && (
+                              <span className="text-sm animate-slide-in flex-1">{item.title}</span>
+                            )}
+                            {!collapsed && item.badge && (
+                              <Badge 
+                                variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} 
+                                className="ml-auto text-[10px] px-1.5 py-0.5"
+                              >
+                                {item.badge}
+                              </Badge>
+                            )}
                           </NavLink>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -226,13 +247,13 @@ export function AppSidebar() {
                     <SidebarMenuButton 
                       asChild 
                       isActive={isActive('/configuracoes')}
-                      className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground transition-all duration-200 hover:translate-x-1"
+                      className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md hover:border-l-2 hover:border-l-primary data-[active=true]:bg-gradient-to-r data-[active=true]:from-primary/20 data-[active=true]:to-transparent data-[active=true]:border-l-2 data-[active=true]:border-l-primary data-[active=true]:shadow-inner transition-all duration-300"
                     >
                       <NavLink 
                         to="/configuracoes" 
-                        className="flex items-center gap-3 px-3 py-2"
+                        className="flex items-center gap-3 px-3 py-3"
                       >
-                        <Settings className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                        <Settings className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:scale-110" />
                         {!collapsed && <span className="text-sm animate-slide-in">Configurações</span>}
                       </NavLink>
                     </SidebarMenuButton>
