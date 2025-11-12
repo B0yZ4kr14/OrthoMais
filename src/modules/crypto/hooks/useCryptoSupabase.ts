@@ -2,7 +2,41 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { toast as sonnerToast } from 'sonner';
 import type { ExchangeConfig, CryptoWallet, CryptoTransactionComplete } from '../types/crypto.types';
+
+// Helper function to fetch exchange rates
+const fetchExchangeRate = async (coinType: string): Promise<number> => {
+  try {
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${getCoinGeckoId(coinType)}&vs_currencies=brl`
+    );
+    const data = await response.json();
+    const coinId = getCoinGeckoId(coinType);
+    return data[coinId]?.brl || 0;
+  } catch (error) {
+    console.error('Error fetching exchange rate:', error);
+    const rates: Record<string, number> = {
+      BTC: 350000,
+      ETH: 18000,
+      USDT: 5.2,
+      BNB: 2200,
+      USDC: 5.2,
+    };
+    return rates[coinType] || 0;
+  }
+};
+
+const getCoinGeckoId = (coinType: string): string => {
+  const mapping: Record<string, string> = {
+    BTC: 'bitcoin',
+    ETH: 'ethereum',
+    USDT: 'tether',
+    BNB: 'binancecoin',
+    USDC: 'usd-coin',
+  };
+  return mapping[coinType] || coinType.toLowerCase();
+};
 
 export const useCryptoSupabase = (clinicId: string) => {
   const [exchanges, setExchanges] = useState<ExchangeConfig[]>([]);
@@ -243,7 +277,7 @@ export const useCryptoSupabase = (clinicId: string) => {
 
     if (error) throw error;
 
-    toast.success('Solicitação de pagamento criada! Aguardando confirmação...');
+    sonnerToast.success('Solicitação de pagamento criada! Aguardando confirmação...');
     await loadData();
     return transaction;
   };
@@ -295,48 +329,6 @@ export const useCryptoSupabase = (clinicId: string) => {
       pendingTransactions,
       confirmedToday,
     };
-  };
-
-  const createPaymentRequest = async (data: {
-    wallet_id: string;
-    amount_crypto: number;
-    patient_id?: string;
-    conta_receber_id?: string;
-  }) => {
-    if (!clinicId) throw new Error('Clinic ID required');
-
-    const wallet = wallets.find(w => w.id === data.wallet_id);
-    if (!wallet) throw new Error('Wallet not found');
-
-    const exchangeRate = await fetchExchangeRate(wallet.coin_type);
-    const amountBrl = data.amount_crypto * exchangeRate;
-
-    const { data: transaction, error } = await supabase
-      .from('crypto_transactions')
-      .insert({
-        clinic_id: clinicId,
-        exchange_config_id: wallet.exchange_config_id,
-        wallet_id: data.wallet_id,
-        patient_id: data.patient_id,
-        conta_receber_id: data.conta_receber_id,
-        coin_type: wallet.coin_type,
-        amount_crypto: data.amount_crypto,
-        amount_brl: amountBrl,
-        exchange_rate: exchangeRate,
-        tipo: 'RECEBIMENTO',
-        status: 'PENDENTE',
-        confirmations: 0,
-        required_confirmations: 3,
-        to_address: wallet.wallet_address,
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    toast.success('Solicitação de pagamento criada! Aguardando confirmação...');
-    await loadData();
-    return transaction;
   };
 
   return {
