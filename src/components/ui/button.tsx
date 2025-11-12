@@ -17,6 +17,9 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         elevated: "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground shadow-lg hover:shadow-xl hover:-translate-y-0.5 hover:animate-glow active:translate-y-0 border border-primary/20",
         "elevated-secondary": "bg-gradient-to-br from-card to-card/90 text-card-foreground shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 border border-border/50",
+        success: "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md shadow-green-500/50 hover:shadow-lg hover:shadow-green-500/60 hover:-translate-y-0.5 active:translate-y-0",
+        warning: "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/50 hover:shadow-lg hover:shadow-amber-500/60 hover:-translate-y-0.5 active:translate-y-0",
+        info: "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md shadow-blue-500/50 hover:shadow-lg hover:shadow-blue-500/60 hover:-translate-y-0.5 active:translate-y-0",
       },
       size: {
         default: "h-10 px-4 py-2",
