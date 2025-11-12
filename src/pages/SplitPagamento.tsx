@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { DollarSign, TrendingUp, Users, AlertCircle } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,16 +6,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/utils/validation.utils';
-// Temporarily disabled - waiting for Supabase types regeneration
-// import { useSplitSupabase } from '@/modules/split-pagamento/hooks/useSplitSupabase';
+import { useSplitSupabase } from '@/modules/split-pagamento/hooks/useSplitSupabase';
+import { SplitConfigForm } from '@/components/split-pagamento/SplitConfigForm';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function SplitPagamento() {
-  // Temporarily disabled - waiting for Supabase types regeneration
-  const loading = false;
-  const configs: any[] = [];
-  const transacoes: any[] = [];
-  const comissoes: any[] = [];
+  const { configs, transacoes, comissoes, loading } = useSplitSupabase();
+  const [configFormOpen, setConfigFormOpen] = useState(false);
+  const [editingConfig, setEditingConfig] = useState<any>(null);
 
   const totalVendas = comissoes.reduce((acc, c) => acc + c.total_vendas, 0);
   const totalComissoes = comissoes.reduce((acc, c) => acc + c.total_comissao, 0);
@@ -207,18 +206,57 @@ export default function SplitPagamento() {
 
         <TabsContent value="config" className="space-y-4">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Configuração de Split por Dentista</CardTitle>
+              <Button onClick={() => setConfigFormOpen(true)}>Nova Configuração</Button>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
                 Configure o percentual de split e chave PIX para cada dentista parceiro
               </p>
-              <Button>Adicionar Configuração de Split</Button>
+              {configs.length === 0 ? (
+                <p className="text-center text-muted-foreground py-4">
+                  Nenhuma configuração de split cadastrada ainda
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {configs.map((config) => (
+                    <div key={config.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <div className="font-medium">{config.dentist_name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {config.percentual_dentista}% dentista / {config.percentual_clinica}% clínica
+                        </div>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setEditingConfig(config);
+                          setConfigFormOpen(true);
+                        }}
+                      >
+                        Editar
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+
+      <SplitConfigForm
+        open={configFormOpen}
+        onOpenChange={(open) => {
+          setConfigFormOpen(open);
+          if (!open) setEditingConfig(null);
+        }}
+        dentistas={[]}
+        procedimentos={[]}
+        editingConfig={editingConfig}
+      />
     </div>
   );
 }

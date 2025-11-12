@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useFidelidadeSupabase } from "@/modules/fidelidade/hooks/useFidelidadeSupabase";
 
 const badgeSchema = z.object({
   nome: z.string().min(3, "Nome deve ter no mínimo 3 caracteres"),
@@ -39,6 +40,7 @@ const iconeOptions = [
 ];
 
 export function BadgeForm({ open, onOpenChange }: BadgeFormProps) {
+  const { createBadge } = useFidelidadeSupabase();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<BadgeFormData>>({
     nome: "",
@@ -56,8 +58,7 @@ export function BadgeForm({ open, onOpenChange }: BadgeFormProps) {
     try {
       const validated = badgeSchema.parse(formData);
       
-      // Aqui você integraria com o hook de fidelidade para criar a badge
-      toast.success("Badge criada com sucesso!");
+      await createBadge(validated);
       
       onOpenChange(false);
       setFormData({

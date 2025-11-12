@@ -1,22 +1,23 @@
 import { Award, Gift, Star, TrendingUp, Users, Zap, Share2 } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-// Temporarily disabled - waiting for Supabase types regeneration
-// import { useFidelidadeSupabase } from '@/modules/fidelidade/hooks/useFidelidadeSupabase';
+import { useFidelidadeSupabase } from '@/modules/fidelidade/hooks/useFidelidadeSupabase';
+import { RecompensaForm } from '@/components/fidelidade/RecompensaForm';
+import { BadgeForm } from '@/components/fidelidade/BadgeForm';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
 
 export default function ProgramaFidelidade() {
-  // Temporarily disabled - waiting for Supabase types regeneration
-  const loading = false;
-  const pontos: any[] = [];
-  const recompensas: any[] = [];
-  const indicacoes: any[] = [];
+  const { pontos, recompensas, badges, indicacoes, loading } = useFidelidadeSupabase();
+  const [recompensaFormOpen, setRecompensaFormOpen] = useState(false);
+  const [badgeFormOpen, setBadgeFormOpen] = useState(false);
+  const [editingRecompensa, setEditingRecompensa] = useState<any>(null);
 
   const triggerConfetti = () => {
     confetti({
@@ -222,7 +223,7 @@ export default function ProgramaFidelidade() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Catálogo de Recompensas</CardTitle>
-              <Button>Adicionar Recompensa</Button>
+              <Button onClick={() => setRecompensaFormOpen(true)}>Adicionar Recompensa</Button>
             </CardHeader>
             <CardContent>
               {recompensas.length === 0 ? (
@@ -246,7 +247,16 @@ export default function ProgramaFidelidade() {
                         <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                         <span className="font-bold">{recompensa.pontos_necessarios}</span>
                       </div>
-                      <Button variant="outline" size="sm">Editar</Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setEditingRecompensa(recompensa);
+                          setRecompensaFormOpen(true);
+                        }}
+                      >
+                        Editar
+                      </Button>
                     </div>
                     </Card>
                   ))}
@@ -301,7 +311,7 @@ export default function ProgramaFidelidade() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Badges Compartilháveis</CardTitle>
-              <Button>Criar Badge</Button>
+              <Button onClick={() => setBadgeFormOpen(true)}>Criar Badge</Button>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
@@ -340,6 +350,21 @@ export default function ProgramaFidelidade() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <RecompensaForm
+        open={recompensaFormOpen}
+        onOpenChange={(open) => {
+          setRecompensaFormOpen(open);
+          if (!open) setEditingRecompensa(null);
+        }}
+        procedimentos={[]}
+        editingRecompensa={editingRecompensa}
+      />
+
+      <BadgeForm
+        open={badgeFormOpen}
+        onOpenChange={setBadgeFormOpen}
+      />
     </div>
   );
 }
