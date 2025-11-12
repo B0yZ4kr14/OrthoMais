@@ -14,7 +14,9 @@ import { Odontograma3D } from '@/modules/pep/components/Odontograma3D';
 import { OdontogramaHistory } from '@/modules/pep/components/OdontogramaHistory';
 import { OdontogramaComparison } from '@/modules/pep/components/OdontogramaComparison';
 import { AssinaturaDigital } from '@/modules/pep/components/AssinaturaDigital';
+import { OdontogramaAIAnalysis } from '@/modules/pep/components/OdontogramaAIAnalysis';
 import { useOdontogramaSupabase } from '@/modules/pep/hooks/useOdontogramaSupabase';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function PEP() {
   const [activeTab, setActiveTab] = useState('historico');
@@ -41,6 +43,36 @@ export default function PEP() {
     } else {
       setSelectedForComparison([historyId, null]);
       setActiveTab('historico-odonto');
+    }
+  };
+
+  const handleCreateTreatmentsFromAI = async (suggestions: any[]) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuário não autenticado');
+
+      // Criar tratamentos na tabela pep_tratamentos
+      const treatmentsToInsert = suggestions.map(suggestion => ({
+        prontuario_id: prontuarioId,
+        titulo: suggestion.procedure,
+        descricao: suggestion.clinical_notes || `Tratamento para o dente ${suggestion.tooth_number}`,
+        dente_codigo: suggestion.tooth_number.toString(),
+        valor_estimado: suggestion.estimated_cost,
+        status: 'EM_ANDAMENTO',
+        data_inicio: new Date().toISOString().split('T')[0],
+        created_by: user.id,
+        observacoes: `Prioridade: ${suggestion.priority}${suggestion.estimated_duration ? ` | Duração estimada: ${suggestion.estimated_duration}` : ''}`
+      }));
+
+      const { error } = await supabase
+        .from('pep_tratamentos')
+        .insert(treatmentsToInsert);
+
+      if (error) throw error;
+
+    } catch (error) {
+      console.error('Erro ao criar tratamentos:', error);
+      throw error;
     }
   };
 
@@ -80,7 +112,7 @@ export default function PEP() {
 
       {/* Tabs Principais */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9">
           <TabsTrigger value="historico">
             <History className="mr-2 h-4 w-4" />
             <span className="hidden lg:inline">Histórico</span>
@@ -96,6 +128,10 @@ export default function PEP() {
           <TabsTrigger value="odontograma3d">
             <Box className="mr-2 h-4 w-4" />
             <span className="hidden lg:inline">Odonto 3D</span>
+          </TabsTrigger>
+          <TabsTrigger value="analise-ia">
+            <Smile className="mr-2 h-4 w-4" />
+            <span className="hidden lg:inline">Análise IA</span>
           </TabsTrigger>
           <TabsTrigger value="historico-odonto">
             <Clock className="mr-2 h-4 w-4" />
@@ -193,6 +229,13 @@ export default function PEP() {
 
         <TabsContent value="odontograma3d" className="space-y-4">
           <Odontograma3D prontuarioId={prontuarioId} />
+        </TabsContent>
+
+        <TabsContent value="analise-ia" className="space-y-4">
+          <OdontogramaAIAnalysis 
+            prontuarioId={prontuarioId}
+            onTreatmentCreate={handleCreateTreatmentsFromAI}
+          />
         </TabsContent>
 
         <TabsContent value="historico-odonto" className="space-y-4">
