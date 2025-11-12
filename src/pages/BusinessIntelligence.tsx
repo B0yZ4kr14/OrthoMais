@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { BarChart3, TrendingUp, AlertTriangle, Bell, Download, Plus, Settings } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ExportDashboardDialog } from '@/components/bi/ExportDashboardDialog';
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))'];
 
@@ -58,10 +59,10 @@ export default function BusinessIntelligence() {
               <SelectItem value="1year">Último ano</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Exportar Relatório
-          </Button>
+          <ExportDashboardDialog 
+            dashboardName="Dashboard Principal" 
+            data={[...revenueData, ...procedureData, ...alertsData]}
+          />
         </div>
         <Button>
           <Plus className="h-4 w-4 mr-2" />

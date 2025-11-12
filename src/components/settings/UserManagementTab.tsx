@@ -157,6 +157,28 @@ export const UserManagementTab = () => {
 
       if (roleError) throw roleError;
 
+      // Adicionar permissões de módulos se for MEMBER
+      if (newUserRole === 'MEMBER') {
+        const permissionsToInsert = userPermissions
+          .filter(p => p.can_view || p.can_edit || p.can_delete)
+          .map(p => ({
+            user_id: authData.user.id,
+            module_catalog_id: modules.find(m => m.module_key === p.module_key)?.id,
+            can_view: p.can_view,
+            can_edit: p.can_edit,
+            can_delete: p.can_delete,
+          }))
+          .filter(p => p.module_catalog_id !== undefined);
+
+        if (permissionsToInsert.length > 0) {
+          const { error: permError } = await supabase
+            .from('user_module_permissions')
+            .insert(permissionsToInsert);
+
+          if (permError) throw permError;
+        }
+      }
+
       toast.success('Usuário criado com sucesso');
       setIsAddDialogOpen(false);
       resetForm();

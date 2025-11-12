@@ -8,6 +8,7 @@ import { Navigate } from 'react-router-dom';
 import ModulesAdmin from './settings/ModulesAdmin';
 import { DatabaseBackupTab } from '@/components/settings/DatabaseBackupTab';
 import { BackupStatsDashboard } from '@/components/settings/BackupStatsDashboard';
+import { UserManagementTab } from '@/components/settings/UserManagementTab';
 
 export default function Configuracoes() {
   const { user, hasRole } = useAuth();
@@ -29,8 +30,7 @@ export default function Configuracoes() {
       id: 'users',
       label: 'Usuários',
       icon: Users,
-      description: 'Gerenciar usuários e permissões',
-      comingSoon: true
+      description: 'Gerenciar usuários e permissões'
     },
     {
       id: 'database',
@@ -87,21 +87,7 @@ export default function Configuracoes() {
         </TabsContent>
 
         <TabsContent value="users" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Gerenciamento de Usuários</CardTitle>
-              <CardDescription>
-                Adicione, edite ou remova usuários do sistema e gerencie suas permissões.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
-                <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium">Em Desenvolvimento</p>
-                <p className="text-sm">Esta funcionalidade estará disponível em breve.</p>
-              </div>
-            </CardContent>
-          </Card>
+          <UserManagementTab />
         </TabsContent>
 
         <TabsContent value="database" className="space-y-4">
