@@ -35,7 +35,81 @@
 
 ---
 
-## 🏗️ Instalação
+## 🐳 Deploy com Docker
+
+### Opção 1: Docker Compose (Recomendado)
+
+Execute a stack completa (aplicação + PostgreSQL + Nginx + Prometheus + Grafana):
+
+```sh
+# Configure variáveis de ambiente
+cp .env.example .env
+# Edite .env com suas credenciais
+
+# Inicie todos os serviços
+docker-compose up -d
+
+# Verifique os logs
+docker-compose logs -f orthoplus
+
+# Parar serviços
+docker-compose down
+
+# Parar e remover volumes
+docker-compose down -v
+```
+
+**Serviços disponíveis:**
+- Ortho+: `http://localhost:5173`
+- Grafana: `http://localhost:3000` (admin/admin)
+- Prometheus: `http://localhost:9090`
+- PostgreSQL: `localhost:5432`
+
+### Opção 2: Docker Individual
+
+Execute apenas a aplicação:
+
+```sh
+# Build da imagem
+docker build -t orthoplus:latest .
+
+# Executar container
+docker run -d \
+  --name orthoplus \
+  -p 5173:5173 \
+  -e VITE_SUPABASE_URL=your_url \
+  -e VITE_SUPABASE_PUBLISHABLE_KEY=your_key \
+  -e VITE_SUPABASE_PROJECT_ID=your_id \
+  orthoplus:latest
+
+# Ver logs
+docker logs -f orthoplus
+
+# Parar container
+docker stop orthoplus
+
+# Remover container
+docker rm orthoplus
+```
+
+### Opção 3: Docker Hub (Produção)
+
+```sh
+# Pull da imagem oficial
+docker pull tsitelecom/orthoplus:latest
+
+# Executar
+docker run -d \
+  --name orthoplus \
+  -p 80:5173 \
+  -e VITE_SUPABASE_URL=your_url \
+  -e VITE_SUPABASE_PUBLISHABLE_KEY=your_key \
+  tsitelecom/orthoplus:latest
+```
+
+---
+
+## 🏗️ Instalação Manual
 
 ### Opção 1: Instalação Automática (Ubuntu 24.04.3 LTS)
 
