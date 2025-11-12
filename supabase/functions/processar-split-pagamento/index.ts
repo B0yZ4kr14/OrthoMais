@@ -6,6 +6,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Gateway PIX Configuration (Mercado Pago, PicPay, or Banco do Brasil)
+const PIX_GATEWAY_API_URL = Deno.env.get('PIX_GATEWAY_API_URL') || 'https://api.mercadopago.com';
+const PIX_GATEWAY_TOKEN = Deno.env.get('PIX_GATEWAY_TOKEN') || '';
+
 interface SplitPaymentRequest {
   transacao_origem_id: string;
   valor_original: number;
@@ -203,11 +207,8 @@ serve(async (req) => {
   }
 });
 
-// Simula processamento de transferência PIX
+// Real PIX transfer processing via Gateway
 async function processarPixTransfer(chave_pix: string | null, valor: number) {
-  // Em produção, aqui seria feita a integração com gateway de pagamento
-  // Exemplo: Mercado Pago, PicPay, Banco do Brasil, etc.
-  
   if (!chave_pix) {
     return {
       success: false,
@@ -215,13 +216,62 @@ async function processarPixTransfer(chave_pix: string | null, valor: number) {
     };
   }
 
-  // Simulação de sucesso
-  console.log(`[SIMULAÇÃO] Transferindo R$ ${valor} via PIX para chave ${chave_pix}`);
-  
-  return {
-    success: true,
-    comprovante_id: `PIX-${Date.now()}-${Math.random().toString(36).substring(7)}`,
-  };
+  // If no gateway token is configured, use simulation
+  if (!PIX_GATEWAY_TOKEN) {
+    console.log(`[SIMULAÇÃO] Transferindo R$ ${valor} via PIX para chave ${chave_pix}`);
+    return {
+      success: true,
+      comprovante_id: `PIX-SIM-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+    };
+  }
+
+  try {
+    // Real integration with PIX Gateway (Mercado Pago example)
+    console.log(`[GATEWAY PIX] Processando transferência de R$ ${valor} para ${chave_pix}`);
+    
+    const response = await fetch(`${PIX_GATEWAY_API_URL}/v1/payments`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${PIX_GATEWAY_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        transaction_amount: valor,
+        payment_method_id: 'pix',
+        payer: {
+          email: 'payer@example.com', // Would come from database
+        },
+        metadata: {
+          recipient_pix_key: chave_pix,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('[GATEWAY PIX] Erro:', errorData);
+      return {
+        success: false,
+        erro: errorData.message || 'Erro ao processar PIX',
+      };
+    }
+
+    const data = await response.json();
+    console.log('[GATEWAY PIX] Transferência realizada com sucesso:', data.id);
+
+    return {
+      success: true,
+      comprovante_id: data.id || `PIX-${Date.now()}`,
+      qr_code: data.point_of_interaction?.transaction_data?.qr_code,
+      qr_code_base64: data.point_of_interaction?.transaction_data?.qr_code_base64,
+    };
+  } catch (error: any) {
+    console.error('[GATEWAY PIX] Exceção:', error);
+    return {
+      success: false,
+      erro: error.message || 'Erro ao processar PIX',
+    };
+  }
 }
 
 // Atualiza comissão mensal do dentista

@@ -1,80 +1,42 @@
-import { useState } from 'react';
-import { Award, Gift, Star, TrendingUp, Users, Zap } from 'lucide-react';
+import { Award, Gift, Star, TrendingUp, Users, Zap, Share2 } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useFidelidadeSupabase } from '@/modules/fidelidade/hooks/useFidelidadeSupabase';
+import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
 
 export default function ProgramaFidelidade() {
-  // Mock data
-  const pacientes = [
-    {
-      id: '1',
-      nome: 'Ana Silva',
-      pontos_disponiveis: 450,
-      pontos_totais: 1200,
-      nivel: 'OURO',
-      badges: ['Paciente VIP', 'Fiel 1 Ano', 'Indicador Top'],
-    },
-    {
-      id: '2',
-      nome: 'Carlos Santos',
-      pontos_disponiveis: 180,
-      pontos_totais: 350,
-      nivel: 'BRONZE',
-      badges: ['Novo Membro'],
-    },
-  ];
+  const { pontos, recompensas, indicacoes, loading } = useFidelidadeSupabase();
 
-  const recompensas = [
-    {
-      id: '1',
-      nome: 'Limpeza Grátis',
-      descricao: 'Uma sessão de limpeza completa',
-      pontos_necessarios: 300,
-      tipo: 'PROCEDIMENTO_GRATIS',
-      ativo: true,
-    },
-    {
-      id: '2',
-      nome: '20% Desconto',
-      descricao: 'Desconto em qualquer procedimento',
-      pontos_necessarios: 500,
-      tipo: 'DESCONTO_PERCENTUAL',
-      ativo: true,
-    },
-    {
-      id: '3',
-      nome: 'Kit Dental Premium',
-      descricao: 'Kit com escova elétrica e fio dental',
-      pontos_necessarios: 200,
-      tipo: 'BRINDE',
-      ativo: true,
-    },
-  ];
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'],
+    });
+  };
 
-  const indicacoes = [
-    {
-      id: '1',
-      indicador_nome: 'Ana Silva',
-      indicado_nome: 'Pedro Costa',
-      indicado_telefone: '(11) 99999-8888',
-      status: 'COMPARECEU',
-      pontos_concedidos: 50,
-      created_at: '2024-01-10',
-    },
-    {
-      id: '2',
-      indicador_nome: 'Carlos Santos',
-      indicado_nome: 'Mariana Oliveira',
-      indicado_telefone: '(11) 98888-7777',
-      status: 'AGENDADO',
-      pontos_concedidos: null,
-      created_at: '2024-01-15',
-    },
-  ];
+  const handleShareBadge = async (badgeName: string) => {
+    const shareText = `🏆 Acabei de conquistar o badge "${badgeName}" no meu programa de fidelidade odontológico! #Ortho+ #Saúde`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({ text: shareText });
+        toast.success('Badge compartilhado com sucesso!');
+      } catch (error) {
+        console.log('Compartilhamento cancelado');
+      }
+    } else {
+      navigator.clipboard.writeText(shareText);
+      toast.success('Texto copiado para a área de transferência!');
+    }
+  };
 
   const getNivelColor = (nivel: string) => {
     switch (nivel) {
@@ -96,6 +58,20 @@ export default function ProgramaFidelidade() {
       default: return 'secondary';
     }
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-6 space-y-6">
+        <Skeleton className="h-20 w-full" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -167,13 +143,18 @@ export default function ProgramaFidelidade() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {pacientes.map((paciente, index) => (
-                  <Card key={paciente.id} className="p-4">
+                {pontos.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    Nenhum paciente cadastrado no programa ainda
+                  </p>
+                ) : (
+                  pontos.map((paciente, index) => (
+                    <Card key={paciente.id} className="p-4 transition-all hover:shadow-lg">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-4">
                         <div className="text-3xl font-bold text-muted-foreground">#{index + 1}</div>
                         <div>
-                          <h3 className="font-semibold text-lg">{paciente.nome}</h3>
+                          <h3 className="font-semibold text-lg">{paciente.patient_name}</h3>
                           <div className="flex items-center gap-2">
                             <Badge variant="outline" className={getNivelColor(paciente.nivel)}>
                               {paciente.nivel}
@@ -195,21 +176,38 @@ export default function ProgramaFidelidade() {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Progresso para próximo nível</span>
-                        <span className="font-medium">75%</span>
+                        <span className="font-medium">
+                          {Math.round((paciente.pontos_totais % 1000) / 10)}%
+                        </span>
                       </div>
-                      <Progress value={75} />
+                      <Progress 
+                        value={(paciente.pontos_totais % 1000) / 10} 
+                        className="h-3 transition-all duration-500"
+                      />
                     </div>
 
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {paciente.badges.map((badge, i) => (
-                        <Badge key={i} variant="secondary" className="gap-1">
-                          <Zap className="h-3 w-3" />
-                          {badge}
-                        </Badge>
-                      ))}
-                    </div>
-                  </Card>
-                ))}
+                    {paciente.badges && paciente.badges.length > 0 && (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {paciente.badges.map((badge, i) => (
+                          <Badge 
+                            key={i} 
+                            variant="secondary" 
+                            className="gap-1 cursor-pointer hover:scale-110 transition-transform"
+                            onClick={() => {
+                              triggerConfetti();
+                              handleShareBadge(badge.nome);
+                            }}
+                          >
+                            <Zap className="h-3 w-3" />
+                            {badge.nome}
+                            <Share2 className="h-3 w-3 ml-1" />
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    </Card>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -222,8 +220,13 @@ export default function ProgramaFidelidade() {
               <Button>Adicionar Recompensa</Button>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {recompensas.map((recompensa) => (
+              {recompensas.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">
+                  Nenhuma recompensa cadastrada ainda
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {recompensas.map((recompensa) => (
                   <Card key={recompensa.id} className="p-4">
                     <div className="flex justify-between items-start mb-3">
                       <Gift className="h-8 w-8 text-primary" />
@@ -240,9 +243,10 @@ export default function ProgramaFidelidade() {
                       </div>
                       <Button variant="outline" size="sm">Editar</Button>
                     </div>
-                  </Card>
-                ))}
-              </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -253,8 +257,13 @@ export default function ProgramaFidelidade() {
               <CardTitle>Programa de Indicação Premiada</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                {indicacoes.map((indicacao) => (
+              {indicacoes.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">
+                  Nenhuma indicação registrada ainda
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {indicacoes.map((indicacao) => (
                   <div key={indicacao.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex-1">
                       <div className="font-medium">{indicacao.indicador_nome}</div>
@@ -275,9 +284,10 @@ export default function ProgramaFidelidade() {
                     <Badge variant={getStatusIndicacaoVariant(indicacao.status)}>
                       {indicacao.status}
                     </Badge>
-                  </div>
-                ))}
-              </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

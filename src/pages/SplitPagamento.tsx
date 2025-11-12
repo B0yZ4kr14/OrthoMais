@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { DollarSign, TrendingUp, Users, AlertCircle } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,54 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/utils/validation.utils';
+import { useSplitSupabase } from '@/modules/split-pagamento/hooks/useSplitSupabase';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function SplitPagamento() {
-  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
-
-  // Mock data - será substituído por dados reais do Supabase
-  const comissoes = [
-    {
-      id: '1',
-      dentist_name: 'Dr. João Silva',
-      total_vendas: 15000,
-      total_comissao: 9000,
-      total_pago: 5000,
-      total_pendente: 4000,
-      percentual_medio: 60,
-    },
-    {
-      id: '2',
-      dentist_name: 'Dra. Maria Santos',
-      total_vendas: 12000,
-      total_comissao: 7200,
-      total_pago: 7200,
-      total_pendente: 0,
-      percentual_medio: 60,
-    },
-  ];
-
-  const transacoes = [
-    {
-      id: '1',
-      dentist_name: 'Dr. João Silva',
-      paciente_name: 'Carlos Souza',
-      valor_original: 1500,
-      percentual_split: 60,
-      valor_split: 900,
-      status: 'CONCLUIDO',
-      processado_em: '2024-01-15T10:30:00',
-    },
-    {
-      id: '2',
-      dentist_name: 'Dra. Maria Santos',
-      paciente_name: 'Ana Paula',
-      valor_original: 2000,
-      percentual_split: 60,
-      valor_split: 1200,
-      status: 'PENDENTE',
-      processado_em: null,
-    },
-  ];
+  const { comissoes, transacoes, loading } = useSplitSupabase();
 
   const totalVendas = comissoes.reduce((acc, c) => acc + c.total_vendas, 0);
   const totalComissoes = comissoes.reduce((acc, c) => acc + c.total_comissao, 0);
@@ -79,6 +35,20 @@ export default function SplitPagamento() {
       default: return status;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-6 space-y-6">
+        <Skeleton className="h-20 w-full" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -144,42 +114,48 @@ export default function SplitPagamento() {
         <TabsContent value="comissoes" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Comissões por Dentista - {selectedMonth}</CardTitle>
+              <CardTitle>Comissões por Dentista - Mês Atual</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {comissoes.map((comissao) => (
-                  <Card key={comissao.id} className="p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="font-semibold text-lg">{comissao.dentist_name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Split médio: {comissao.percentual_medio}%
-                        </p>
+                {comissoes.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    Nenhuma comissão registrada este mês
+                  </p>
+                ) : (
+                  comissoes.map((comissao) => (
+                    <Card key={comissao.id} className="p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="font-semibold text-lg">{comissao.dentist_name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Split médio: {((comissao.total_comissao / comissao.total_vendas) * 100).toFixed(0)}%
+                          </p>
+                        </div>
+                        <Button size="sm">Processar Repasse PIX</Button>
                       </div>
-                      <Button size="sm">Processar Repasse PIX</Button>
-                    </div>
 
-                    <div className="grid grid-cols-4 gap-4">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Vendas</p>
-                        <p className="font-semibold">{formatCurrency(comissao.total_vendas)}</p>
+                      <div className="grid grid-cols-4 gap-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground">Vendas</p>
+                          <p className="font-semibold">{formatCurrency(comissao.total_vendas)}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Comissão</p>
+                          <p className="font-semibold">{formatCurrency(comissao.total_comissao)}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Pago</p>
+                          <p className="font-semibold text-green-600">{formatCurrency(comissao.total_pago)}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Pendente</p>
+                          <p className="font-semibold text-amber-600">{formatCurrency(comissao.total_pendente)}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Comissão</p>
-                        <p className="font-semibold">{formatCurrency(comissao.total_comissao)}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Pago</p>
-                        <p className="font-semibold text-green-600">{formatCurrency(comissao.total_pago)}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Pendente</p>
-                        <p className="font-semibold text-amber-600">{formatCurrency(comissao.total_pendente)}</p>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -192,27 +168,33 @@ export default function SplitPagamento() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {transacoes.map((transacao) => (
-                  <div key={transacao.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="font-medium">{transacao.dentist_name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        Paciente: {transacao.paciente_name}
+                {transacoes.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    Nenhuma transação registrada ainda
+                  </p>
+                ) : (
+                  transacoes.map((transacao) => (
+                    <div key={transacao.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex-1">
+                        <div className="font-medium">Dentista ID: {transacao.dentist_id}</div>
+                        <div className="text-sm text-muted-foreground">
+                          Transação Origem: {transacao.transacao_origem_id}
+                        </div>
                       </div>
+                      <div className="text-right mr-4">
+                        <div className="font-medium">
+                          {formatCurrency(transacao.valor_split)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {transacao.percentual_split}% de {formatCurrency(transacao.valor_original)}
+                        </div>
+                      </div>
+                      <Badge variant={getStatusVariant(transacao.status)}>
+                        {getStatusLabel(transacao.status)}
+                      </Badge>
                     </div>
-                    <div className="text-right mr-4">
-                      <div className="font-medium">
-                        {formatCurrency(transacao.valor_split)}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {transacao.percentual_split}% de {formatCurrency(transacao.valor_original)}
-                      </div>
-                    </div>
-                    <Badge variant={getStatusVariant(transacao.status)}>
-                      {getStatusLabel(transacao.status)}
-                    </Badge>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
