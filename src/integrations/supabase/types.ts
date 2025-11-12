@@ -14,16 +14,252 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_logs: {
+        Row: {
+          action: string
+          clinic_id: string | null
+          created_at: string
+          details: Json | null
+          id: number
+          target_module_id: number | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          clinic_id?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: number
+          target_module_id?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          clinic_id?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: number
+          target_module_id?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_logs_target_module_id_fkey"
+            columns: ["target_module_id"]
+            isOneToOne: false
+            referencedRelation: "module_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinic_modules: {
+        Row: {
+          clinic_id: string
+          id: number
+          is_active: boolean
+          module_catalog_id: number
+          subscribed_at: string
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          id?: number
+          is_active?: boolean
+          module_catalog_id: number
+          subscribed_at?: string
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          id?: number
+          is_active?: boolean
+          module_catalog_id?: number
+          subscribed_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_modules_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_modules_module_catalog_id_fkey"
+            columns: ["module_catalog_id"]
+            isOneToOne: false
+            referencedRelation: "module_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinics: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      module_catalog: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: number
+          module_key: string
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: number
+          module_key: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: number
+          module_key?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      module_dependencies: {
+        Row: {
+          created_at: string
+          depends_on_module_id: number
+          id: number
+          module_id: number
+        }
+        Insert: {
+          created_at?: string
+          depends_on_module_id: number
+          id?: number
+          module_id: number
+        }
+        Update: {
+          created_at?: string
+          depends_on_module_id?: number
+          id?: number
+          module_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "module_dependencies_depends_on_module_id_fkey"
+            columns: ["depends_on_module_id"]
+            isOneToOne: false
+            referencedRelation: "module_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "module_dependencies_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "module_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          clinic_id: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          clinic_id?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          clinic_id?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_clinic_id: { Args: { _user_id: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "ADMIN" | "MEMBER"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +386,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["ADMIN", "MEMBER"],
+    },
   },
 } as const
