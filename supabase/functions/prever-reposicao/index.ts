@@ -31,7 +31,16 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const { produtos }: { produtos: PrevisaoInput[] } = await req.json();
+    const { produtos, eventosFuturos }: { 
+      produtos: PrevisaoInput[],
+      eventosFuturos?: Array<{
+        tipo: string;
+        dataInicio: string;
+        dataFim: string;
+        impactoEstimado: number;
+        descricao: string;
+      }>
+    } = await req.json();
 
     if (!produtos || produtos.length === 0) {
       return new Response(
@@ -81,11 +90,27 @@ serve(async (req) => {
       };
     });
 
+    // Preparar informações sobre eventos futuros se houver
+    const eventosInfo = eventosFuturos && eventosFuturos.length > 0 ? `
+
+EVENTOS FUTUROS QUE IMPACTARÃO O CONSUMO:
+${eventosFuturos.map(e => `
+- ${e.tipo}: ${e.descricao}
+  Período: ${e.dataInicio} a ${e.dataFim}
+  Impacto estimado no consumo: ${e.impactoEstimado > 0 ? '+' : ''}${e.impactoEstimado}%
+`).join('')}
+
+IMPORTANTE: Ajuste suas previsões considerando estes eventos futuros. Por exemplo:
+- PROMOCAO ou EXPANSAO aumentarão o consumo
+- FERIAS ou RECESSO reduzirão o consumo
+` : '';
+
     // Chamar Lovable AI para análise preditiva
     const prompt = `Você é um especialista em previsão de demanda e gestão de estoque. Analise os seguintes dados de consumo e forneça previsões precisas de quando cada produto precisará ser reposto.
 
 DADOS DOS PRODUTOS:
 ${JSON.stringify(dadosAnalise, null, 2)}
+${eventosInfo}
 
 ANÁLISE SOLICITADA:
 1. Para cada produto, analise padrões de consumo histórico
@@ -112,7 +137,11 @@ RETORNE em formato JSON estruturado com esta estrutura EXATA (não adicione text
       "sazonalidade": "ALTA" | "MEDIA" | "BAIXA",
       "confianca": número entre 0 e 1 (ex: 0.85),
       "justificativa": "explicação breve da previsão",
-      "recomendacao": "ação recomendada"
+      "recomendacao": "ação recomendada",
+      "metodoTradicional": {
+        "diasAteEstoqueZero": número (inteiro, baseado apenas em consumo médio simples dos últimos 30 dias),
+        "quantidadeSugerida": número (inteiro, quantidade fixa sem considerar tendências)
+      }
     }
   ],
   "resumo": {

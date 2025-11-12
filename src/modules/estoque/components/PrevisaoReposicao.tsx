@@ -1,333 +1,268 @@
-import { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Minus, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock,
-  Sparkles,
-  RefreshCw,
-  Calendar,
-  Package
-} from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { formatDate } from '@/lib/utils/date.utils';
-import { formatCurrency } from '@/lib/utils/validation.utils';
-import type { Produto, Movimentacao } from '../types/estoque.types';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-
-interface PrevisaoReposicaoProps {
-  produtos: Produto[];
-  movimentacoes: Movimentacao[];
-}
+import { useState } from "react";
+import { useEstoqueSupabase } from "../hooks/useEstoqueSupabase";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2, Brain, AlertTriangle, TrendingUp, TrendingDown, Minus, Mail, CalendarDays, Target } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Previsao {
   produto: string;
-  status: 'CRITICO' | 'ALERTA' | 'NORMAL' | 'EXCESSO';
+  status: "CRITICO" | "ALERTA" | "NORMAL" | "EXCESSO";
   diasAteEstoqueMinimo: number;
   diasAteEstoqueZero: number;
   dataEstimadaReposicao: string;
   quantidadeSugerida: number;
-  tendencia: 'CRESCENTE' | 'ESTAVEL' | 'DECRESCENTE';
-  sazonalidade: 'ALTA' | 'MEDIA' | 'BAIXA';
+  tendencia: "CRESCENTE" | "ESTAVEL" | "DECRESCENTE";
+  sazonalidade: "ALTA" | "MEDIA" | "BAIXA";
   confianca: number;
   justificativa: string;
   recomendacao: string;
-}
-
-interface PrevisaoResponse {
-  previsoes: Previsao[];
-  resumo: {
-    produtosCriticos: number;
-    produtosAlerta: number;
-    economiaEstimada: number;
-    observacoes: string;
+  metodoTradicional?: {
+    diasAteEstoqueZero: number;
+    quantidadeSugerida: number;
   };
 }
 
-export function PrevisaoReposicao({ produtos, movimentacoes }: PrevisaoReposicaoProps) {
-  const [previsoes, setPrevisoes] = useState<PrevisaoResponse | null>(null);
+interface EventoFuturo {
+  tipo: "PROMOCAO" | "FERIAS" | "EXPANSAO" | "OUTRO";
+  dataInicio: string;
+  dataFim: string;
+  impactoEstimado: number;
+  descricao: string;
+}
+
+export function PrevisaoReposicao() {
+  const { produtos, movimentacoes } = useEstoqueSupabase();
+  const [previsoes, setPrevisoes] = useState<Previsao[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [resumo, setResumo] = useState<any>(null);
+  const [eventosFuturos, setEventosFuturos] = useState<EventoFuturo[]>([]);
+  const [novoEvento, setNovoEvento] = useState<EventoFuturo>({
+    tipo: "PROMOCAO",
+    dataInicio: "",
+    dataFim: "",
+    impactoEstimado: 0,
+    descricao: ""
+  });
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const gerarPrevisoes = async () => {
     setLoading(true);
     try {
-      // Filtrar produtos com movimentações suficientes para análise
-      const produtosComHistorico = produtos
-        .filter(p => {
-          const movsProduto = movimentacoes.filter(m => m.produtoId === p.id);
-          return movsProduto.length >= 5; // Mínimo 5 movimentações
-        })
-        .slice(0, 20); // Limitar para evitar timeout
+      const produtosParaAnalise = produtos
+        .filter(p => p.quantidadeAtual <= p.quantidadeMinima * 1.5)
+        .map(produto => {
+          const movimentacoesProduto = movimentacoes.filter(m => m.produtoId === produto.id);
+          
+          return {
+            produtoId: produto.id,
+            produtoNome: produto.nome,
+            quantidadeAtual: produto.quantidadeAtual,
+            quantidadeMinima: produto.quantidadeMinima,
+            movimentacoes: movimentacoesProduto.map(m => ({
+              data: m.createdAt,
+              quantidade: m.quantidade,
+              tipo: m.tipo
+            }))
+          };
+        });
 
-      if (produtosComHistorico.length === 0) {
-        toast.error('Nenhum produto com histórico suficiente para análise');
+      if (produtosParaAnalise.length === 0) {
+        toast.info("Nenhum produto necessita análise de reposição no momento");
+        setLoading(false);
         return;
       }
 
-      const dadosAnalise = produtosComHistorico.map(produto => ({
-        produtoId: produto.id!,
-        produtoNome: produto.nome,
-        quantidadeAtual: produto.quantidadeAtual,
-        quantidadeMinima: produto.quantidadeMinima,
-        movimentacoes: movimentacoes
-          .filter(m => m.produtoId === produto.id)
-          .map(m => ({
-            data: m.createdAt!,
-            quantidade: m.quantidade,
-            tipo: m.tipo,
-          }))
-          .slice(-90), // Últimas 90 movimentações
-      }));
-
-      console.log(`Gerando previsões para ${dadosAnalise.length} produtos...`);
-
       const { data, error } = await supabase.functions.invoke('prever-reposicao', {
-        body: { produtos: dadosAnalise },
+        body: { 
+          produtos: produtosParaAnalise,
+          eventosFuturos: eventosFuturos.length > 0 ? eventosFuturos : undefined
+        }
       });
 
-      if (error) {
-        console.error('Erro ao chamar função de previsão:', error);
-        throw error;
-      }
+      if (error) throw error;
 
-      if (!data || !data.previsoes) {
-        throw new Error('Resposta inválida da API de previsão');
-      }
-
-      setPrevisoes(data);
-      toast.success('Previsões geradas com sucesso!');
+      setPrevisoes(data.previsoes || []);
+      setResumo(data.resumo || {});
+      toast.success("Previsões geradas com sucesso pela IA!");
     } catch (error: any) {
-      console.error('Erro ao gerar previsões:', error);
-      toast.error(error.message || 'Erro ao gerar previsões de reposição');
+      console.error("Erro ao gerar previsões:", error);
+      toast.error(error.message || "Erro ao gerar previsões de reposição");
     } finally {
       setLoading(false);
     }
   };
 
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case 'CRITICO':
-        return { icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-500/10', label: 'Crítico' };
-      case 'ALERTA':
-        return { icon: Clock, color: 'text-orange-500', bg: 'bg-orange-500/10', label: 'Alerta' };
-      case 'NORMAL':
-        return { icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-500/10', label: 'Normal' };
-      case 'EXCESSO':
-        return { icon: Package, color: 'text-blue-500', bg: 'bg-blue-500/10', label: 'Excesso' };
-      default:
-        return { icon: Minus, color: 'text-gray-500', bg: 'bg-gray-500/10', label: 'Desconhecido' };
+  const enviarAlertaEmail = async () => {
+    if (!previsoes || previsoes.length === 0) {
+      toast.error("Gere as previsões antes de enviar alertas");
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      const { error } = await supabase.functions.invoke('send-replenishment-alerts', {
+        body: { previsoes, resumo, eventosFuturos: eventosFuturos.length > 0 ? eventosFuturos : undefined }
+      });
+
+      if (error) throw error;
+      toast.success("Alertas enviados por email para gestores!");
+    } catch (error: any) {
+      console.error("Erro ao enviar alertas:", error);
+      toast.error(error.message || "Erro ao enviar alertas por email");
+    } finally {
+      setSendingEmail(false);
     }
   };
 
-  const getTendenciaIcon = (tendencia: string) => {
-    switch (tendencia) {
-      case 'CRESCENTE':
-        return <TrendingUp className="h-4 w-4 text-red-500" />;
-      case 'DECRESCENTE':
-        return <TrendingDown className="h-4 w-4 text-green-500" />;
-      default:
-        return <Minus className="h-4 w-4 text-gray-500" />;
+  const adicionarEvento = () => {
+    if (!novoEvento.dataInicio || !novoEvento.dataFim || !novoEvento.descricao) {
+      toast.error("Preencha todos os campos do evento");
+      return;
     }
+    setEventosFuturos([...eventosFuturos, novoEvento]);
+    setNovoEvento({ tipo: "PROMOCAO", dataInicio: "", dataFim: "", impactoEstimado: 0, descricao: "" });
+    setDialogOpen(false);
+    toast.success("Evento futuro adicionado! Gere as previsões novamente.");
+  };
+
+  const removerEvento = (index: number) => {
+    setEventosFuturos(eventosFuturos.filter((_, i) => i !== index));
+    toast.success("Evento removido");
+  };
+
+  const getStatusIcon = (status: string) => {
+    if (status === "CRITICO") return <AlertTriangle className="w-5 h-5 text-destructive" />;
+    if (status === "ALERTA") return <AlertTriangle className="w-5 h-5 text-warning" />;
+    return <AlertTriangle className="w-5 h-5 text-muted-foreground" />;
+  };
+
+  const getTrendIcon = (tendencia: string) => {
+    if (tendencia === "CRESCENTE") return <TrendingUp className="w-5 h-5 text-destructive" />;
+    if (tendencia === "DECRESCENTE") return <TrendingDown className="w-5 h-5 text-success" />;
+    return <Minus className="w-5 h-5 text-muted-foreground" />;
   };
 
   return (
     <div className="space-y-6">
-      {!previsoes ? (
-        <Card className="p-8 text-center">
-          <Sparkles className="h-12 w-12 mx-auto text-primary mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Previsão Inteligente de Reposição</h3>
-          <p className="text-muted-foreground mb-6">
-            Use inteligência artificial para prever quando seus produtos precisarão ser repostos,
-            baseado em padrões históricos de consumo e sazonalidade.
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">Previsão Inteligente de Reposição (IA)</h3>
+          <p className="text-sm text-muted-foreground">
+            Análise preditiva usando machine learning baseada em padrões históricos de consumo
           </p>
-          <Button onClick={gerarPrevisoes} disabled={loading} size="lg">
-            {loading ? (
-              <>
-                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                Analisando...
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4 mr-2" />
-                Gerar Previsões
-              </>
-            )}
-          </Button>
-        </Card>
-      ) : (
-        <>
-          {/* Resumo */}
-          <div className="grid gap-4 md:grid-cols-4">
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-lg bg-red-500/10">
-                  <AlertTriangle className="h-5 w-5 text-red-500" />
+        </div>
+        <div className="flex gap-2">
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <CalendarDays className="w-4 h-4 mr-2" />
+                Eventos Futuros ({eventosFuturos.length})
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Ajuste Fino de Previsões</DialogTitle>
+                <DialogDescription>
+                  Informe eventos futuros que impactarão o consumo
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Tipo de Evento</Label>
+                    <Select value={novoEvento.tipo} onValueChange={(v: any) => setNovoEvento({...novoEvento, tipo: v})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PROMOCAO">Promoção</SelectItem>
+                        <SelectItem value="FERIAS">Férias/Recesso</SelectItem>
+                        <SelectItem value="EXPANSAO">Expansão</SelectItem>
+                        <SelectItem value="OUTRO">Outro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Impacto (%)</Label>
+                    <Input type="number" placeholder="Ex: 30 ou -20" value={novoEvento.impactoEstimado || ""}
+                      onChange={(e) => setNovoEvento({...novoEvento, impactoEstimado: parseInt(e.target.value) || 0})} />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Críticos</p>
-                  <p className="text-2xl font-bold">{previsoes.resumo.produtosCriticos}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><Label>Data Início</Label><Input type="date" value={novoEvento.dataInicio} onChange={(e) => setNovoEvento({...novoEvento, dataInicio: e.target.value})} /></div>
+                  <div><Label>Data Fim</Label><Input type="date" value={novoEvento.dataFim} onChange={(e) => setNovoEvento({...novoEvento, dataFim: e.target.value})} /></div>
                 </div>
-              </div>
-            </Card>
-
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-lg bg-orange-500/10">
-                  <Clock className="h-5 w-5 text-orange-500" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Alerta</p>
-                  <p className="text-2xl font-bold">{previsoes.resumo.produtosAlerta}</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-lg bg-green-500/10">
-                  <Package className="h-5 w-5 text-green-500" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Analisados</p>
-                  <p className="text-2xl font-bold">{previsoes.previsoes.length}</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-lg bg-blue-500/10">
-                  <TrendingUp className="h-5 w-5 text-blue-500" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Economia Estimada</p>
-                  <p className="text-2xl font-bold">{formatCurrency(previsoes.resumo.economiaEstimada)}</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Observações Gerais */}
-          {previsoes.resumo.observacoes && (
-            <Card className="p-4 bg-blue-500/5 border-blue-500/20">
-              <p className="text-sm">
-                <strong className="text-blue-600 dark:text-blue-400">💡 Insights:</strong>{' '}
-                {previsoes.resumo.observacoes}
-              </p>
-            </Card>
-          )}
-
-          {/* Lista de Previsões */}
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Previsões por Produto</h3>
-            <Button variant="outline" onClick={gerarPrevisoes} disabled={loading}>
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Atualizar
-            </Button>
-          </div>
-
-          <div className="grid gap-4">
-            {previsoes.previsoes
-              .sort((a, b) => {
-                const statusOrder = { CRITICO: 0, ALERTA: 1, NORMAL: 2, EXCESSO: 3 };
-                return statusOrder[a.status] - statusOrder[b.status];
-              })
-              .map((previsao, index) => {
-                const statusConfig = getStatusConfig(previsao.status);
-                const StatusIcon = statusConfig.icon;
-
-                return (
-                  <Card key={index} className="p-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 space-y-3">
-                        <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-lg ${statusConfig.bg}`}>
-                            <StatusIcon className={`h-5 w-5 ${statusConfig.color}`} />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold">{previsao.produto}</h4>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge variant="outline" className={statusConfig.color}>
-                                {statusConfig.label}
-                              </Badge>
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    {getTendenciaIcon(previsao.tendencia)}
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    Tendência: {previsao.tendencia.toLowerCase()}
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                              <Badge variant="secondary" className="text-xs">
-                                Confiança: {(previsao.confianca * 100).toFixed(0)}%
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div>
-                            <p className="text-muted-foreground">Estoque Mínimo</p>
-                            <p className="font-semibold">
-                              {previsao.diasAteEstoqueMinimo >= 999 
-                                ? 'Suficiente' 
-                                : `${previsao.diasAteEstoqueMinimo} dias`}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">Estoque Zero</p>
-                            <p className="font-semibold">
-                              {previsao.diasAteEstoqueZero >= 999 
-                                ? 'Suficiente' 
-                                : `${previsao.diasAteEstoqueZero} dias`}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">Repor Até</p>
-                            <p className="font-semibold flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              {formatDate(previsao.dataEstimadaReposicao)}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">Qtd. Sugerida</p>
-                            <p className="font-semibold">{previsao.quantidadeSugerida} un</p>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="flex items-start gap-2">
-                            <Badge variant="outline" className="text-xs">
-                              Sazonalidade: {previsao.sazonalidade}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            <strong>Análise:</strong> {previsao.justificativa}
-                          </p>
-                          <p className="text-sm">
-                            <strong className="text-primary">✓ Recomendação:</strong> {previsao.recomendacao}
-                          </p>
-                        </div>
+                <div><Label>Descrição</Label><Textarea placeholder="Descreva o evento..." value={novoEvento.descricao} onChange={(e) => setNovoEvento({...novoEvento, descricao: e.target.value})} /></div>
+                <Button onClick={adicionarEvento} className="w-full">Adicionar Evento</Button>
+                {eventosFuturos.length > 0 && (
+                  <div className="border-t pt-4">
+                    <h4 className="font-semibold mb-2">Eventos Configurados</h4>
+                    {eventosFuturos.map((e, i) => (
+                      <div key={i} className="flex items-center justify-between p-3 bg-muted rounded-lg mb-2">
+                        <div><Badge variant="outline">{e.tipo}</Badge> <span className="text-sm">{e.descricao}</span></div>
+                        <Button variant="ghost" size="sm" onClick={() => removerEvento(i)}>Remover</Button>
                       </div>
-                    </div>
-                  </Card>
-                );
-              })}
-          </div>
-        </>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+          {previsoes && previsoes.length > 0 && (
+            <Button onClick={enviarAlertaEmail} disabled={sendingEmail} variant="outline" size="sm">
+              {sendingEmail ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enviando...</> : <><Mail className="w-4 h-4 mr-2" />Enviar Alertas</>}
+            </Button>
+          )}
+          <Button onClick={gerarPrevisoes} disabled={loading || produtos.length === 0}>
+            {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analisando...</> : <><Brain className="w-4 h-4 mr-2" />Gerar Previsões IA</>}
+          </Button>
+        </div>
+      </div>
+
+      {previsoes && previsoes.length > 0 && (
+        <Tabs defaultValue="previsoes" className="w-full">
+          <TabsList>
+            <TabsTrigger value="previsoes">Previsões IA</TabsTrigger>
+            <TabsTrigger value="comparativo">Comparativo IA vs Tradicional</TabsTrigger>
+          </TabsList>
+          <TabsContent value="previsoes" className="space-y-4 mt-4">
+            {previsoes.map((p, i) => (
+              <Card key={i}>
+                <CardHeader><CardTitle>{p.produto}</CardTitle><CardDescription>{p.justificativa}</CardDescription></CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-4 gap-4">
+                    <div><p className="text-sm text-muted-foreground">Estoque Zero</p><p className="text-2xl font-bold">{p.diasAteEstoqueZero} dias</p></div>
+                    <div><p className="text-sm text-muted-foreground">Qtd Sugerida</p><p className="text-2xl font-bold">{p.quantidadeSugerida}</p></div>
+                    <div><p className="text-sm text-muted-foreground">Confiança</p><p className="text-2xl font-bold">{(p.confianca * 100).toFixed(0)}%</p></div>
+                    <div><p className="text-sm text-muted-foreground">Tendência</p><p className="flex items-center gap-1 mt-1">{getTrendIcon(p.tendencia)}</p></div>
+                  </div>
+                  <div className="bg-muted p-3 rounded-lg"><p className="text-sm"><strong>Recomendação:</strong> {p.recomendacao}</p></div>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+          <TabsContent value="comparativo" className="space-y-4 mt-4">
+            <Card><CardHeader><CardTitle>Comparativo IA vs Tradicional</CardTitle></CardHeader><CardContent>
+              {previsoes.map((p, i) => (
+                <div key={i} className="border rounded-lg p-4 mb-4">
+                  <h4 className="font-semibold mb-3">{p.produto}</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-primary/10 p-3 rounded"><Brain className="w-5 h-5 mb-2" /><p className="font-bold">IA: {p.diasAteEstoqueZero} dias | {p.quantidadeSugerida} un</p><p className="text-xs text-muted-foreground mt-2">Considera sazonalidade, tendências e eventos futuros</p></div>
+                    <div className="bg-muted p-3 rounded"><Target className="w-5 h-5 mb-2" /><p className="font-bold">Tradicional: {p.metodoTradicional?.diasAteEstoqueZero || "N/A"} dias | {p.metodoTradicional?.quantidadeSugerida || "N/A"} un</p><p className="text-xs text-muted-foreground mt-2">Apenas média simples dos últimos 30 dias</p></div>
+                  </div>
+                </div>
+              ))}
+            </CardContent></Card>
+          </TabsContent>
+        </Tabs>
       )}
     </div>
   );

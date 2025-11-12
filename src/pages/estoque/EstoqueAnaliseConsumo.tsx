@@ -436,7 +436,7 @@ export default function EstoqueAnaliseConsumo() {
         </TabsContent>
 
         <TabsContent value="previsao" className="space-y-6">
-          <PrevisaoReposicao produtos={produtos} movimentacoes={movimentacoes} />
+          <PrevisaoReposicao />
         </TabsContent>
       </Tabs>
     </div>
