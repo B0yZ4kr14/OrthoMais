@@ -161,48 +161,60 @@ export default function Dashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <ActionCard
-              title="Novo Paciente"
-              subtitle="Cadastrar"
-              icon={Users}
-              bgColor="bg-[hsl(var(--module-blue))]"
-              route="/pacientes"
-            />
-            <ActionCard
-              title="Agendar Consulta"
-              subtitle="Agenda"
-              icon={Calendar}
-              bgColor="bg-[hsl(var(--module-purple))]"
-              route="/agenda-clinica"
-            />
-            <ActionCard
-              title="Prontuário"
-              subtitle="Abrir PEP"
-              icon={FileText}
-              bgColor="bg-[hsl(var(--module-yellow))]"
-              route="/pep"
-            />
-            <ActionCard
-              title="Contas a Receber"
-              subtitle="Financeiro"
-              icon={DollarSign}
-              bgColor="bg-[hsl(var(--module-green))]"
-              route="/financeiro/contas-receber"
-            />
-            <ActionCard
-              title="Estoque"
-              subtitle="Gerenciar"
-              icon={Activity}
-              bgColor="bg-[hsl(var(--module-orange))]"
-              route="/estoque"
-            />
-            <ActionCard
-              title="Relatórios"
-              subtitle="Business Intelligence"
-              icon={BarChart3}
-              bgColor="bg-[hsl(var(--module-cyan))]"
-              route="/business-intelligence"
-            />
+            <div className="animate-fade-in" style={{ animationDelay: '0ms' }}>
+              <ActionCard
+                title="Novo Paciente"
+                subtitle="Cadastrar"
+                icon={Users}
+                bgColor="bg-[hsl(var(--module-blue))]"
+                route="/pacientes"
+              />
+            </div>
+            <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+              <ActionCard
+                title="Agendar Consulta"
+                subtitle="Agenda"
+                icon={Calendar}
+                bgColor="bg-[hsl(var(--module-purple))]"
+                route="/agenda-clinica"
+              />
+            </div>
+            <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+              <ActionCard
+                title="Prontuário"
+                subtitle="Abrir PEP"
+                icon={FileText}
+                bgColor="bg-[hsl(var(--module-yellow))]"
+                route="/pep"
+              />
+            </div>
+            <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+              <ActionCard
+                title="Contas a Receber"
+                subtitle="Financeiro"
+                icon={DollarSign}
+                bgColor="bg-[hsl(var(--module-green))]"
+                route="/financeiro/contas-receber"
+              />
+            </div>
+            <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
+              <ActionCard
+                title="Estoque"
+                subtitle="Gerenciar"
+                icon={Activity}
+                bgColor="bg-[hsl(var(--module-orange))]"
+                route="/estoque"
+              />
+            </div>
+            <div className="animate-fade-in" style={{ animationDelay: '500ms' }}>
+              <ActionCard
+                title="Relatórios"
+                subtitle="Business Intelligence"
+                icon={BarChart3}
+                bgColor="bg-[hsl(var(--module-cyan))]"
+                route="/business-intelligence"
+              />
+            </div>
           </div>
         </CardContent>
       </Card>

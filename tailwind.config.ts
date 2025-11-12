@@ -131,8 +131,14 @@ export default {
           },
         },
         "fade-in": {
-          from: { opacity: "0" },
-          to: { opacity: "1" },
+          from: { 
+            opacity: "0",
+            transform: "translateY(20px) scale(0.95)"
+          },
+          to: { 
+            opacity: "1",
+            transform: "translateY(0) scale(1)"
+          },
         },
         "slide-in": {
           from: { 
@@ -171,7 +177,7 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "collapsible-down": "collapsible-down 0.3s ease-out",
         "collapsible-up": "collapsible-up 0.3s ease-out",
-        "fade-in": "fade-in 0.2s ease-out",
+        "fade-in": "fade-in 0.5s ease-out",
         "slide-in": "slide-in 0.3s ease-out",
         "glow": "glow 2s ease-in-out infinite",
         "shimmer": "shimmer 2s linear infinite",

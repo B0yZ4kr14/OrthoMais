@@ -19,18 +19,18 @@ export function ActionCard({ title, subtitle, icon: Icon, bgColor, route }: Acti
 
   return (
     <Card 
-      className="cursor-pointer hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50 hover:scale-105 active:scale-95"
+      className="cursor-pointer hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50 hover:scale-105 active:scale-95 h-full"
       onClick={handleClick}
     >
-      <CardContent className="p-6">
-        <div className="flex flex-col items-center text-center space-y-3">
+      <CardContent className="p-6 h-full">
+        <div className="flex flex-col items-center text-center space-y-3 h-full">
           <div 
-            className={`p-4 rounded-2xl ${bgColor} shadow-lg hover:shadow-2xl transition-shadow duration-300`}
+            className={`p-4 rounded-2xl ${bgColor} shadow-lg hover:shadow-2xl transition-all duration-300 hover:rotate-3`}
             style={{ width: 'fit-content' }}
           >
             <Icon className="h-8 w-8 text-white drop-shadow-md" />
           </div>
-          <div>
+          <div className="flex-1 flex flex-col justify-center">
             <h3 className="font-semibold text-lg">{title}</h3>
             <p className="text-sm text-muted-foreground">{subtitle}</p>
           </div>
