@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, TrendingDown, Package, Calendar, AlertTriangle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Package, Calendar, AlertTriangle, Sparkles, BarChart3 } from 'lucide-react';
 import { useEstoqueSupabase } from '@/modules/estoque/hooks/useEstoqueSupabase';
+import { PrevisaoReposicao } from '@/modules/estoque/components/PrevisaoReposicao';
 import { format, subDays, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, eachMonthOfInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { PageHeader } from '@/components/shared/PageHeader';
@@ -178,12 +180,26 @@ export default function EstoqueAnaliseConsumo() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <PageHeader
         title="Análise de Consumo de Estoque"
         description="Análise preditiva e tendências de uso de materiais"
         icon={TrendingUp}
       />
+
+      <Tabs defaultValue="analise" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="analise">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Análise de Consumo
+          </TabsTrigger>
+          <TabsTrigger value="previsao">
+            <Sparkles className="h-4 w-4 mr-2" />
+            Previsão Inteligente (IA)
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="analise" className="space-y-6">
 
       {/* Filtro de Período */}
       <Card>
@@ -417,6 +433,12 @@ export default function EstoqueAnaliseConsumo() {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="previsao" className="space-y-6">
+          <PrevisaoReposicao produtos={produtos} movimentacoes={movimentacoes} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
