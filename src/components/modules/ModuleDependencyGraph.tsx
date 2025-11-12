@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useRef } from 'react';
 import {
   ReactFlow,
   Node,
@@ -13,8 +13,12 @@ import {
   NodeProps,
   Handle,
   Position,
+  useReactFlow,
+  ReactFlowProvider,
+  Panel,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { toPng, toSvg } from 'html-to-image';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,9 +26,17 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle2, XCircle, AlertCircle, Lock, Play, RotateCcw, Filter, Zap } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertCircle, Lock, Play, RotateCcw, Filter, Zap, Download, Image as ImageIcon, FileCode } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 interface ModuleData {
   id: number;
@@ -160,7 +172,9 @@ const nodeTypes = {
   moduleNode: ModuleNode,
 };
 
-export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
+function ModuleDependencyGraphContent({ modules }: ModuleDependencyGraphProps) {
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const { getNodes } = useReactFlow();
   const [simulationState, setSimulationState] = useState<SimulationState>({
     active: false,
     targetModule: null,
@@ -402,6 +416,52 @@ export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
     }
   }, [simulationState, startSimulation, clearSimulation]);
 
+  // Export functions
+  const downloadImage = (dataUrl: string, filename: string) => {
+    const a = document.createElement('a');
+    a.setAttribute('download', filename);
+    a.setAttribute('href', dataUrl);
+    a.click();
+  };
+
+  const exportToPng = useCallback(async () => {
+    if (!reactFlowWrapper.current) return;
+
+    try {
+      toast.info('Preparando exportação...', { description: 'Gerando imagem PNG' });
+      
+      const dataUrl = await toPng(reactFlowWrapper.current, {
+        backgroundColor: '#ffffff',
+        quality: 1,
+        pixelRatio: 2, // Higher quality
+      });
+
+      downloadImage(dataUrl, `grafo-modulos-${new Date().toISOString().split('T')[0]}.png`);
+      toast.success('Grafo exportado!', { description: 'Imagem PNG baixada com sucesso.' });
+    } catch (error) {
+      console.error('Error exporting to PNG:', error);
+      toast.error('Erro ao exportar', { description: 'Não foi possível gerar a imagem PNG.' });
+    }
+  }, [reactFlowWrapper]);
+
+  const exportToSvg = useCallback(async () => {
+    if (!reactFlowWrapper.current) return;
+
+    try {
+      toast.info('Preparando exportação...', { description: 'Gerando imagem SVG' });
+      
+      const dataUrl = await toSvg(reactFlowWrapper.current, {
+        backgroundColor: '#ffffff',
+      });
+
+      downloadImage(dataUrl, `grafo-modulos-${new Date().toISOString().split('T')[0]}.svg`);
+      toast.success('Grafo exportado!', { description: 'Imagem SVG baixada com sucesso.' });
+    } catch (error) {
+      console.error('Error exporting to SVG:', error);
+      toast.error('Erro ao exportar', { description: 'Não foi possível gerar a imagem SVG.' });
+    }
+  }, [reactFlowWrapper]);
+
   // Stats
   const stats = useMemo(() => {
     const total = filteredModules.length;
@@ -413,7 +473,7 @@ export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
   }, [filteredModules]);
 
   return (
-    <div className="h-full w-full flex flex-col bg-background">
+    <div ref={reactFlowWrapper} className="h-full w-full flex flex-col bg-background">
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-4 p-4 border-b bg-card">
         <div className="flex items-center gap-4">
@@ -463,13 +523,36 @@ export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
           </div>
         </div>
 
-        {/* Simulation Controls */}
-        {simulationState.active && (
-          <Button variant="outline" size="sm" onClick={clearSimulation}>
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Limpar Simulação
-          </Button>
-        )}
+        {/* Action Controls */}
+        <div className="flex items-center gap-2">
+          {simulationState.active && (
+            <Button variant="outline" size="sm" onClick={clearSimulation}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Limpar Simulação
+            </Button>
+          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Download className="h-4 w-4" />
+                Exportar
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={exportToPng} className="gap-2">
+                <ImageIcon className="h-4 w-4" />
+                Exportar como PNG
+                <span className="ml-auto text-xs text-muted-foreground">Alta qualidade</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportToSvg} className="gap-2">
+                <FileCode className="h-4 w-4" />
+                Exportar como SVG
+                <span className="ml-auto text-xs text-muted-foreground">Vetorial</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Simulation Alert */}
@@ -557,5 +640,14 @@ export function ModuleDependencyGraph({ modules }: ModuleDependencyGraphProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+// Wrapper component with ReactFlowProvider
+export function ModuleDependencyGraph(props: ModuleDependencyGraphProps) {
+  return (
+    <ReactFlowProvider>
+      <ModuleDependencyGraphContent {...props} />
+    </ReactFlowProvider>
   );
 }
