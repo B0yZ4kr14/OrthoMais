@@ -82,19 +82,40 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Buscar registro em clinic_modules
-    const { data: clinicModule, error: clinicModuleError } = await supabase
+    // Buscar registro em clinic_modules (ou criar se não existir)
+    let clinicModule = null;
+    const { data: existingModule, error: clinicModuleError } = await supabase
       .from('clinic_modules')
       .select('*')
       .eq('clinic_id', clinicId)
       .eq('module_catalog_id', catalogModule.id)
-      .single()
+      .maybeSingle()
 
-    if (clinicModuleError || !clinicModule) {
-      return new Response(
-        JSON.stringify({ error: 'Module not subscribed by clinic' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+    if (clinicModuleError) {
+      throw clinicModuleError;
+    }
+
+    // Se não existir, criar automaticamente (sistema sempre completo)
+    if (!existingModule) {
+      console.log('Module not found in clinic_modules, creating automatically...')
+      const { data: newModule, error: insertError } = await supabase
+        .from('clinic_modules')
+        .insert({
+          clinic_id: clinicId,
+          module_catalog_id: catalogModule.id,
+          is_active: false
+        })
+        .select()
+        .single()
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      clinicModule = newModule;
+      console.log('Module created successfully')
+    } else {
+      clinicModule = existingModule;
     }
 
     const newState = !clinicModule.is_active
