@@ -121,17 +121,17 @@ export function AppSidebar() {
         {!collapsed ? (
           <div className="flex items-center justify-center px-2">
             <img 
-              src="/src/assets/ortho-logo-new.png" 
+              src="/src/assets/ortho-logo-full.png" 
               alt="Ortho +" 
-              className="h-12 w-auto object-contain"
+              className="h-20 w-auto object-contain"
             />
           </div>
         ) : (
           <div className="flex justify-center">
             <img 
-              src="/src/assets/ortho-logo-new.png" 
+              src="/src/assets/ortho-logo-full.png" 
               alt="Ortho +" 
-              className="h-8 w-auto object-contain"
+              className="h-10 w-auto object-contain"
             />
           </div>
         )}
