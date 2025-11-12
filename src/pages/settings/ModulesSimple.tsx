@@ -3,7 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Settings, Loader2, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -15,7 +14,6 @@ interface Module {
   name: string;
   description: string;
   category: string;
-  is_subscribed: boolean;
   is_active: boolean;
   can_activate: boolean;
   can_deactivate: boolean;
@@ -85,14 +83,13 @@ export default function ModulesSimple() {
       <div className="grid gap-3">
         {modules.map((module) => {
           const isToggling = toggling === module.module_key;
-          const canToggle = module.is_subscribed && 
-            (module.is_active ? module.can_deactivate : module.can_activate);
+          const canToggle = module.is_active ? module.can_deactivate : module.can_activate;
 
           return (
             <Card
               key={module.module_key}
               className={cn(
-                "p-4 transition-all",
+                "p-4 transition-all hover:shadow-md",
                 module.is_active && "border-primary/50 bg-primary/5",
                 isToggling && "opacity-60"
               )}
@@ -100,7 +97,7 @@ export default function ModulesSimple() {
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4 flex-1">
                   <div className={cn(
-                    "flex items-center justify-center w-10 h-10 rounded-full",
+                    "flex items-center justify-center w-10 h-10 rounded-full transition-colors",
                     module.is_active ? "bg-success/20" : "bg-muted"
                   )}>
                     {module.is_active ? (
@@ -116,25 +113,16 @@ export default function ModulesSimple() {
                       <Badge variant={module.is_active ? 'success' : 'secondary'} className="text-xs">
                         {module.is_active ? 'Ativo' : 'Inativo'}
                       </Badge>
-                      {!module.is_subscribed && (
-                        <Badge variant="outline" className="text-xs">Não contratado</Badge>
-                      )}
                     </div>
                     <p className="text-sm text-muted-foreground">{module.description}</p>
                   </div>
                 </div>
 
-                {module.is_subscribed ? (
-                  <Switch
-                    checked={module.is_active}
-                    disabled={!canToggle || isToggling}
-                    onCheckedChange={() => handleToggle(module.module_key)}
-                  />
-                ) : (
-                  <Button variant="outline" size="sm">
-                    Solicitar
-                  </Button>
-                )}
+                <Switch
+                  checked={module.is_active}
+                  disabled={!canToggle || isToggling}
+                  onCheckedChange={() => handleToggle(module.module_key)}
+                />
               </div>
             </Card>
           );
