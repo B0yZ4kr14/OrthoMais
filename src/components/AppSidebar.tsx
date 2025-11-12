@@ -1,4 +1,4 @@
-import { 
+import {
   LayoutDashboard, 
   Users, 
   UserPlus, 
@@ -7,7 +7,9 @@ import {
   FileText,
   DollarSign,
   Settings,
-  TrendingUp
+  TrendingUp,
+  ClipboardList,
+  Shield
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
@@ -41,6 +43,8 @@ const mainItems = [
   { title: 'Financeiro', url: '/financeiro', icon: DollarSign },
   { title: 'Relatórios', url: '/relatorios', icon: FileText },
   { title: 'Business Intelligence', url: '/business-intelligence', icon: TrendingUp },
+  { title: 'Templates de Relatórios', url: '/report-templates', icon: ClipboardList },
+  { title: 'Auditoria', url: '/audit-logs', icon: Shield },
 ];
 
 export function AppSidebar() {
@@ -57,12 +61,11 @@ export function AppSidebar() {
       <SidebarHeader className="border-b p-4">
         {!collapsed ? (
           <div className="flex items-center gap-2">
-            <img src={orthoLogo} alt="Ortho +" className="h-8" />
-            <span className="font-bold text-lg">Ortho +</span>
+            <img src="/src/assets/ortho-logo-new.png" alt="Ortho +" className="h-10" />
           </div>
         ) : (
           <div className="flex justify-center">
-            <img src={orthoLogo} alt="Ortho +" className="h-8" />
+            <img src="/src/assets/ortho-logo-new.png" alt="Ortho +" className="h-8" />
           </div>
         )}
       </SidebarHeader>

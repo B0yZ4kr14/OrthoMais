@@ -24,6 +24,8 @@ import PEP from './pages/PEP';
 import Relatorios from './pages/Relatorios';
 import BusinessIntelligence from './pages/BusinessIntelligence';
 import Auth from './pages/Auth';
+import ReportTemplates from '@/pages/ReportTemplates';
+import AuditLogs from '@/pages/AuditLogs';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -61,6 +63,22 @@ const App = () => (
                               <Route path="/pep" element={<PEP />} />
                               <Route path="/relatorios" element={<Relatorios />} />
                               <Route path="/business-intelligence" element={<BusinessIntelligence />} />
+                              <Route 
+                                path="/report-templates" 
+                                element={
+                                  <ProtectedRoute requireAdmin>
+                                    <ReportTemplates />
+                                  </ProtectedRoute>
+                                }
+                              />
+                              <Route 
+                                path="/audit-logs" 
+                                element={
+                                  <ProtectedRoute requireAdmin>
+                                    <AuditLogs />
+                                  </ProtectedRoute>
+                                }
+                              />
                               <Route path="/modulos" element={<GerenciamentoModulos />} />
                               <Route
                                 path="/configuracoes" 

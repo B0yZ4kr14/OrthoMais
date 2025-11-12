@@ -1,32 +1,12 @@
-import { useState, useEffect } from 'react';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Calendar, 
-  DollarSign, 
-  TrendingUp, 
-  Activity, 
-  CheckCircle2, 
-  Loader2,
-  BarChart3
-} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatCard } from '@/components/StatCard';
+import { ActionCard } from '@/components/dashboard/ActionCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { LayoutDashboard, Users, Calendar, DollarSign, TrendingUp, Activity, UserPlus, FileText, CreditCard, Camera, CheckCircle2, Loader2, BarChart3 } from 'lucide-react';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
-import { 
-  BarChart, 
-  Bar, 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer 
-} from 'recharts';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -172,6 +152,60 @@ export default function Dashboard() {
           borderColor="border-l-orange-500"
         />
       </div>
+
+      {/* Action Cards - Ações Rápidas */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Ações Rápidas</CardTitle>
+          <CardDescription>Acesse rapidamente as funcionalidades mais utilizadas</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <ActionCard
+              title="Novo Paciente"
+              subtitle="Cadastrar"
+              icon={Users}
+              bgColor="bg-[hsl(var(--module-blue))]"
+              route="/pacientes"
+            />
+            <ActionCard
+              title="Agendar Consulta"
+              subtitle="Agenda"
+              icon={Calendar}
+              bgColor="bg-[hsl(var(--module-purple))]"
+              route="/agenda-clinica"
+            />
+            <ActionCard
+              title="Novo Orçamento"
+              subtitle="Criar orçamento"
+              icon={FileText}
+              bgColor="bg-[hsl(var(--module-yellow))]"
+              route="/pep"
+            />
+            <ActionCard
+              title="Tratamento"
+              subtitle="Iniciar tratamento"
+              icon={Activity}
+              bgColor="bg-[hsl(var(--module-orange))]"
+              route="/pep"
+            />
+            <ActionCard
+              title="Registrar Pagamento"
+              subtitle="Financeiro"
+              icon={CreditCard}
+              bgColor="bg-[hsl(var(--module-pink))]"
+              route="/financeiro"
+            />
+            <ActionCard
+              title="Radiologia"
+              subtitle="Agendar exame"
+              icon={Camera}
+              bgColor="bg-[hsl(var(--module-cyan))]"
+              route="/pep"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Tratamentos */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
