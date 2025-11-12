@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { ModuleDependencyGraph } from '@/components/modules/ModuleDependencyGraph';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
+import confetti from 'canvas-confetti';
 
 interface ModuleData {
   id: number;
@@ -34,6 +35,7 @@ export default function ModulesAdmin() {
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState<string | null>(null);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
+  const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
     // Check if user has completed onboarding
@@ -63,6 +65,24 @@ export default function ModulesAdmin() {
 
   const handleToggle = async (moduleKey: string, currentState: boolean) => {
     setToggling(moduleKey);
+    
+    // Shake animation para tentativa de desativar bloqueado
+    const module = modules.find(m => m.module_key === moduleKey);
+    if (currentState && module && !module.can_deactivate) {
+      const cardElement = cardRefs.current[moduleKey];
+      if (cardElement) {
+        cardElement.classList.add('animate-shake');
+        setTimeout(() => cardElement.classList.remove('animate-shake'), 500);
+      }
+      
+      toast.error('Módulo bloqueado', {
+        description: `Este módulo não pode ser desativado pois é requerido por: ${module.blocking_dependencies.join(', ')}`,
+        duration: 5000,
+      });
+      setToggling(null);
+      return;
+    }
+    
     try {
       const { data, error } = await supabase.functions.invoke('toggle-module-state', {
         body: { module_key: moduleKey },
@@ -71,6 +91,28 @@ export default function ModulesAdmin() {
       if (error) throw error;
 
       const newState = !currentState;
+      
+      // Confetti ao ativar módulo pela primeira vez
+      if (newState) {
+        const wasActivatedBefore = localStorage.getItem(`module-activated-${moduleKey}`);
+        if (!wasActivatedBefore) {
+          const cardElement = cardRefs.current[moduleKey];
+          if (cardElement) {
+            const rect = cardElement.getBoundingClientRect();
+            const x = (rect.left + rect.width / 2) / window.innerWidth;
+            const y = (rect.top + rect.height / 2) / window.innerHeight;
+            
+            confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { x, y },
+              colors: ['#2dd4bf', '#14b8a6', '#0d9488', '#fbbf24', '#f59e0b'],
+            });
+          }
+          localStorage.setItem(`module-activated-${moduleKey}`, 'true');
+        }
+      }
+      
       toast.success(
         newState ? 'Módulo ativado com sucesso!' : 'Módulo desativado com sucesso!',
         {
@@ -80,6 +122,13 @@ export default function ModulesAdmin() {
       await fetchModules();
     } catch (error: any) {
       console.error('Toggle error:', error);
+      
+      // Shake animation para erro
+      const cardElement = cardRefs.current[moduleKey];
+      if (cardElement) {
+        cardElement.classList.add('animate-shake');
+        setTimeout(() => cardElement.classList.remove('animate-shake'), 500);
+      }
       
       // Parse error message to show dependency info
       const errorMsg = error.message || 'Erro ao alterar estado do módulo';
@@ -254,6 +303,7 @@ export default function ModulesAdmin() {
               return (
                 <Card 
                   key={module.module_key}
+                  ref={(el) => (cardRefs.current[module.module_key] = el)}
                   variant="elevated"
                   className={cn(
                     getModuleStatusColor(module),

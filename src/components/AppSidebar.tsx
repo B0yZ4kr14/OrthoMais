@@ -18,8 +18,7 @@ import {
   FolderOpen,
   ShoppingCart,
   Webhook,
-  LineChart,
-  Palette
+  LineChart
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
@@ -88,6 +87,16 @@ const menuGroups = [
       { title: 'Integrações API', url: '/estoque/integracoes', icon: Webhook, badge: 'Beta' },
       { title: 'Análise de Pedidos', url: '/estoque/analise-pedidos', icon: LineChart },
       { title: 'Análise de Consumo', url: '/estoque/analise-consumo', icon: BarChart3 },
+    ]
+  },
+  {
+    label: 'Financeiro',
+    items: [
+      { title: 'Dashboard Financeiro', url: '/financeiro', icon: DollarSign },
+      { title: 'Contas a Receber', url: '/financeiro/contas-receber', icon: TrendingUp },
+      { title: 'Contas a Pagar', url: '/financeiro/contas-pagar', icon: CreditCard },
+      { title: 'Notas Fiscais (NFe/NFSe)', url: '/financeiro/notas-fiscais', icon: FileText },
+      { title: 'Cobrança', url: '/cobranca', icon: CreditCard },
     ]
   },
   {
@@ -257,22 +266,7 @@ export function AppSidebar() {
                         <Settings className="h-5 w-5 shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
                         {!collapsed && <span className="text-sm font-medium animate-slide-in">Configurações</span>}
                       </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={isActive('/style-guide')}
-                      className="relative group hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground hover:shadow-[0_4px_12px_-2px_rgba(0,0,0,0.4)] hover:border-l-4 hover:border-l-primary hover:-translate-x-0.5 data-[active=true]:bg-gradient-to-r data-[active=true]:from-primary/25 data-[active=true]:via-primary/15 data-[active=true]:to-transparent data-[active=true]:border-l-4 data-[active=true]:border-l-primary data-[active=true]:shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_4px_12px_-2px_rgba(0,0,0,0.5)] transition-all duration-300 ease-out"
-                    >
-                      <NavLink 
-                        to="/style-guide" 
-                        className="flex items-center gap-3 px-4 py-3.5 rounded-lg"
-                      >
-                        <Palette className="h-5 w-5 shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
-                        {!collapsed && <span className="text-sm font-medium animate-slide-in">Guia de Estilo</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
+                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>

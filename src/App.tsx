@@ -21,7 +21,6 @@ import AgendaClinica from "./pages/AgendaClinica";
 import GerenciamentoModulos from "./pages/GerenciamentoModulos";
 import ModulesAdmin from './pages/settings/ModulesAdmin';
 import Configuracoes from './pages/Configuracoes';
-import StyleGuide from './pages/StyleGuide';
 import PEP from './pages/PEP';
 import Relatorios from './pages/Relatorios';
 import BusinessIntelligence from './pages/BusinessIntelligence';
@@ -39,6 +38,9 @@ import EstoqueAnaliseConsumo from '@/pages/estoque/EstoqueAnaliseConsumo';
 import EstoquePedidos from '@/pages/estoque/EstoquePedidos';
 import EstoqueIntegracoes from '@/pages/estoque/EstoqueIntegracoes';
 import EstoqueAnalisePedidos from '@/pages/estoque/EstoqueAnalisePedidos';
+import ContasReceber from '@/pages/financeiro/ContasReceber';
+import ContasPagar from '@/pages/financeiro/ContasPagar';
+import NotasFiscais from '@/pages/financeiro/NotasFiscais';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -72,6 +74,9 @@ const App = () => (
                               <Route path="/funcionarios" element={<Funcionarios />} />
                               <Route path="/procedimentos" element={<Procedimentos />} />
                               <Route path="/financeiro" element={<Financeiro />} />
+                              <Route path="/financeiro/contas-receber" element={<ContasReceber />} />
+                              <Route path="/financeiro/contas-pagar" element={<ContasPagar />} />
+                              <Route path="/financeiro/notas-fiscais" element={<NotasFiscais />} />
                               <Route path="/agenda" element={<AgendaClinica />} />
                               <Route path="/agenda-clinica" element={<AgendaClinica />} />
                               <Route path="/pep" element={<PEP />} />
@@ -111,18 +116,10 @@ const App = () => (
                                   <ProtectedRoute requireAdmin>
                                     <Configuracoes />
                                   </ProtectedRoute>
-                                } 
-                              />
-                              <Route
-                                path="/style-guide" 
-                                element={
-                                  <ProtectedRoute requireAdmin>
-                                    <StyleGuide />
-                                  </ProtectedRoute>
-                                } 
-                              />
-                              <Route 
-                                path="/settings/modules" 
+                                 }
+                               />
+                               <Route 
+                                 path="/settings/modules"
                                 element={
                                   <ProtectedRoute requireAdmin>
                                     <ModulesAdmin />
