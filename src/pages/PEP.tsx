@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, Plus, History, Upload, Activity } from 'lucide-react';
+import { FileText, Plus, History, Upload, Activity, Smile } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -9,6 +9,7 @@ import { HistoricoClinicoForm } from '@/modules/pep/components/HistoricoClinicoF
 import { TratamentoForm } from '@/modules/pep/components/TratamentoForm';
 import { AnexosUpload } from '@/modules/pep/components/AnexosUpload';
 import { EvolucoesTimeline } from '@/modules/pep/components/EvolucoesTimeline';
+import { Odontograma2D } from '@/modules/pep/components/Odontograma2D';
 
 export default function PEP() {
   const [activeTab, setActiveTab] = useState('historico');
@@ -54,7 +55,7 @@ export default function PEP() {
 
       {/* Tabs Principais */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="historico">
             <History className="mr-2 h-4 w-4" />
             Histórico Clínico
@@ -62,6 +63,10 @@ export default function PEP() {
           <TabsTrigger value="tratamentos">
             <Activity className="mr-2 h-4 w-4" />
             Tratamentos
+          </TabsTrigger>
+          <TabsTrigger value="odontograma">
+            <Smile className="mr-2 h-4 w-4" />
+            Odontograma
           </TabsTrigger>
           <TabsTrigger value="anexos">
             <Upload className="mr-2 h-4 w-4" />
@@ -143,6 +148,10 @@ export default function PEP() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="odontograma" className="space-y-4">
+          <Odontograma2D />
         </TabsContent>
 
         <TabsContent value="anexos" className="space-y-4">
