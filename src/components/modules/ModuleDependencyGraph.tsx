@@ -54,6 +54,7 @@ interface ModuleData {
 
 interface ModuleDependencyGraphProps {
   modules?: ModuleData[];
+  loading?: boolean;
 }
 
 interface SimulationState {
@@ -172,12 +173,38 @@ const nodeTypes = {
   moduleNode: ModuleNode,
 };
 
-function ModuleDependencyGraphContent({ modules = [] }: ModuleDependencyGraphProps) {
+function ModuleDependencyGraphContent({ modules = [], loading = false }: ModuleDependencyGraphProps) {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { getNodes } = useReactFlow();
   
   // Ensure modules is always an array
   const safeModules = Array.isArray(modules) ? modules : [];
+  
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative">
+            <div className="w-20 h-20 border-4 border-muted rounded-full animate-pulse"></div>
+            <div className="absolute inset-0 w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <div className="space-y-3 text-center max-w-md">
+            <p className="text-xl font-bold text-foreground">Carregando Grafo de Dependências</p>
+            <p className="text-sm text-muted-foreground">
+              Analisando módulos e mapeando suas relações hierárquicas...
+            </p>
+          </div>
+          {/* Skeleton cards */}
+          <div className="flex gap-4 mt-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="w-48 h-32 bg-muted/50 rounded-lg animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   const [simulationState, setSimulationState] = useState<SimulationState>({
     active: false,

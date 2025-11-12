@@ -265,10 +265,21 @@ All colors MUST be HSL.
 @layer base {
   * {
     @apply border-border;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
   }
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Smooth theme transitions */
+  :root,
+  .dark,
+  .professional-dark,
+  .dark-gold {
+    transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
   }
 
   /* Tipografia Hierárquica Global */

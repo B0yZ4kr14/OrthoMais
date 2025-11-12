@@ -220,7 +220,7 @@ export default function ModulesAdmin() {
                 </DialogDescription>
               </DialogHeader>
               <div className="h-[calc(90vh-120px)]">
-                <ModuleDependencyGraph modules={modules} />
+                <ModuleDependencyGraph modules={modules} loading={loading} />
               </div>
             </DialogContent>
           </Dialog>
