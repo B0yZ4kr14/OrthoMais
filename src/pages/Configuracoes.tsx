@@ -9,6 +9,7 @@ import ModulesSimple from './settings/ModulesSimple';
 import { DatabaseBackupTab } from '@/components/settings/DatabaseBackupTab';
 import { BackupStatsDashboard } from '@/components/settings/BackupStatsDashboard';
 import { UserManagementTab } from '@/components/settings/UserManagementTab';
+import { ModulePermissionsManager } from '@/components/settings/ModulePermissionsManager';
 
 export default function Configuracoes() {
   const { user, hasRole } = useAuth();
@@ -27,6 +28,12 @@ export default function Configuracoes() {
       description: 'Gerenciar módulos ativos do sistema'
     },
     {
+      id: 'permissions',
+      label: 'Permissões',
+      icon: Shield,
+      description: 'Gerenciar permissões de acesso por módulo'
+    },
+    {
       id: 'users',
       label: 'Usuários',
       icon: Users,
@@ -37,13 +44,6 @@ export default function Configuracoes() {
       label: 'Banco de Dados',
       icon: Database,
       description: 'Configurações de backup e dados'
-    },
-    {
-      id: 'security',
-      label: 'Segurança',
-      icon: Shield,
-      description: 'Configurações de segurança e auditoria',
-      comingSoon: true
     },
     {
       id: 'notifications',
@@ -86,6 +86,10 @@ export default function Configuracoes() {
           <ModulesSimple />
         </TabsContent>
 
+        <TabsContent value="permissions" className="space-y-4">
+          <ModulePermissionsManager />
+        </TabsContent>
+
         <TabsContent value="users" className="space-y-4">
           <UserManagementTab />
         </TabsContent>
@@ -93,24 +97,6 @@ export default function Configuracoes() {
         <TabsContent value="database" className="space-y-4">
           <BackupStatsDashboard />
           <DatabaseBackupTab />
-        </TabsContent>
-
-        <TabsContent value="security" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Segurança e Auditoria</CardTitle>
-              <CardDescription>
-                Configure políticas de segurança, logs de auditoria e conformidade LGPD.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
-                <Shield className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium">Em Desenvolvimento</p>
-                <p className="text-sm">Esta funcionalidade estará disponível em breve.</p>
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
         <TabsContent value="notifications" className="space-y-4">

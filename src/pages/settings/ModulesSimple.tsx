@@ -72,6 +72,25 @@ export default function ModulesSimple() {
     );
   }
 
+  // Agrupar módulos por categoria
+  const groupedModules = modules.reduce((acc, module) => {
+    const category = module.category || 'Outros';
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(module);
+    return acc;
+  }, {} as Record<string, Module[]>);
+
+  const categoryOrder = ['Gestão e Operação', 'Financeiro', 'Crescimento e Marketing', 'Compliance', 'Inovação', 'Outros'];
+  const sortedCategories = Object.keys(groupedModules).sort((a, b) => {
+    const indexA = categoryOrder.indexOf(a);
+    const indexB = categoryOrder.indexOf(b);
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
+
   return (
     <div className="flex-1 space-y-6 p-8">
       <PageHeader
@@ -80,53 +99,64 @@ export default function ModulesSimple() {
         description="Ative ou desative módulos do sistema"
       />
 
-      <div className="grid gap-3">
-        {modules.map((module) => {
-          const isToggling = toggling === module.module_key;
-          const canToggle = module.is_active ? module.can_deactivate : module.can_activate;
+      <div className="space-y-8">
+        {sortedCategories.map((category) => (
+          <div key={category} className="space-y-3">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-foreground">{category}</h2>
+              <div className="flex-1 h-px bg-border"></div>
+            </div>
+            
+            <div className="grid gap-3">
+              {groupedModules[category].map((module) => {
+                const isToggling = toggling === module.module_key;
+                const canToggle = module.is_active ? module.can_deactivate : module.can_activate;
 
-          return (
-            <Card
-              key={module.module_key}
-              className={cn(
-                "p-4 transition-all hover:shadow-md",
-                module.is_active && "border-primary/50 bg-primary/5",
-                isToggling && "opacity-60"
-              )}
-            >
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4 flex-1">
-                  <div className={cn(
-                    "flex items-center justify-center w-10 h-10 rounded-full transition-colors",
-                    module.is_active ? "bg-success/20" : "bg-muted"
-                  )}>
-                    {module.is_active ? (
-                      <Check className="h-5 w-5 text-success" />
-                    ) : (
-                      <X className="h-5 w-5 text-muted-foreground" />
+                return (
+                  <Card
+                    key={module.module_key}
+                    className={cn(
+                      "p-4 transition-all hover:shadow-md",
+                      module.is_active && "border-primary/50 bg-primary/5",
+                      isToggling && "opacity-60"
                     )}
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-foreground">{module.name}</h3>
-                      <Badge variant={module.is_active ? 'success' : 'secondary'} className="text-xs">
-                        {module.is_active ? 'Ativo' : 'Inativo'}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{module.description}</p>
-                  </div>
-                </div>
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className={cn(
+                          "flex items-center justify-center w-10 h-10 rounded-full transition-colors",
+                          module.is_active ? "bg-success/20" : "bg-muted"
+                        )}>
+                          {module.is_active ? (
+                            <Check className="h-5 w-5 text-success" />
+                          ) : (
+                            <X className="h-5 w-5 text-muted-foreground" />
+                          )}
+                        </div>
+                        
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold text-foreground">{module.name}</h3>
+                            <Badge variant={module.is_active ? 'success' : 'secondary'} className="text-xs">
+                              {module.is_active ? 'Ativo' : 'Inativo'}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{module.description}</p>
+                        </div>
+                      </div>
 
-                <Switch
-                  checked={module.is_active}
-                  disabled={!canToggle || isToggling}
-                  onCheckedChange={() => handleToggle(module.module_key)}
-                />
-              </div>
-            </Card>
-          );
-        })}
+                      <Switch
+                        checked={module.is_active}
+                        disabled={!canToggle || isToggling}
+                        onCheckedChange={() => handleToggle(module.module_key)}
+                      />
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
