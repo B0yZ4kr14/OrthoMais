@@ -53,6 +53,7 @@ import CRMFunil from '@/pages/CRMFunil';
 import SplitPagamento from '@/pages/SplitPagamento';
 import ProgramaFidelidade from '@/pages/ProgramaFidelidade';
 import NotFound from './pages/NotFound';
+import { ProductTour } from './components/tour/ProductTour';
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,7 @@ const App = () => (
             <ModulesProvider>
               <Toaster />
               <Sonner />
+              <ProductTour />
               <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route
@@ -73,7 +75,9 @@ const App = () => (
                   <ProtectedRoute>
                     <SidebarProvider>
                       <div className="flex min-h-screen w-full">
-                        <AppSidebar />
+                        <div data-tour="sidebar">
+                          <AppSidebar />
+                        </div>
                         <div className="flex-1 flex flex-col">
                           <DashboardHeader />
                           <main className="flex-1 bg-background">

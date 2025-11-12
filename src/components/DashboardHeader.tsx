@@ -45,7 +45,7 @@ export function DashboardHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm px-6 flex items-center justify-between">
-      <div className="flex-1 max-w-md">
+      <div className="flex-1 max-w-md" data-tour="search-bar">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -57,7 +57,8 @@ export function DashboardHeader() {
 
       <div className="flex items-center gap-3">
         {/* Theme Preview Dialog */}
-        <Dialog>
+        <div data-tour="theme-toggle">
+          <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline" size="icon" className="relative">
               <Palette className="h-5 w-5" />
@@ -101,20 +102,12 @@ export function DashboardHeader() {
           </div>
         )}
 
-        {/* Notifications */}
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <Badge 
-            className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px]"
-            variant="destructive"
-          >
-            3
-          </Badge>
-        </Button>
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-3 hover:bg-accent">
+            <div data-tour="user-menu">
+              <Button variant="ghost" className="flex items-center gap-3 hover:bg-accent">
               <div className="text-right">
                 <p className="text-sm font-medium text-foreground">
                   {user?.email?.split('@')[0] || 'Usuário'}
@@ -125,8 +118,9 @@ export function DashboardHeader() {
                 <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                   {user?.email ? getInitials(user.email) : 'US'}
                 </AvatarFallback>
-              </Avatar>
-            </Button>
+                </Avatar>
+              </Button>
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>

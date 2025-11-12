@@ -1,73 +1,98 @@
-# Welcome to your Lovable project
+# Ortho+ | Sistema de Gestão Odontológica Completo
 
-## Project info
+## 🦷 Sobre o Sistema
 
-**URL**: https://lovable.dev/projects/ab203c0d-07a2-4325-8893-0110d34090b0
+**Ortho+** é uma plataforma SaaS B2B multitenant completa para gestão de clínicas odontológicas, desenvolvida com foco em modularidade, escalabilidade e experiência do usuário.
 
-## How can I edit this code?
+### Desenvolvido por TSI Telecom
+**Copyright © 2025 TSI Telecom - Todos os direitos reservados**
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🚀 Tecnologias
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ab203c0d-07a2-4325-8893-0110d34090b0) and start prompting.
+- **React 18.3** + **TypeScript** + **Vite**
+- **Tailwind CSS** + **Shadcn/ui**
+- **Supabase** (PostgreSQL + Auth + Storage + Functions)
+- **React Query** + **Zod** + **React Joyride**
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📦 Módulos Disponíveis (22 módulos)
 
-**Use your preferred IDE**
+### Gestão e Operação
+- Dashboard, Pacientes, Dentistas, Funcionários, Agenda, PEP, Odontograma, Estoque, Orçamentos, Contratos
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Financeiro  
+- Gestão Financeira, Contas a Receber/Pagar, NFe, Split de Pagamento, Cobrança, Crypto
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Crescimento & Marketing
+- CRM + Funil, Automação, Business Intelligence, Fidelidade
 
-Follow these steps:
+### Compliance
+- LGPD, Auditoria, Assinatura Digital ICP, TISS
+
+### Inovação
+- Teleodontologia, IA Raio-X, Fluxo Digital, Portal do Paciente
+
+---
+
+## 🏗️ Como Rodar o Projeto
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Clone o repositório
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Navegue para o diretório
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Instale as dependências
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Configure as variáveis de ambiente
+# (Supabase já está configurado via Lovable Cloud)
+
+# Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🚀 Deploy
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Abra [Lovable](https://lovable.dev/projects/ab203c0d-07a2-4325-8893-0110d34090b0) e clique em **Share → Publish**.
 
-**Use GitHub Codespaces**
+## 🌐 Domínio Customizado
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Conecte seu domínio em **Project > Settings > Domains > Connect Domain**.
 
-## What technologies are used for this project?
+[Documentação Completa](https://docs.lovable.dev/features/custom-domain)
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 📚 Documentação Adicional
 
-## How can I deploy this project?
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - Arquitetura técnica completa
+- [SECURITY.md](./SECURITY.md) - Práticas de segurança
+- [API_DOCS.md](./API_DOCS.md) - Documentação das Edge Functions
 
-Simply open [Lovable](https://lovable.dev/projects/ab203c0d-07a2-4325-8893-0110d34090b0) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## 🏆 Diferenciais
 
-Yes, you can!
+1. **Arquitetura Modular Descentralizada** - 100% plug-and-play
+2. **IA Integrada** - Gemini Vision + ML
+3. **Automação Completa** - Do estoque às cobranças
+4. **Multi-tenancy Robusto** - Isolamento perfeito
+5. **Design Premium** - 3 temas + animações
+6. **LGPD Native** - Compliance desde o design
+7. **Tour Guiado** - Onboarding interativo
+8. **Crypto Ready** - Bitcoin nativo
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 📞 Contato
+
+**TSI Telecom**  
+🌐 https://tsitelecom.com  
+📧 contato@tsitelecom.com
+
+---
+
+*Desenvolvido com 💙 pela TSI Telecom | Versão 1.0.0*

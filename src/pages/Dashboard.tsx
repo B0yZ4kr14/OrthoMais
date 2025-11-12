@@ -114,7 +114,7 @@ export default function Dashboard() {
       />
 
       {/* Cards de Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" data-tour="dashboard-stats">
         <StatCard
           label="Pacientes Ativos"
           value={stats.totalPatients.toString()}
@@ -154,7 +154,7 @@ export default function Dashboard() {
       </div>
 
       {/* Action Cards - Ações Rápidas */}
-      <Card variant="gradient">
+      <Card variant="gradient" data-tour="action-cards">
         <CardHeader>
           <CardTitle>Ações Rápidas</CardTitle>
           <CardDescription>Acesse rapidamente as funcionalidades mais utilizadas</CardDescription>
