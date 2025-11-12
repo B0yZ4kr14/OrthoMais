@@ -26,6 +26,8 @@ import BusinessIntelligence from './pages/BusinessIntelligence';
 import Auth from './pages/Auth';
 import ReportTemplates from '@/pages/ReportTemplates';
 import AuditLogs from '@/pages/AuditLogs';
+import UserBehaviorAnalytics from "@/pages/UserBehaviorAnalytics";
+import LGPDCompliance from "@/pages/LGPDCompliance";
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -63,7 +65,9 @@ const App = () => (
                               <Route path="/pep" element={<PEP />} />
                               <Route path="/relatorios" element={<Relatorios />} />
                               <Route path="/business-intelligence" element={<BusinessIntelligence />} />
-                              <Route 
+                              <Route path="/analise-comportamental" element={<UserBehaviorAnalytics />} />
+                              <Route path="/lgpd-compliance" element={<LGPDCompliance />} />
+                              <Route
                                 path="/report-templates" 
                                 element={
                                   <ProtectedRoute requireAdmin>

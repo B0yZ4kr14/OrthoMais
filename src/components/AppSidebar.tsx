@@ -9,7 +9,8 @@ import {
   Settings,
   TrendingUp,
   ClipboardList,
-  Shield
+  Shield,
+  Activity
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
@@ -43,8 +44,10 @@ const mainItems = [
   { title: 'Financeiro', url: '/financeiro', icon: DollarSign },
   { title: 'Relatórios', url: '/relatorios', icon: FileText },
   { title: 'Business Intelligence', url: '/business-intelligence', icon: TrendingUp },
+  { title: 'Análise Comportamental', url: '/analise-comportamental', icon: Activity },
   { title: 'Templates de Relatórios', url: '/report-templates', icon: ClipboardList },
   { title: 'Auditoria', url: '/audit-logs', icon: Shield },
+  { title: 'LGPD', url: '/lgpd-compliance', icon: Shield },
 ];
 
 export function AppSidebar() {
