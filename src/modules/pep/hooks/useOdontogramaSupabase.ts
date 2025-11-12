@@ -29,7 +29,16 @@ export const useOdontogramaSupabase = (prontuarioId: string) => {
 
   // Carregar dados do prontuário específico do Supabase
   const loadData = useCallback(async () => {
-    if (!prontuarioId) return;
+    if (!prontuarioId) {
+      // Inicializar com todos os dentes hígidos se não houver prontuarioId
+      const processedTeeth: Record<number, ToothData> = {};
+      ALL_TEETH.forEach(num => {
+        processedTeeth[num] = createInitialToothData(num);
+      });
+      setTeethData(processedTeeth);
+      setIsLoading(false);
+      return;
+    }
     
     setIsLoading(true);
     try {

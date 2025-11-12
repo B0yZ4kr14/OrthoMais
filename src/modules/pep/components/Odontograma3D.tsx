@@ -33,7 +33,12 @@ function ToothMesh({ position, toothData, selectedStatus, onToothClick, onToothR
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
 
-  const color = TOOTH_STATUS_COLORS[toothData.status];
+  // Proteção contra dados undefined
+  if (!toothData) {
+    return null;
+  }
+
+  const color = TOOTH_STATUS_COLORS[toothData.status] || TOOTH_STATUS_COLORS['higido'];
   const isExtraido = toothData.status === 'extraido';
 
   const handleClick = (e: any) => {
@@ -264,52 +269,68 @@ export const Odontograma3D = ({ prontuarioId }: Odontograma3DProps) => {
 
               <Suspense fallback={null}>
                 {/* Arcada Superior Direita */}
-                {UPPER_RIGHT_TEETH.map((num, idx) => (
-                  <ToothMesh
-                    key={num}
-                    position={[-7 + idx * 1.2, 2, 2]}
-                    toothData={teethData[num]}
-                    selectedStatus={selectedStatus}
-                    onToothClick={handleToothClick}
-                    onToothRightClick={handleToothRightClick}
-                  />
-                ))}
+                {UPPER_RIGHT_TEETH.map((num, idx) => {
+                  const tooth = teethData[num];
+                  if (!tooth) return null;
+                  return (
+                    <ToothMesh
+                      key={num}
+                      position={[-7 + idx * 1.2, 2, 2]}
+                      toothData={tooth}
+                      selectedStatus={selectedStatus}
+                      onToothClick={handleToothClick}
+                      onToothRightClick={handleToothRightClick}
+                    />
+                  );
+                })}
 
                 {/* Arcada Superior Esquerda */}
-                {UPPER_LEFT_TEETH.map((num, idx) => (
-                  <ToothMesh
-                    key={num}
-                    position={[0.5 + idx * 1.2, 2, 2]}
-                    toothData={teethData[num]}
-                    selectedStatus={selectedStatus}
-                    onToothClick={handleToothClick}
-                    onToothRightClick={handleToothRightClick}
-                  />
-                ))}
+                {UPPER_LEFT_TEETH.map((num, idx) => {
+                  const tooth = teethData[num];
+                  if (!tooth) return null;
+                  return (
+                    <ToothMesh
+                      key={num}
+                      position={[0.5 + idx * 1.2, 2, 2]}
+                      toothData={tooth}
+                      selectedStatus={selectedStatus}
+                      onToothClick={handleToothClick}
+                      onToothRightClick={handleToothRightClick}
+                    />
+                  );
+                })}
 
                 {/* Arcada Inferior Esquerda */}
-                {LOWER_LEFT_TEETH.map((num, idx) => (
-                  <ToothMesh
-                    key={num}
-                    position={[0.5 + idx * 1.2, -2, 2]}
-                    toothData={teethData[num]}
-                    selectedStatus={selectedStatus}
-                    onToothClick={handleToothClick}
-                    onToothRightClick={handleToothRightClick}
-                  />
-                ))}
+                {LOWER_LEFT_TEETH.map((num, idx) => {
+                  const tooth = teethData[num];
+                  if (!tooth) return null;
+                  return (
+                    <ToothMesh
+                      key={num}
+                      position={[0.5 + idx * 1.2, -2, 2]}
+                      toothData={tooth}
+                      selectedStatus={selectedStatus}
+                      onToothClick={handleToothClick}
+                      onToothRightClick={handleToothRightClick}
+                    />
+                  );
+                })}
 
                 {/* Arcada Inferior Direita */}
-                {LOWER_RIGHT_TEETH.map((num, idx) => (
-                  <ToothMesh
-                    key={num}
-                    position={[-7 + idx * 1.2, -2, 2]}
-                    toothData={teethData[num]}
-                    selectedStatus={selectedStatus}
-                    onToothClick={handleToothClick}
-                    onToothRightClick={handleToothRightClick}
-                  />
-                ))}
+                {LOWER_RIGHT_TEETH.map((num, idx) => {
+                  const tooth = teethData[num];
+                  if (!tooth) return null;
+                  return (
+                    <ToothMesh
+                      key={num}
+                      position={[-7 + idx * 1.2, -2, 2]}
+                      toothData={tooth}
+                      selectedStatus={selectedStatus}
+                      onToothClick={handleToothClick}
+                      onToothRightClick={handleToothRightClick}
+                    />
+                  );
+                })}
 
                 {/* Base/Gengiva */}
                 <mesh position={[0, 0, 1.5]} receiveShadow>

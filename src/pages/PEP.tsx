@@ -29,7 +29,8 @@ export default function PEP() {
   const [isReceitaDialogOpen, setIsReceitaDialogOpen] = useState(false);
   
   // Mock prontuario ID - em produção viria da seleção do paciente
-  const prontuarioId = 'mock-prontuario-id';
+  // UUID válido de exemplo
+  const prontuarioId = '00000000-0000-0000-0000-000000000001';
 
   // Estados para comparação de odontogramas
   const [selectedForComparison, setSelectedForComparison] = useState<[string | null, string | null]>([null, null]);
