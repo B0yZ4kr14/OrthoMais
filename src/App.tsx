@@ -15,6 +15,7 @@ import Procedimentos from "./pages/Procedimentos";
 import Resumo from "./pages/Resumo";
 import AgendaClinica from "./pages/AgendaClinica";
 import GerenciamentoModulos from "./pages/GerenciamentoModulos";
+import ModulesAdmin from "./pages/settings/ModulesAdmin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
                     <Route path="/procedimentos" element={<Procedimentos />} />
                     <Route path="/agenda-clinica" element={<AgendaClinica />} />
                     <Route path="/modulos" element={<GerenciamentoModulos />} />
+                    <Route path="/settings/modules" element={<ModulesAdmin />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
