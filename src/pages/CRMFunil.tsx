@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function CRMFunil() {
+  const [formOpen, setFormOpen] = useState(false);
   // Mock data
   const leads = [
     { id: '1', nome: 'Ana Costa', status_funil: 'NOVO', score_qualidade: 85, temperatura: 'QUENTE', valor_estimado: 5000 },

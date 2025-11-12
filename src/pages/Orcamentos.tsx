@@ -8,10 +8,14 @@ import { useOrcamentosSupabase } from '@/modules/orcamentos/hooks/useOrcamentosS
 import { formatCurrency } from '@/lib/utils/validation.utils';
 import { statusLabels, tipoPlanoLabels } from '@/modules/orcamentos/types/orcamento.types';
 import type { OrcamentoComplete } from '@/modules/orcamentos/types/orcamento.types';
+import { OrcamentoForm } from '@/components/financeiro/OrcamentoForm';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 
 export default function Orcamentos() {
   const { orcamentos, loading, sendOrcamento, approveOrcamento, convertToTreatmentPlan } = useOrcamentosSupabase();
   const [selectedOrcamento, setSelectedOrcamento] = useState<OrcamentoComplete | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
 
   const getStatusVariant = (status: string) => {
     const variants: Record<string, any> = {
@@ -42,7 +46,7 @@ export default function Orcamentos() {
           title="Orçamentos"
           description="Gestão completa de orçamentos e propostas comerciais"
         />
-        <Button variant="elevated">
+        <Button variant="elevated" onClick={() => setFormOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Novo Orçamento
         </Button>
@@ -159,6 +163,22 @@ export default function Orcamentos() {
           )}
         </div>
       </Card>
+
+      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Novo Orçamento</DialogTitle>
+          </DialogHeader>
+          <OrcamentoForm
+            onSubmit={(data) => {
+              console.log('Orçamento criado:', data);
+              toast.success('Orçamento criado com sucesso!');
+              setFormOpen(false);
+            }}
+            onCancel={() => setFormOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

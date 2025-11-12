@@ -48,6 +48,8 @@ import PortalPaciente from '@/pages/PortalPaciente';
 import Teleodontologia from '@/pages/Teleodontologia';
 import IARadiografia from '@/pages/IARadiografia';
 import CRMFunil from '@/pages/CRMFunil';
+import SplitPagamento from '@/pages/SplitPagamento';
+import ProgramaFidelidade from '@/pages/ProgramaFidelidade';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();

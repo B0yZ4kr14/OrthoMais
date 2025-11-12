@@ -8,10 +8,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useContratosSupabase } from '@/modules/contratos/hooks/useContratosSupabase';
 import { statusContratoLabels } from '@/modules/contratos/types/contrato.types';
 import type { ContratoComplete, ContratoTemplate } from '@/modules/contratos/types/contrato.types';
+import { ContratoForm } from '@/components/contratos/ContratoForm';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 
 export default function Contratos() {
   const { contratos, templates, loading, signContrato, cancelContrato } = useContratosSupabase();
   const [selectedContrato, setSelectedContrato] = useState<ContratoComplete | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
 
   const getStatusVariant = (status: string) => {
     const variants: Record<string, any> = {
@@ -40,7 +44,7 @@ export default function Contratos() {
           title="Contratos Digitais"
           description="Gestão completa de contratos com assinatura digital"
         />
-        <Button variant="elevated">
+        <Button variant="elevated" onClick={() => setFormOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Novo Contrato
         </Button>
@@ -162,6 +166,22 @@ export default function Contratos() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Novo Contrato</DialogTitle>
+          </DialogHeader>
+          <ContratoForm
+            onSubmit={(data) => {
+              console.log('Contrato criado:', data);
+              toast.success('Contrato criado com sucesso!');
+              setFormOpen(false);
+            }}
+            onCancel={() => setFormOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
