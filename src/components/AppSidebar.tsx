@@ -138,16 +138,16 @@ export function AppSidebar() {
               <Collapsible defaultOpen={false} className="group/collapsible">
                 <SidebarGroup>
                   <SidebarGroupLabel className="text-sidebar-foreground/70 font-medium text-xs uppercase tracking-wider">
-                    <CollapsibleTrigger className="flex w-full items-center justify-between hover:text-sidebar-foreground transition-colors">
+                    <CollapsibleTrigger className="flex w-full items-center justify-between hover:text-sidebar-foreground transition-all duration-300">
                       {!collapsed && (
                         <>
-                          <span>{group.label}</span>
-                          <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                          <span className="animate-fade-in">{group.label}</span>
+                          <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]/collapsible:rotate-180" />
                         </>
                       )}
                     </CollapsibleTrigger>
                   </SidebarGroupLabel>
-                  <CollapsibleContent>
+                  <CollapsibleContent className="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up overflow-hidden transition-all">
                     <SidebarGroupContent>
                       <SidebarMenu>
                         {group.items.map((item) => (
@@ -155,15 +155,15 @@ export function AppSidebar() {
                             <SidebarMenuButton 
                               asChild 
                               isActive={isActive(item.url)}
-                              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground transition-colors"
+                              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground transition-all duration-200 hover:translate-x-1"
                             >
                               <NavLink 
                                 to={item.url} 
                                 end 
                                 className="flex items-center gap-3 px-3 py-2"
                               >
-                                <item.icon className="h-4 w-4 shrink-0" />
-                                {!collapsed && <span className="text-sm">{item.title}</span>}
+                                <item.icon className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                                {!collapsed && <span className="text-sm animate-slide-in">{item.title}</span>}
                               </NavLink>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
@@ -185,15 +185,15 @@ export function AppSidebar() {
                         <SidebarMenuButton 
                           asChild 
                           isActive={isActive(item.url)}
-                          className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground transition-colors"
+                          className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground transition-all duration-200 hover:translate-x-1"
                         >
                           <NavLink 
                             to={item.url} 
                             end 
                             className="flex items-center gap-3 px-3 py-2"
                           >
-                            <item.icon className="h-4 w-4 shrink-0" />
-                            {!collapsed && <span className="text-sm">{item.title}</span>}
+                            <item.icon className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                            {!collapsed && <span className="text-sm animate-slide-in">{item.title}</span>}
                           </NavLink>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -218,14 +218,14 @@ export function AppSidebar() {
                     <SidebarMenuButton 
                       asChild 
                       isActive={isActive('/configuracoes')}
-                      className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground transition-colors"
+                      className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground transition-all duration-200 hover:translate-x-1"
                     >
                       <NavLink 
                         to="/configuracoes" 
                         className="flex items-center gap-3 px-3 py-2"
                       >
-                        <Settings className="h-4 w-4 shrink-0" />
-                        {!collapsed && <span className="text-sm">Configurações</span>}
+                        <Settings className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                        {!collapsed && <span className="text-sm animate-slide-in">Configurações</span>}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

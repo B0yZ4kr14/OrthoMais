@@ -28,6 +28,10 @@ import ReportTemplates from '@/pages/ReportTemplates';
 import AuditLogs from '@/pages/AuditLogs';
 import UserBehaviorAnalytics from "@/pages/UserBehaviorAnalytics";
 import LGPDCompliance from "@/pages/LGPDCompliance";
+import Cobranca from '@/pages/Cobranca';
+import EstoqueCadastros from '@/pages/estoque/EstoqueCadastros';
+import EstoqueRequisicoes from '@/pages/estoque/EstoqueRequisicoes';
+import EstoqueMovimentacoes from '@/pages/estoque/EstoqueMovimentacoes';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -67,6 +71,10 @@ const App = () => (
                               <Route path="/business-intelligence" element={<BusinessIntelligence />} />
                               <Route path="/analise-comportamental" element={<UserBehaviorAnalytics />} />
                               <Route path="/lgpd-compliance" element={<LGPDCompliance />} />
+                              <Route path="/cobranca" element={<Cobranca />} />
+                              <Route path="/estoque/cadastros" element={<EstoqueCadastros />} />
+                              <Route path="/estoque/requisicoes" element={<EstoqueRequisicoes />} />
+                              <Route path="/estoque/movimentacoes" element={<EstoqueMovimentacoes />} />
                               <Route
                                 path="/report-templates" 
                                 element={
