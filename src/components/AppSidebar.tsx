@@ -6,7 +6,8 @@ import {
   Stethoscope,
   FileText,
   DollarSign,
-  Settings
+  Settings,
+  TrendingUp
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
@@ -39,6 +40,7 @@ const mainItems = [
   { title: 'PEP', url: '/pep', icon: FileText },
   { title: 'Financeiro', url: '/financeiro', icon: DollarSign },
   { title: 'Relatórios', url: '/relatorios', icon: FileText },
+  { title: 'Business Intelligence', url: '/business-intelligence', icon: TrendingUp },
 ];
 
 export function AppSidebar() {

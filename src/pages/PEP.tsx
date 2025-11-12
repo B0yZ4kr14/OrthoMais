@@ -15,6 +15,9 @@ import { OdontogramaHistory } from '@/modules/pep/components/OdontogramaHistory'
 import { OdontogramaComparison } from '@/modules/pep/components/OdontogramaComparison';
 import { AssinaturaDigital } from '@/modules/pep/components/AssinaturaDigital';
 import { OdontogramaAIAnalysis } from '@/modules/pep/components/OdontogramaAIAnalysis';
+import { PrescricaoForm } from '@/modules/pep/components/PrescricaoForm';
+import { ReceitaForm } from '@/modules/pep/components/ReceitaForm';
+import { ProntuarioPDF } from '@/modules/pep/components/ProntuarioPDF';
 import { useOdontogramaSupabase } from '@/modules/pep/hooks/useOdontogramaSupabase';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -22,6 +25,8 @@ export default function PEP() {
   const [activeTab, setActiveTab] = useState('historico');
   const [isHistoricoDialogOpen, setIsHistoricoDialogOpen] = useState(false);
   const [isTratamentoDialogOpen, setIsTratamentoDialogOpen] = useState(false);
+  const [isPrescricaoDialogOpen, setIsPrescricaoDialogOpen] = useState(false);
+  const [isReceitaDialogOpen, setIsReceitaDialogOpen] = useState(false);
   
   // Mock prontuario ID - em produção viria da seleção do paciente
   const prontuarioId = 'mock-prontuario-id';
@@ -112,7 +117,7 @@ export default function PEP() {
 
       {/* Tabs Principais */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-11">
           <TabsTrigger value="historico">
             <History className="mr-2 h-4 w-4" />
             <span className="hidden lg:inline">Histórico</span>
@@ -148,6 +153,14 @@ export default function PEP() {
           <TabsTrigger value="evolucoes">
             <FileText className="mr-2 h-4 w-4" />
             <span className="hidden lg:inline">Evoluções</span>
+          </TabsTrigger>
+          <TabsTrigger value="prescricoes">
+            <FileText className="mr-2 h-4 w-4" />
+            <span className="hidden lg:inline">Prescrições</span>
+          </TabsTrigger>
+          <TabsTrigger value="receitas">
+            <FileText className="mr-2 h-4 w-4" />
+            <span className="hidden lg:inline">Receitas</span>
           </TabsTrigger>
         </TabsList>
 
@@ -270,6 +283,74 @@ export default function PEP() {
 
         <TabsContent value="evolucoes" className="space-y-4">
           <EvolucoesTimeline prontuarioId={prontuarioId} />
+        </TabsContent>
+
+        <TabsContent value="prescricoes" className="space-y-4">
+          <div className="flex justify-end">
+            <Dialog open={isPrescricaoDialogOpen} onOpenChange={setIsPrescricaoDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nova Prescrição
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Criar Prescrição Médica</DialogTitle>
+                </DialogHeader>
+                <PrescricaoForm
+                  prontuarioId={prontuarioId}
+                  onSuccess={() => setIsPrescricaoDialogOpen(false)}
+                  onCancel={() => setIsPrescricaoDialogOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <Card>
+            <CardContent className="py-8">
+              <div className="text-center text-muted-foreground">
+                <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p>Nenhuma prescrição registrada</p>
+                <p className="text-sm mt-1">Clique em "Nova Prescrição" para começar</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="receitas" className="space-y-4">
+          <div className="flex justify-end">
+            <Dialog open={isReceitaDialogOpen} onOpenChange={setIsReceitaDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nova Receita
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Criar Receita Médica</DialogTitle>
+                </DialogHeader>
+                <ReceitaForm
+                  prontuarioId={prontuarioId}
+                  onSuccess={() => setIsReceitaDialogOpen(false)}
+                  onCancel={() => setIsReceitaDialogOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <Card>
+            <CardContent className="py-8">
+              <div className="text-center text-muted-foreground">
+                <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p>Nenhuma receita registrada</p>
+                <p className="text-sm mt-1">Clique em "Nova Receita" para começar</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <ProntuarioPDF prontuarioId={prontuarioId} patientName="João da Silva" />
         </TabsContent>
       </Tabs>
     </div>
