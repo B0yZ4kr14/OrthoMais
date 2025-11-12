@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SearchInput } from '@/components/shared/SearchInput';
 import { DeleteConfirmDialog } from '@/components/shared/DeleteConfirmDialog';
-import { Package, Users, Building2, Plus } from 'lucide-react';
+import { Package, Users, Building2, Plus, Scan } from 'lucide-react';
 import { useEstoqueSupabase } from '@/modules/estoque/hooks/useEstoqueSupabase';
 import { ProdutoForm } from '@/modules/estoque/components/ProdutoForm';
 import { ProdutosList } from '@/modules/estoque/components/ProdutosList';
@@ -14,6 +14,7 @@ import { FornecedorForm } from '@/modules/estoque/components/FornecedorForm';
 import { FornecedoresList } from '@/modules/estoque/components/FornecedoresList';
 import { CategoriaForm } from '@/modules/estoque/components/CategoriaForm';
 import { CategoriasList } from '@/modules/estoque/components/CategoriasList';
+import { BarcodeScannerDialog } from '@/modules/estoque/components/BarcodeScannerDialog';
 import type { Produto, Fornecedor, Categoria } from '@/modules/estoque/types/estoque.types';
 import { toast } from 'sonner';
 
@@ -43,6 +44,7 @@ export default function EstoqueCadastros() {
   const [selectedProduto, setSelectedProduto] = useState<Produto | undefined>();
   const [selectedFornecedor, setSelectedFornecedor] = useState<Fornecedor | undefined>();
   const [selectedCategoria, setSelectedCategoria] = useState<Categoria | undefined>();
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{ id: string; type: 'produto' | 'fornecedor' | 'categoria' } | null>(null);
@@ -168,6 +170,17 @@ export default function EstoqueCadastros() {
     }
   };
 
+  const handleScanSuccess = (barcode: string) => {
+    const produto = produtos.find(p => p.codigoBarras === barcode || p.codigo === barcode);
+    if (produto) {
+      setSelectedProduto(produto);
+      setProdutoViewMode('form');
+      toast.success(`Produto encontrado: ${produto.nome}`);
+    } else {
+      toast.error('Produto não encontrado com este código de barras');
+    }
+  };
+
   const filteredProdutos = produtos.filter(p =>
     p.nome.toLowerCase().includes(searchProduto.toLowerCase()) ||
     p.codigo.toLowerCase().includes(searchProduto.toLowerCase())
@@ -180,11 +193,17 @@ export default function EstoqueCadastros() {
 
   return (
     <div className="p-8 space-y-6">
-      <PageHeader
-        icon={Package}
-        title="Cadastros de Estoque"
-        description="Gestão de produtos, fornecedores e categorias do estoque"
-      />
+      <div className="flex justify-between items-center">
+        <PageHeader
+          icon={Package}
+          title="Cadastros de Estoque"
+          description="Gestão de produtos, fornecedores e categorias do estoque"
+        />
+        <Button onClick={() => setScannerOpen(true)} variant="outline">
+          <Scan className="mr-2 h-4 w-4" />
+          Scanner de Código de Barras
+        </Button>
+      </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
@@ -370,6 +389,12 @@ export default function EstoqueCadastros() {
         onConfirm={confirmDelete}
         title="Confirmar exclusão"
         description={`Tem certeza que deseja excluir este ${itemToDelete?.type}? Esta ação não pode ser desfeita.`}
+      />
+
+      <BarcodeScannerDialog
+        open={scannerOpen}
+        onOpenChange={setScannerOpen}
+        onScanSuccess={handleScanSuccess}
       />
     </div>
   );

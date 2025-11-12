@@ -87,6 +87,7 @@ export const produtoSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter no mínimo 2 caracteres').max(100),
   descricao: z.string().optional(),
   codigo: z.string().min(1, 'Código é obrigatório'),
+  codigoBarras: z.string().optional(), // Código de barras
   categoriaId: z.string().uuid('Selecione uma categoria'),
   fornecedorId: z.string().uuid('Selecione um fornecedor'),
   unidadeMedida: z.enum(['UNIDADE', 'CAIXA', 'FRASCO', 'PACOTE', 'KG', 'LITRO']),

@@ -1,11 +1,10 @@
 import { Card } from '@/components/ui/card';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { useEstoqueSupabase } from '@/modules/estoque/hooks/useEstoqueSupabase';
+import { EstoqueRelatorios } from '@/modules/estoque/components/EstoqueRelatorios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { Package, AlertTriangle, TrendingUp, DollarSign, Clock, CheckCircle } from 'lucide-react';
+import { Package, AlertTriangle, TrendingUp, DollarSign, Clock, CheckCircle, BarChart3 } from 'lucide-react';
 import { useMemo } from 'react';
-
-import { BarChart3 } from 'lucide-react';
 
 export default function EstoqueDashboard() {
   const { produtos, requisicoes, movimentacoes, alertas, loading } = useEstoqueSupabase();
@@ -276,6 +275,9 @@ export default function EstoqueDashboard() {
           </div>
         </Card>
       )}
+
+      {/* Geração de Relatórios */}
+      <EstoqueRelatorios />
     </div>
   );
 }

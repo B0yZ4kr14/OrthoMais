@@ -81,6 +81,20 @@ export function ProdutoForm({ produto, categorias, fornecedores, onSubmit, onCan
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="codigoBarras"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Código de Barras</FormLabel>
+                <FormControl>
+                  <Input placeholder="EAN-13, Code-128, etc." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <FormField
