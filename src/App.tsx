@@ -10,6 +10,8 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AppLayout } from "@/components/AppLayout";
 import { useHotkeys } from "@/hooks/useHotkeys";
+import { LoadingState } from '@/components/shared/LoadingState';
+import { lazy, Suspense } from 'react';
 import Demo from "./pages/Demo";
 import Dashboard from "./pages/Dashboard";
 import Pacientes from "./pages/Pacientes";
@@ -23,12 +25,14 @@ import GerenciamentoModulos from "./pages/GerenciamentoModulos";
 import ModulesAdmin from './pages/settings/ModulesAdmin';
 import Configuracoes from './pages/Configuracoes';
 import PEP from './pages/PEP';
-import Relatorios from './pages/Relatorios';
-import BusinessIntelligence from './pages/BusinessIntelligence';
+// Lazy load rotas pesadas
+const Relatorios = lazy(() => import('./pages/Relatorios'));
+const BusinessIntelligence = lazy(() => import('./pages/BusinessIntelligence'));
+const IARadiografia = lazy(() => import('@/pages/IARadiografia'));
+const UserBehaviorAnalytics = lazy(() => import("@/pages/UserBehaviorAnalytics"));
 import Auth from './pages/Auth';
 import ReportTemplates from '@/pages/ReportTemplates';
 import AuditLogs from '@/pages/AuditLogs';
-import UserBehaviorAnalytics from "@/pages/UserBehaviorAnalytics";
 import LGPDCompliance from "@/pages/LGPDCompliance";
 import Cobranca from '@/pages/Cobranca';
 import EstoqueDashboard from '@/pages/estoque/EstoqueDashboard';
@@ -49,7 +53,6 @@ import Contratos from '@/pages/Contratos';
 import PortalPaciente from '@/pages/PortalPaciente';
 import Teleodontologia from './pages/Teleodontologia';
 import HistoricoTeleconsultas from './pages/HistoricoTeleconsultas';
-import IARadiografia from '@/pages/IARadiografia';
 import CRMFunil from '@/pages/CRMFunil';
 import SplitPagamento from '@/pages/SplitPagamento';
 import ProgramaFidelidade from '@/pages/ProgramaFidelidade';
@@ -96,9 +99,9 @@ const App = () => (
                 <Route path="/agenda" element={<ProtectedRoute><AppLayout><AgendaClinica /></AppLayout></ProtectedRoute>} />
                 <Route path="/agenda-clinica" element={<ProtectedRoute><AppLayout><AgendaClinica /></AppLayout></ProtectedRoute>} />
                 <Route path="/pep" element={<ProtectedRoute><AppLayout><PEP /></AppLayout></ProtectedRoute>} />
-                <Route path="/relatorios" element={<ProtectedRoute><AppLayout><Relatorios /></AppLayout></ProtectedRoute>} />
-                <Route path="/business-intelligence" element={<ProtectedRoute><AppLayout><BusinessIntelligence /></AppLayout></ProtectedRoute>} />
-                <Route path="/analise-comportamental" element={<ProtectedRoute><AppLayout><UserBehaviorAnalytics /></AppLayout></ProtectedRoute>} />
+                <Route path="/relatorios" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando relatórios..." />}><Relatorios /></Suspense></AppLayout></ProtectedRoute>} />
+                <Route path="/business-intelligence" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando BI..." />}><BusinessIntelligence /></Suspense></AppLayout></ProtectedRoute>} />
+                <Route path="/analise-comportamental" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando analytics..." />}><UserBehaviorAnalytics /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/lgpd-compliance" element={<ProtectedRoute><AppLayout><LGPDCompliance /></AppLayout></ProtectedRoute>} />
                 <Route path="/cobranca" element={<ProtectedRoute><AppLayout><Cobranca /></AppLayout></ProtectedRoute>} />
                 <Route path="/estoque" element={<ProtectedRoute><AppLayout><EstoqueDashboard /></AppLayout></ProtectedRoute>} />
@@ -114,7 +117,7 @@ const App = () => (
                 <Route path="/portal-paciente" element={<ProtectedRoute><AppLayout><PortalPaciente /></AppLayout></ProtectedRoute>} />
                 <Route path="/teleodontologia" element={<ProtectedRoute><AppLayout><Teleodontologia /></AppLayout></ProtectedRoute>} />
                 <Route path="/historico-teleconsultas" element={<ProtectedRoute><AppLayout><HistoricoTeleconsultas /></AppLayout></ProtectedRoute>} />
-                <Route path="/ia-radiografia" element={<ProtectedRoute><AppLayout><IARadiografia /></AppLayout></ProtectedRoute>} />
+                <Route path="/ia-radiografia" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando IA..." />}><IARadiografia /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/crm" element={<ProtectedRoute><AppLayout><CRMFunil /></AppLayout></ProtectedRoute>} />
                 <Route path="/crm-funil" element={<ProtectedRoute><AppLayout><CRMFunil /></AppLayout></ProtectedRoute>} />
                 <Route path="/split-pagamento" element={<ProtectedRoute><AppLayout><SplitPagamento /></AppLayout></ProtectedRoute>} />
