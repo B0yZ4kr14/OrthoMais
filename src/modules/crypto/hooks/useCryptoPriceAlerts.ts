@@ -21,8 +21,8 @@ interface PriceAlert {
 }
 
 export function useCryptoPriceAlerts() {
-  const { user } = useAuth();
-  const clinicId = user?.user_metadata?.clinic_id;
+  const { user, clinicId: authClinicId } = useAuth();
+  const clinicId = authClinicId || (user && 'user_metadata' in user ? user.user_metadata?.clinic_id : null);
   
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
   const [loading, setLoading] = useState(true);

@@ -52,9 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
 
-  const isAdmin = userProfile === 'ADMIN';
-  const isMember = userProfile === 'MEMBER';
-  const isPatient = userProfile === 'PATIENT';
+  // Derived state moved to bottom to avoid redeclaration
 
   // Fetch user role and clinics
   const fetchUserMetadata = async (userId: string) => {
@@ -77,15 +75,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserRole(roleData.role as 'ADMIN' | 'MEMBER');
         setUserProfile(roleData.role as UserProfile);
         
-        // Update user object with avatar and full_name
+        // Update user object with avatar and full_name (only for User type)
         setUser((currentUser) => {
-          if (!currentUser) return null;
+          if (!currentUser || 'role' in currentUser) return currentUser;
           return {
             ...currentUser,
             user_metadata: {
-              ...currentUser.user_metadata,
+              ...(currentUser as User).user_metadata,
               avatar_url: profileData?.avatar_url,
-              full_name: profileData?.full_name || currentUser.user_metadata?.full_name,
+              full_name: profileData?.full_name || (currentUser as User).user_metadata?.full_name,
             }
           };
         });
@@ -232,6 +230,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error };
   };
 
+  const signInPatient = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('patient-auth', {
+        body: { action: 'login', email, password },
+      });
+
+      if (error) throw error;
+
+      localStorage.setItem('patient_token', data.token);
+      localStorage.setItem('patient_session_id', data.sessionId);
+
+      setUser(data.patient);
+      setSession(data.token);
+      setUserProfile('PATIENT');
+
+      toast.success('Bem-vindo ao Portal do Paciente!');
+      return { error: null };
+    } catch (error: any) {
+      toast.error('Erro ao fazer login: ' + error.message);
+      return { error };
+    }
+  };
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -257,7 +278,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return userPermissions.includes(moduleKey.toLowerCase());
   };
 
-  const isAdmin = userRole === 'ADMIN';
+  // Derived state
+  const isAdmin = userProfile === 'ADMIN';
+  const isMember = userProfile === 'MEMBER';
+  const isPatient = userProfile === 'PATIENT';
 
   return (
     <AuthContext.Provider
@@ -266,8 +290,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         loading,
         userRole,
+        userProfile,
         clinicId,
         isAdmin,
+        isMember,
+        isPatient,
         availableClinics,
         selectedClinic,
         userPermissions,
@@ -277,6 +304,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fetchUserMetadata,
         signUp,
         signIn,
+        signInPatient,
         signOut,
       }}
     >
