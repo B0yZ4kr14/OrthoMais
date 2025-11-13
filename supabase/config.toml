@@ -86,3 +86,18 @@ verify_jwt = false
 
 [functions.emitir-nfce]
 verify_jwt = true
+
+[functions.autorizar-nfce-sefaz]
+verify_jwt = true
+
+[functions.inutilizar-numeracao-nfce]
+verify_jwt = true
+
+[functions.carta-correcao-nfce]
+verify_jwt = true
+
+[functions.sugerir-sangria-ia]
+verify_jwt = true
+
+[functions.gerar-sped-fiscal]
+verify_jwt = true

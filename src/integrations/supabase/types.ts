@@ -351,6 +351,133 @@ export type Database = {
           },
         ]
       }
+      caixa_incidentes: {
+        Row: {
+          boletim_ocorrencia: string | null
+          clinic_id: string
+          created_at: string | null
+          data_incidente: string
+          descricao: string | null
+          dia_semana: number
+          horario_incidente: string
+          id: string
+          metadata: Json | null
+          tipo_incidente: string
+          valor_caixa_momento: number | null
+          valor_perdido: number | null
+        }
+        Insert: {
+          boletim_ocorrencia?: string | null
+          clinic_id: string
+          created_at?: string | null
+          data_incidente: string
+          descricao?: string | null
+          dia_semana: number
+          horario_incidente: string
+          id?: string
+          metadata?: Json | null
+          tipo_incidente: string
+          valor_caixa_momento?: number | null
+          valor_perdido?: number | null
+        }
+        Update: {
+          boletim_ocorrencia?: string | null
+          clinic_id?: string
+          created_at?: string | null
+          data_incidente?: string
+          descricao?: string | null
+          dia_semana?: number
+          horario_incidente?: string
+          id?: string
+          metadata?: Json | null
+          tipo_incidente?: string
+          valor_caixa_momento?: number | null
+          valor_perdido?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caixa_incidentes_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      caixa_movimentos: {
+        Row: {
+          aberto_em: string | null
+          caixa_id: string | null
+          clinic_id: string
+          created_at: string | null
+          created_by: string
+          diferenca: number | null
+          fechado_em: string | null
+          horario_risco: string | null
+          id: string
+          motivo_sangria: string | null
+          observacoes: string | null
+          risco_calculado: number | null
+          status: string
+          sugerido_por_ia: boolean | null
+          tipo: string
+          valor: number
+          valor_esperado: number | null
+          valor_final: number | null
+          valor_inicial: number | null
+        }
+        Insert: {
+          aberto_em?: string | null
+          caixa_id?: string | null
+          clinic_id: string
+          created_at?: string | null
+          created_by: string
+          diferenca?: number | null
+          fechado_em?: string | null
+          horario_risco?: string | null
+          id?: string
+          motivo_sangria?: string | null
+          observacoes?: string | null
+          risco_calculado?: number | null
+          status?: string
+          sugerido_por_ia?: boolean | null
+          tipo: string
+          valor: number
+          valor_esperado?: number | null
+          valor_final?: number | null
+          valor_inicial?: number | null
+        }
+        Update: {
+          aberto_em?: string | null
+          caixa_id?: string | null
+          clinic_id?: string
+          created_at?: string | null
+          created_by?: string
+          diferenca?: number | null
+          fechado_em?: string | null
+          horario_risco?: string | null
+          id?: string
+          motivo_sangria?: string | null
+          observacoes?: string | null
+          risco_calculado?: number | null
+          status?: string
+          sugerido_por_ia?: boolean | null
+          tipo?: string
+          valor?: number
+          valor_esperado?: number | null
+          valor_final?: number | null
+          valor_inicial?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caixa_movimentos_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campanha_envios: {
         Row: {
           aberto_em: string | null
@@ -1039,6 +1166,84 @@ export type Database = {
           },
         ]
       }
+      fechamento_caixa: {
+        Row: {
+          arquivo_sped_gerado_em: string | null
+          arquivo_sped_path: string | null
+          caixa_movimento_id: string
+          clinic_id: string
+          created_at: string | null
+          created_by: string
+          data_fechamento: string
+          divergencia: number
+          id: string
+          observacoes: string | null
+          percentual_divergencia: number | null
+          quantidade_nfce: number
+          quantidade_vendas_pdv: number
+          total_nfce_emitidas: number
+          total_sangrias: number
+          total_suprimentos: number
+          total_vendas_pdv: number
+          vendas_sem_nfce: number
+        }
+        Insert: {
+          arquivo_sped_gerado_em?: string | null
+          arquivo_sped_path?: string | null
+          caixa_movimento_id: string
+          clinic_id: string
+          created_at?: string | null
+          created_by: string
+          data_fechamento: string
+          divergencia?: number
+          id?: string
+          observacoes?: string | null
+          percentual_divergencia?: number | null
+          quantidade_nfce?: number
+          quantidade_vendas_pdv?: number
+          total_nfce_emitidas?: number
+          total_sangrias?: number
+          total_suprimentos?: number
+          total_vendas_pdv?: number
+          vendas_sem_nfce?: number
+        }
+        Update: {
+          arquivo_sped_gerado_em?: string | null
+          arquivo_sped_path?: string | null
+          caixa_movimento_id?: string
+          clinic_id?: string
+          created_at?: string | null
+          created_by?: string
+          data_fechamento?: string
+          divergencia?: number
+          id?: string
+          observacoes?: string | null
+          percentual_divergencia?: number | null
+          quantidade_nfce?: number
+          quantidade_vendas_pdv?: number
+          total_nfce_emitidas?: number
+          total_sangrias?: number
+          total_suprimentos?: number
+          total_vendas_pdv?: number
+          vendas_sem_nfce?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fechamento_caixa_caixa_movimento_id_fkey"
+            columns: ["caixa_movimento_id"]
+            isOneToOne: false
+            referencedRelation: "caixa_movimentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fechamento_caixa_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fiscal_config: {
         Row: {
           ambiente: string
@@ -1625,6 +1830,69 @@ export type Database = {
           },
         ]
       }
+      nfce_carta_correcao: {
+        Row: {
+          clinic_id: string
+          codigo_status: string | null
+          correcao: string
+          created_at: string | null
+          created_by: string
+          data_evento: string | null
+          id: string
+          motivo: string | null
+          nfce_id: string
+          protocolo: string | null
+          sequencia: number
+          status: string
+          xml_evento: string | null
+        }
+        Insert: {
+          clinic_id: string
+          codigo_status?: string | null
+          correcao: string
+          created_at?: string | null
+          created_by: string
+          data_evento?: string | null
+          id?: string
+          motivo?: string | null
+          nfce_id: string
+          protocolo?: string | null
+          sequencia?: number
+          status?: string
+          xml_evento?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          codigo_status?: string | null
+          correcao?: string
+          created_at?: string | null
+          created_by?: string
+          data_evento?: string | null
+          id?: string
+          motivo?: string | null
+          nfce_id?: string
+          protocolo?: string | null
+          sequencia?: number
+          status?: string
+          xml_evento?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nfce_carta_correcao_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nfce_carta_correcao_nfce_id_fkey"
+            columns: ["nfce_id"]
+            isOneToOne: false
+            referencedRelation: "nfce_emitidas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nfce_emitidas: {
         Row: {
           ambiente: string
@@ -1704,6 +1972,68 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "nfce_emitidas_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nfce_inutilizacao: {
+        Row: {
+          ano: number
+          clinic_id: string
+          codigo_status: string | null
+          created_at: string | null
+          created_by: string
+          data_inutilizacao: string | null
+          id: string
+          justificativa: string
+          motivo: string | null
+          numero_final: number
+          numero_inicial: number
+          protocolo: string | null
+          serie: number
+          status: string
+          xml_inutilizacao: string | null
+        }
+        Insert: {
+          ano: number
+          clinic_id: string
+          codigo_status?: string | null
+          created_at?: string | null
+          created_by: string
+          data_inutilizacao?: string | null
+          id?: string
+          justificativa: string
+          motivo?: string | null
+          numero_final: number
+          numero_inicial: number
+          protocolo?: string | null
+          serie: number
+          status?: string
+          xml_inutilizacao?: string | null
+        }
+        Update: {
+          ano?: number
+          clinic_id?: string
+          codigo_status?: string | null
+          created_at?: string | null
+          created_by?: string
+          data_inutilizacao?: string | null
+          id?: string
+          justificativa?: string
+          motivo?: string | null
+          numero_final?: number
+          numero_inicial?: number
+          protocolo?: string | null
+          serie?: number
+          status?: string
+          xml_inutilizacao?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nfce_inutilizacao_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
