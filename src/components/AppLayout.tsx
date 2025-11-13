@@ -8,17 +8,19 @@ interface AppLayoutProps {
 export function AppLayout({
   children
 }: AppLayoutProps) {
-  return <SidebarProvider>
+  return (
+    <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <div data-tour="sidebar">
           <AppSidebar />
         </div>
         <div className="flex-1 flex flex-col min-w-0">
-          <DashboardHeader className="rounded-bl-none px-[9px] mx-[30px]" />
-          <main className="flex-1 bg-background overflow-x-hidden pt-6 px-4 lg:px-6">
+          <DashboardHeader />
+          <main className="flex-1 bg-background overflow-x-hidden p-6">
             {children}
           </main>
         </div>
       </div>
-    </SidebarProvider>;
+    </SidebarProvider>
+  );
 }

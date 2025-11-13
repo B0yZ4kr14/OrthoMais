@@ -36,25 +36,22 @@ export function DashboardHeader({ className }: DashboardHeaderProps = {}) {
   };
   return <>
       <HotkeysHelp />
-      <header className={cn("sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm shrink-0", className)}>
-        {/* Top row with search and user menu */}
-        <div className="h-16 px-4 lg:px-6 flex items-center gap-4 mx-[34px]">
-          {/* Centralizar a busca */}
-          <div className="flex-1 flex justify-center" data-tour="search-bar">
+      <header className={cn("sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60", className)}>
+        <div className="flex items-center justify-between h-14 px-6 gap-6">
+          {/* Search - left aligned with max-width */}
+          <div className="flex-1 max-w-md" data-tour="search-bar">
             <GlobalSearch />
           </div>
 
-          {/* Right side: Notifications, Theme, Clinic Selector and User Menu */}
-          <div className="flex items-center gap-2">
-            {/* Notifications */}
+          {/* Right side actions */}
+          <div className="flex items-center gap-3">
             <NotificationDropdown />
 
-            {/* Theme Preview Dialog */}
-            <div data-tour="theme-toggle">
+            <div data-tour="theme-toggle" className="flex items-center gap-1">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="icon" className="relative">
-                    <Palette className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <Palette className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-5xl">
@@ -64,50 +61,46 @@ export function DashboardHeader({ className }: DashboardHeaderProps = {}) {
                       Escolher Tema
                     </DialogTitle>
                     <DialogDescription>
-                      Selecione o tema visual que melhor se adapta à sua preferência. As alterações são aplicadas instantaneamente.
+                      Selecione o tema visual que melhor se adapta à sua preferência.
                     </DialogDescription>
                   </DialogHeader>
                   <ThemePreview />
                 </DialogContent>
               </Dialog>
-
-              {/* Theme Toggle */}
               <ThemeToggle />
             </div>
 
-            {/* Seletor de Clínica - só aparece se usuário tiver acesso a múltiplas clínicas */}
-            {availableClinics && availableClinics.length > 1 && <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-muted-foreground" />
-                <Select value={selectedClinic?.id} onValueChange={switchClinic}>
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Selecione a clínica" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableClinics.map(clinic => <SelectItem key={clinic.id} value={clinic.id}>
-                        {clinic.name}
-                      </SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>}
+            {availableClinics && availableClinics.length > 1 && (
+              <Select value={selectedClinic?.id} onValueChange={switchClinic}>
+                <SelectTrigger className="w-[180px] h-9">
+                  <Building2 className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <SelectValue placeholder="Clínica" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableClinics.map(clinic => (
+                    <SelectItem key={clinic.id} value={clinic.id}>
+                      {clinic.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
 
-            {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div data-tour="user-menu">
-                  <Button variant="ghost" className="flex items-center gap-3 hover:bg-accent">
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-foreground">
-                        {user?.email?.split('@')[0] || 'Usuário'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{getRoleName(userRole)}</p>
-                    </div>
-                    <Avatar className="h-9 w-9 bg-primary">
-                      <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-                        {user?.email ? getInitials(user.email) : 'US'}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </div>
+                <Button variant="ghost" size="sm" className="gap-2 h-9 px-2" data-tour="user-menu">
+                  <Avatar className="h-7 w-7 bg-primary">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
+                      {user?.email ? getInitials(user.email) : 'US'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="hidden md:flex flex-col items-start">
+                    <span className="text-xs font-medium">
+                      {user?.email?.split('@')[0] || 'Usuário'}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">{getRoleName(userRole)}</span>
+                  </div>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
@@ -126,8 +119,7 @@ export function DashboardHeader({ className }: DashboardHeaderProps = {}) {
           </div>
         </div>
 
-        {/* Breadcrumbs row */}
-        <div className="h-8 px-4 flex-col items-center border-t border-border/40 bg-muted/10 rounded mx-[99px] lg:px-0 py-0">
+        <div className="border-t border-border/50 bg-muted/30 px-6 py-2">
           <Breadcrumbs />
         </div>
       </header>

@@ -61,13 +61,12 @@ export function Breadcrumbs() {
   }
 
   return (
-    <div className="bg-muted/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-border/50">
-      <Breadcrumb>
-        <BreadcrumbList>
+    <Breadcrumb>
+      <BreadcrumbList className="text-sm">
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link to="/dashboard" className="flex items-center gap-1">
-              <Home className="h-3.5 w-3.5" />
+            <Link to="/dashboard" className="flex items-center gap-1 hover:text-foreground transition-colors">
+              <Home className="h-4 w-4" />
               <span className="sr-only">Home</span>
             </Link>
           </BreadcrumbLink>
@@ -81,20 +80,19 @@ export function Breadcrumbs() {
           return (
             <BreadcrumbItem key={routeTo}>
               <BreadcrumbSeparator>
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </BreadcrumbSeparator>
               {isLast ? (
-                <BreadcrumbPage>{label}</BreadcrumbPage>
+                <BreadcrumbPage className="font-medium text-foreground">{label}</BreadcrumbPage>
               ) : (
                 <BreadcrumbLink asChild>
-                  <Link to={routeTo}>{label}</Link>
+                  <Link to={routeTo} className="hover:text-foreground transition-colors">{label}</Link>
                 </BreadcrumbLink>
               )}
             </BreadcrumbItem>
           );
         })}
-        </BreadcrumbList>
-      </Breadcrumb>
-    </div>
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }

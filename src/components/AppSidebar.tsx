@@ -269,129 +269,157 @@ export function AppSidebar() {
   };
   const collapsed = state === 'collapsed';
   const isActive = (path: string) => currentPath === path;
-  return <Sidebar className={`${collapsed ? 'w-16' : 'w-72'} shadow-[4px_0_24px_-2px_rgba(0,0,0,0.2)]`} collapsible="icon">
-      <SidebarHeader className="border-b border-border p-6 bg-gradient-to-br from-sidebar via-sidebar/95 to-sidebar/90 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-        {!collapsed ? <div className="flex items-center justify-center px-3 py-3 bg-gradient-to-br from-primary/10 via-background/5 to-transparent rounded-xl backdrop-blur-sm shadow-xl border border-primary/20 relative z-20">
-            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-16 w-auto object-contain drop-shadow-2xl filter brightness-110 contrast-110" />
-          </div> : <div className="flex justify-center p-1 bg-background/10 rounded-lg backdrop-blur-sm shadow-[inset_0_1px_5px_rgba(0,0,0,0.2)]">
-            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-10 w-auto object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)] filter brightness-110" />
-          </div>}
+  return <Sidebar className={collapsed ? 'w-16' : 'w-64'} collapsible="icon">
+      <SidebarHeader className="border-b p-4">
+        {!collapsed ? (
+          <div className="flex items-center justify-center py-2">
+            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-10 w-auto object-contain" />
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-8 w-auto object-contain" />
+          </div>
+        )}
       </SidebarHeader>
 
-      <SidebarContent className="bg-sidebar">
-        {menuGroups.map((group, index) => <div key={group.label}>
-            {index > 0 && <Separator className="my-2 bg-border/50" />}
+      <SidebarContent>
+        {menuGroups.map((group, index) => (
+          <div key={group.label}>
+            {index > 0 && <Separator className="my-1" />}
             
-            {group.collapsed ? <Collapsible defaultOpen={false} className="group/collapsible">
+            {group.collapsed ? (
+              <Collapsible defaultOpen={false} className="group/collapsible">
                 <SidebarGroup>
-                  <SidebarGroupLabel className="text-sidebar-foreground/70 font-medium text-xs uppercase tracking-wider">
-                    <CollapsibleTrigger className="flex w-full items-center justify-between hover:text-sidebar-foreground transition-all duration-300">
-                      {!collapsed && <>
-                          <span className="animate-fade-in text-lg text-right">{group.label}</span>
-                          <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]/collapsible:rotate-180" />
-                        </>}
+                  <SidebarGroupLabel className="text-xs font-medium text-muted-foreground px-3">
+                    <CollapsibleTrigger className="flex w-full items-center justify-between hover:text-foreground transition-colors">
+                      {!collapsed && (
+                        <>
+                          <span>{group.label}</span>
+                          <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
+                        </>
+                      )}
                     </CollapsibleTrigger>
                   </SidebarGroupLabel>
-                  <CollapsibleContent className="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up overflow-hidden transition-all">
+                  <CollapsibleContent>
                     <SidebarGroupContent>
                       <SidebarMenu>
-                        {group.items.map(item => <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={isActive(item.url)} className="relative group my-1 mx-2 rounded-lg hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground hover:shadow-[0_6px_16px_-2px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-l-4 hover:border-l-primary hover:-translate-y-0.5 data-[active=true]:bg-gradient-to-r data-[active=true]:from-primary/30 data-[active=true]:via-primary/20 data-[active=true]:to-transparent data-[active=true]:border-l-4 data-[active=true]:border-l-primary data-[active=true]:shadow-[inset_0_3px_10px_rgba(0,0,0,0.4),0_6px_16px_-2px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.15)] transition-all duration-300 ease-out">
-                      <NavLink to={item.url} end className="flex items-center gap-3 px-4 py-3.5 rounded-lg">
-                        <item.icon className="h-5 w-5 shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
-                        {!collapsed && <span className="text-sm font-medium animate-slide-in flex-1">{item.title}</span>}
-                        {!collapsed && item.badge && <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="ml-auto text-[10px] px-1.5 py-0.5 shadow-sm">
-                            {item.badge}
-                          </Badge>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>)}
+                        {group.items.map(item => (
+                          <SidebarMenuItem key={item.title}>
+                            <SidebarMenuButton asChild isActive={isActive(item.url)} className="my-0.5 mx-2 rounded-md hover:bg-accent data-[active=true]:bg-accent data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors">
+                              <NavLink to={item.url} end className="flex items-center gap-3 px-3 py-2">
+                                <item.icon className="h-4 w-4 shrink-0" />
+                                {!collapsed && <span className="text-sm flex-1">{item.title}</span>}
+                                {!collapsed && item.badge && (
+                                  <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5">
+                                    {item.badge}
+                                  </Badge>
+                                )}
+                              </NavLink>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
                       </SidebarMenu>
                     </SidebarGroupContent>
                   </CollapsibleContent>
                 </SidebarGroup>
-              </Collapsible> : <SidebarGroup>
-                <SidebarGroupLabel className="text-sidebar-foreground/70 font-medium text-xs uppercase tracking-wider px-3 rounded-lg">
+              </Collapsible>
+            ) : (
+              <SidebarGroup>
+                <SidebarGroupLabel className="text-xs font-medium text-muted-foreground px-3">
                   {!collapsed && group.label}
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {group.items.map(item => item.subItems ? <Collapsible key={item.title} defaultOpen={false} className="group/submenu">
-                          <SidebarMenuItem>
-                            <CollapsibleTrigger asChild>
-                              <SidebarMenuButton className="relative group my-1 mx-2 rounded-lg hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground hover:shadow-[0_6px_16px_-2px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-l-4 hover:border-l-primary hover:-translate-y-0.5 transition-all duration-300 ease-out">
-                                <div className="flex items-center gap-3 px-4 py-3.5 rounded-lg w-full">
-                                  <item.icon className="h-5 w-5 shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
-                                  {!collapsed && <>
-                                      <span className="text-sm font-medium animate-slide-in flex-1">{item.title}</span>
-                                      {item.badge && <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5 shadow-sm">
-                                          {item.badge}
-                                        </Badge>}
-                                      <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]/submenu:rotate-180" />
-                                    </>}
-                                </div>
-                              </SidebarMenuButton>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent className="overflow-hidden transition-all">
-                              <SidebarMenuSub>
-                                {item.subItems.map(subItem => <SidebarMenuSubItem key={subItem.title}>
-                                    <SidebarMenuSubButton asChild isActive={isActive(subItem.url)} className="hover:bg-sidebar-accent/60 data-[active=true]:bg-primary/20">
-                                      <NavLink to={subItem.url} className="flex items-center gap-2">
-                                        <subItem.icon className="h-4 w-4" />
-                                        {!collapsed && <span>{subItem.title}</span>}
-                                      </NavLink>
-                                    </SidebarMenuSubButton>
-                                  </SidebarMenuSubItem>)}
-                              </SidebarMenuSub>
-                            </CollapsibleContent>
-                          </SidebarMenuItem>
-                        </Collapsible> : <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton asChild isActive={isActive(item.url)} className="relative group my-1 mx-2 rounded-lg hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground hover:shadow-[0_6px_16px_-2px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-l-4 hover:border-l-primary hover:-translate-y-0.5 data-[active=true]:bg-gradient-to-r data-[active=true]:from-primary/30 data-[active=true]:via-primary/20 data-[active=true]:to-transparent data-[active=true]:border-l-4 data-[active=true]:border-l-primary data-[active=true]:shadow-[inset_0_3px_10px_rgba(0,0,0,0.4),0_6px_16px_-2px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.15)] transition-all duration-300 ease-out">
-                            <NavLink to={item.url} end className="flex items-center gap-3 px-4 py-3.5 rounded-lg">
-                              <item.icon className="h-5 w-5 shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
-                              {!collapsed && <span className="text-sm font-medium animate-slide-in flex-1">{item.title}</span>}
-                              {!collapsed && item.badge && <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="ml-auto text-[10px] px-1.5 py-0.5 shadow-sm">
-                                  {item.badge}
-                                </Badge>}
-                            </NavLink>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>)}
+                    {group.items.map(item => item.subItems ? (
+                      <Collapsible key={item.title} defaultOpen={false} className="group/submenu">
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton className="my-0.5 mx-2 rounded-md hover:bg-accent transition-colors">
+                              <div className="flex items-center gap-3 px-3 py-2 w-full">
+                                <item.icon className="h-4 w-4 shrink-0" />
+                                {!collapsed && (
+                                  <>
+                                    <span className="text-sm flex-1">{item.title}</span>
+                                    {item.badge && (
+                                      <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5">
+                                        {item.badge}
+                                      </Badge>
+                                    )}
+                                    <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-data-[state=open]/submenu:rotate-180" />
+                                  </>
+                                )}
+                              </div>
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {item.subItems.map(subItem => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                  <SidebarMenuSubButton asChild isActive={isActive(subItem.url)} className="hover:bg-accent/50 data-[active=true]:bg-accent">
+                                    <NavLink to={subItem.url} className="flex items-center gap-2">
+                                      <subItem.icon className="h-4 w-4" />
+                                      {!collapsed && <span className="text-sm">{subItem.title}</span>}
+                                    </NavLink>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    ) : (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton asChild isActive={isActive(item.url)} className="my-0.5 mx-2 rounded-md hover:bg-accent data-[active=true]:bg-accent data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors">
+                          <NavLink to={item.url} end className="flex items-center gap-3 px-3 py-2">
+                            <item.icon className="h-4 w-4 shrink-0" />
+                            {!collapsed && <span className="text-sm flex-1">{item.title}</span>}
+                            {!collapsed && item.badge && (
+                              <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5">
+                                {item.badge}
+                              </Badge>
+                            )}
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
                   </SidebarMenu>
                 </SidebarGroupContent>
-              </SidebarGroup>}
-          </div>)}
+              </SidebarGroup>
+            )}
+          </div>
+        ))}
 
-        {isAdmin && <>
-            <Separator className="my-2 bg-border/50" />
+        {isAdmin && (
+          <>
+            <Separator className="my-1" />
             <SidebarGroup>
-              <SidebarGroupLabel className="text-sidebar-foreground/70 font-medium text-xs uppercase tracking-wider px-3">
+              <SidebarGroupLabel className="text-xs font-medium text-muted-foreground px-3">
                 {!collapsed && 'Administração'}
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/configuracoes')} className="relative group my-1 mx-2 rounded-lg hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground hover:shadow-[0_6px_16px_-2px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-l-4 hover:border-l-primary hover:-translate-y-0.5 data-[active=true]:bg-gradient-to-r data-[active=true]:from-primary/30 data-[active=true]:via-primary/20 data-[active=true]:to-transparent data-[active=true]:border-l-4 data-[active=true]:border-l-primary data-[active=true]:shadow-[inset_0_3px_10px_rgba(0,0,0,0.4),0_6px_16px_-2px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.15)] transition-all duration-300 ease-out">
-                      <NavLink to="/configuracoes" className="flex items-center gap-3 px-4 py-3.5 rounded-lg">
-                        <Settings className="h-5 w-5 shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
-                        {!collapsed && <span className="text-sm font-medium animate-slide-in">Configurações</span>}
+                    <SidebarMenuButton asChild isActive={isActive('/configuracoes')} className="my-0.5 mx-2 rounded-md hover:bg-accent data-[active=true]:bg-accent data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors">
+                      <NavLink to="/configuracoes" className="flex items-center gap-3 px-3 py-2">
+                        <Settings className="h-4 w-4 shrink-0" />
+                        {!collapsed && <span className="text-sm">Configurações</span>}
                       </NavLink>
-                     </SidebarMenuButton>
+                    </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
-          </>}
+          </>
+        )}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border p-4 bg-sidebar">
-        {!collapsed && <div className="text-center">
-            <p className="text-xs text-sidebar-foreground/60 font-medium">
-              Ortho + v1.0
-            </p>
-            <p className="text-[10px] text-sidebar-foreground/40 mt-1">
-              © 2025 - Todos os direitos reservados
-            </p>
-          </div>}
+      <SidebarFooter className="border-t p-3">
+        {!collapsed && (
+          <div className="text-center space-y-0.5">
+            <p className="text-xs text-muted-foreground font-medium">Ortho + v1.0</p>
+            <p className="text-[10px] text-muted-foreground/60">© 2025 TSI Telecom</p>
+          </div>
+        )}
       </SidebarFooter>
     </Sidebar>;
 }
