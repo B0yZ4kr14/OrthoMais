@@ -67,28 +67,63 @@ export const useCryptoSupabase = (clinicId: string) => {
 
       if (walletsError) throw walletsError;
 
-      // Load transactions with related data
+      // Load transactions without joins (foreign keys not configured)
       const { data: transactionsData, error: transactionsError } = await supabase
         .from('crypto_transactions')
-        .select(`
-          *,
-          patient:patients(nome),
-          wallet:crypto_wallets(wallet_name),
-          exchange:crypto_exchange_config(exchange_name, processing_fee_percentage)
-        `)
+        .select('*')
         .eq('clinic_id', clinicId)
         .order('created_at', { ascending: false });
 
       if (transactionsError) throw transactionsError;
 
-      // Map transactions com processing_fee_percentage da exchange
-      const mappedTransactions = (transactionsData || []).map((tx: any) => ({
-        ...tx,
-        patient_name: tx.patient?.nome,
-        wallet_name: tx.wallet?.wallet_name,
-        exchange_name: tx.exchange?.exchange_name,
-        processing_fee_percentage: tx.exchange?.processing_fee_percentage || 0,
-      }));
+      // Enrich transactions with related data manually
+      const mappedTransactions = await Promise.all(
+        (transactionsData || []).map(async (tx: any) => {
+          let patientName = null;
+          let walletName = null;
+          let exchangeName = null;
+          let processingFeePercentage = 0;
+
+          // Fetch patient name if patient_id exists
+          if (tx.patient_id) {
+            const { data: patientData } = await supabase
+              .from('patients')
+              .select('nome')
+              .eq('id', tx.patient_id)
+              .single();
+            patientName = patientData?.nome;
+          }
+
+          // Fetch wallet name if wallet_id exists
+          if (tx.wallet_id) {
+            const { data: walletData } = await supabase
+              .from('crypto_wallets')
+              .select('wallet_name')
+              .eq('id', tx.wallet_id)
+              .single();
+            walletName = walletData?.wallet_name;
+          }
+
+          // Fetch exchange data if exchange_config_id exists
+          if (tx.exchange_config_id) {
+            const { data: exchangeData } = await supabase
+              .from('crypto_exchange_config')
+              .select('exchange_name, processing_fee_percentage')
+              .eq('id', tx.exchange_config_id)
+              .single();
+            exchangeName = exchangeData?.exchange_name;
+            processingFeePercentage = exchangeData?.processing_fee_percentage || 0;
+          }
+
+          return {
+            ...tx,
+            patient_name: patientName,
+            wallet_name: walletName,
+            exchange_name: exchangeName,
+            processing_fee_percentage: processingFeePercentage,
+          };
+        })
+      );
 
       setExchanges(exchangesData || []);
       setWallets(walletsData || []);
