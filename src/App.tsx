@@ -8,11 +8,10 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ModulesProvider } from "@/contexts/ModulesContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { AppSidebar } from "@/components/AppSidebar";
+import { AppLayout } from "@/components/AppLayout";
 import { useHotkeys } from "@/hooks/useHotkeys";
-import { DashboardHeader } from "@/components/DashboardHeader";
-import Dashboard from "./pages/Dashboard";
 import Demo from "./pages/Demo";
+import Dashboard from "./pages/Dashboard";
 import Pacientes from "./pages/Pacientes";
 import Dentistas from "./pages/Dentistas";
 import Funcionarios from "./pages/Funcionarios";
@@ -76,100 +75,57 @@ const App = () => (
               <Sonner />
               <ProductTour />
               <Routes>
-              <Route path="/demo" element={<Demo />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route
-                path="/*"
-                element={
-                  <ProtectedRoute>
-                    <SidebarProvider>
-                      <div className="flex min-h-screen w-full">
-                        <div data-tour="sidebar">
-                          <AppSidebar />
-                        </div>
-                        <div className="flex-1 flex flex-col">
-                          <DashboardHeader />
-                          <main className="flex-1 bg-background">
-                            <Routes>
-                              <Route path="/" element={<Dashboard />} />
-                              <Route path="/resumo" element={<Resumo />} />
-                              <Route path="/pacientes" element={<Pacientes />} />
-                              <Route path="/dentistas" element={<Dentistas />} />
-                              <Route path="/funcionarios" element={<Funcionarios />} />
-                              <Route path="/procedimentos" element={<Procedimentos />} />
-                              <Route path="/financeiro" element={<Financeiro />} />
-                              <Route path="/financeiro/transacoes" element={<Transacoes />} />
-                              <Route path="/financeiro/contas-receber" element={<ContasReceber />} />
-                              <Route path="/financeiro/contas-pagar" element={<ContasPagar />} />
-                              <Route path="/financeiro/notas-fiscais" element={<NotasFiscais />} />
-                              <Route path="/financeiro/crypto" element={<CryptoPagamentos />} />
-                              <Route path="/agenda" element={<AgendaClinica />} />
-                              <Route path="/agenda-clinica" element={<AgendaClinica />} />
-                              <Route path="/pep" element={<PEP />} />
-                              <Route path="/relatorios" element={<Relatorios />} />
-                              <Route path="/business-intelligence" element={<BusinessIntelligence />} />
-                              <Route path="/analise-comportamental" element={<UserBehaviorAnalytics />} />
-                              <Route path="/lgpd-compliance" element={<LGPDCompliance />} />
-                              <Route path="/cobranca" element={<Cobranca />} />
-                              <Route path="/estoque" element={<EstoqueDashboard />} />
-                              <Route path="/estoque/cadastros" element={<EstoqueCadastros />} />
-                              <Route path="/estoque/requisicoes" element={<EstoqueRequisicoes />} />
-                              <Route path="/estoque/movimentacoes" element={<EstoqueMovimentacoes />} />
-                               <Route path="/estoque/pedidos" element={<EstoquePedidos />} />
-                              <Route path="/estoque/integracoes" element={<EstoqueIntegracoes />} />
-                              <Route path="/estoque/analise-pedidos" element={<EstoqueAnalisePedidos />} />
-                              <Route path="/estoque/analise-consumo" element={<EstoqueAnaliseConsumo />} />
-                              <Route path="/orcamentos" element={<Orcamentos />} />
-                              <Route path="/contratos" element={<Contratos />} />
-                              <Route path="/portal-paciente" element={<PortalPaciente />} />
-                              <Route path="/teleodontologia" element={<Teleodontologia />} />
-                              <Route path="/historico-teleconsultas" element={<HistoricoTeleconsultas />} />
-                              <Route path="/ia-radiografia" element={<IARadiografia />} />
-                              <Route path="/crm-funil" element={<CRMFunil />} />
-                              <Route path="/split-pagamento" element={<SplitPagamento />} />
-                              <Route path="/programa-fidelidade" element={<ProgramaFidelidade />} />
-                              <Route
-                                path="/report-templates"
-                                element={
-                                  <ProtectedRoute requireAdmin>
-                                    <ReportTemplates />
-                                  </ProtectedRoute>
-                                }
-                              />
-                              <Route 
-                                path="/audit-logs" 
-                                element={
-                                  <ProtectedRoute requireAdmin>
-                                    <AuditLogs />
-                                  </ProtectedRoute>
-                                }
-                              />
-                              <Route path="/modulos" element={<GerenciamentoModulos />} />
-                              <Route
-                                path="/configuracoes" 
-                                element={
-                                  <ProtectedRoute requireAdmin>
-                                    <Configuracoes />
-                                  </ProtectedRoute>
-                                 }
-                               />
-                               <Route 
-                                 path="/settings/modules"
-                                element={
-                                  <ProtectedRoute requireAdmin>
-                                    <ModulesAdmin />
-                                  </ProtectedRoute>
-                                } 
-                              />
-                              <Route path="*" element={<NotFound />} />
-                            </Routes>
-                          </main>
-                        </div>
-                      </div>
-                    </SidebarProvider>
-                  </ProtectedRoute>
-                }
-              />
+                <Route path="/demo" element={<Demo />} />
+                <Route path="/auth" element={<Auth />} />
+                
+                {/* Protected Routes with Layout */}
+                <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+                <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+                <Route path="/resumo" element={<ProtectedRoute><AppLayout><Resumo /></AppLayout></ProtectedRoute>} />
+                <Route path="/pacientes" element={<ProtectedRoute><AppLayout><Pacientes /></AppLayout></ProtectedRoute>} />
+                <Route path="/dentistas" element={<ProtectedRoute><AppLayout><Dentistas /></AppLayout></ProtectedRoute>} />
+                <Route path="/funcionarios" element={<ProtectedRoute><AppLayout><Funcionarios /></AppLayout></ProtectedRoute>} />
+                <Route path="/procedimentos" element={<ProtectedRoute><AppLayout><Procedimentos /></AppLayout></ProtectedRoute>} />
+                <Route path="/financeiro" element={<ProtectedRoute><AppLayout><Financeiro /></AppLayout></ProtectedRoute>} />
+                <Route path="/financeiro/transacoes" element={<ProtectedRoute><AppLayout><Transacoes /></AppLayout></ProtectedRoute>} />
+                <Route path="/financeiro/contas-receber" element={<ProtectedRoute><AppLayout><ContasReceber /></AppLayout></ProtectedRoute>} />
+                <Route path="/financeiro/contas-pagar" element={<ProtectedRoute><AppLayout><ContasPagar /></AppLayout></ProtectedRoute>} />
+                <Route path="/financeiro/notas-fiscais" element={<ProtectedRoute><AppLayout><NotasFiscais /></AppLayout></ProtectedRoute>} />
+                <Route path="/financeiro/crypto" element={<ProtectedRoute><AppLayout><CryptoPagamentos /></AppLayout></ProtectedRoute>} />
+                <Route path="/agenda" element={<ProtectedRoute><AppLayout><AgendaClinica /></AppLayout></ProtectedRoute>} />
+                <Route path="/agenda-clinica" element={<ProtectedRoute><AppLayout><AgendaClinica /></AppLayout></ProtectedRoute>} />
+                <Route path="/pep" element={<ProtectedRoute><AppLayout><PEP /></AppLayout></ProtectedRoute>} />
+                <Route path="/relatorios" element={<ProtectedRoute><AppLayout><Relatorios /></AppLayout></ProtectedRoute>} />
+                <Route path="/business-intelligence" element={<ProtectedRoute><AppLayout><BusinessIntelligence /></AppLayout></ProtectedRoute>} />
+                <Route path="/analise-comportamental" element={<ProtectedRoute><AppLayout><UserBehaviorAnalytics /></AppLayout></ProtectedRoute>} />
+                <Route path="/lgpd-compliance" element={<ProtectedRoute><AppLayout><LGPDCompliance /></AppLayout></ProtectedRoute>} />
+                <Route path="/cobranca" element={<ProtectedRoute><AppLayout><Cobranca /></AppLayout></ProtectedRoute>} />
+                <Route path="/estoque" element={<ProtectedRoute><AppLayout><EstoqueDashboard /></AppLayout></ProtectedRoute>} />
+                <Route path="/estoque/cadastros" element={<ProtectedRoute><AppLayout><EstoqueCadastros /></AppLayout></ProtectedRoute>} />
+                <Route path="/estoque/requisicoes" element={<ProtectedRoute><AppLayout><EstoqueRequisicoes /></AppLayout></ProtectedRoute>} />
+                <Route path="/estoque/movimentacoes" element={<ProtectedRoute><AppLayout><EstoqueMovimentacoes /></AppLayout></ProtectedRoute>} />
+                <Route path="/estoque/pedidos" element={<ProtectedRoute><AppLayout><EstoquePedidos /></AppLayout></ProtectedRoute>} />
+                <Route path="/estoque/integracoes" element={<ProtectedRoute><AppLayout><EstoqueIntegracoes /></AppLayout></ProtectedRoute>} />
+                <Route path="/estoque/analise-pedidos" element={<ProtectedRoute><AppLayout><EstoqueAnalisePedidos /></AppLayout></ProtectedRoute>} />
+                <Route path="/estoque/analise-consumo" element={<ProtectedRoute><AppLayout><EstoqueAnaliseConsumo /></AppLayout></ProtectedRoute>} />
+                <Route path="/orcamentos" element={<ProtectedRoute><AppLayout><Orcamentos /></AppLayout></ProtectedRoute>} />
+                <Route path="/contratos" element={<ProtectedRoute><AppLayout><Contratos /></AppLayout></ProtectedRoute>} />
+                <Route path="/portal-paciente" element={<ProtectedRoute><AppLayout><PortalPaciente /></AppLayout></ProtectedRoute>} />
+                <Route path="/teleodontologia" element={<ProtectedRoute><AppLayout><Teleodontologia /></AppLayout></ProtectedRoute>} />
+                <Route path="/historico-teleconsultas" element={<ProtectedRoute><AppLayout><HistoricoTeleconsultas /></AppLayout></ProtectedRoute>} />
+                <Route path="/ia-radiografia" element={<ProtectedRoute><AppLayout><IARadiografia /></AppLayout></ProtectedRoute>} />
+                <Route path="/crm" element={<ProtectedRoute><AppLayout><CRMFunil /></AppLayout></ProtectedRoute>} />
+                <Route path="/crm-funil" element={<ProtectedRoute><AppLayout><CRMFunil /></AppLayout></ProtectedRoute>} />
+                <Route path="/split-pagamento" element={<ProtectedRoute><AppLayout><SplitPagamento /></AppLayout></ProtectedRoute>} />
+                <Route path="/programa-fidelidade" element={<ProtectedRoute><AppLayout><ProgramaFidelidade /></AppLayout></ProtectedRoute>} />
+                <Route path="/report-templates" element={<ProtectedRoute requireAdmin><AppLayout><ReportTemplates /></AppLayout></ProtectedRoute>} />
+                <Route path="/audit-logs" element={<ProtectedRoute requireAdmin><AppLayout><AuditLogs /></AppLayout></ProtectedRoute>} />
+                <Route path="/modulos" element={<ProtectedRoute><AppLayout><GerenciamentoModulos /></AppLayout></ProtectedRoute>} />
+                <Route path="/configuracoes" element={<ProtectedRoute requireAdmin><AppLayout><Configuracoes /></AppLayout></ProtectedRoute>} />
+                <Route path="/settings/modules" element={<ProtectedRoute requireAdmin><AppLayout><ModulesAdmin /></AppLayout></ProtectedRoute>} />
+                
+                {/* 404 Route */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </ModulesProvider>
           </AuthProvider>

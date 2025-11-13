@@ -27,6 +27,7 @@ const routeLabels: Record<string, string> = {
   'orcamentos': 'Orçamentos',
   'contratos': 'Contratos',
   'crm': 'CRM',
+  'crm-funil': 'CRM',
   'cobranca': 'Cobrança',
   'split-pagamento': 'Split de Pagamento',
   'fidelidade': 'Programa de Fidelidade',
