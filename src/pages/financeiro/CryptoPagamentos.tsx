@@ -52,6 +52,8 @@ import { CryptoComparativeDashboard } from '@/modules/crypto/components/CryptoCo
 import { useCryptoPriceAlerts } from '@/modules/crypto/hooks/useCryptoPriceAlerts';
 import { Switch } from '@/components/ui/switch';
 import { Trash2, TrendingDown, BarChart3 } from 'lucide-react';
+import { DCABacktesting } from '@/components/crypto/DCABacktesting';
+import { VolatilityAlerts } from '@/components/crypto/VolatilityAlerts';
 
 export default function CryptoPagamentos() {
   const { clinicId } = useAuth();
