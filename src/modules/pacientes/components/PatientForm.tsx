@@ -5,6 +5,7 @@ import { Patient, patientSchema } from '../types/patient.types';
 import { Button } from '@/components/ui/button';
 import { useConfetti } from '@/hooks/useConfetti';
 import { AvatarUpload } from '@/components/shared/AvatarUpload';
+import { FormattedInput } from '@/components/shared/FormattedInput';
 import {
   Form,
   FormControl,
@@ -70,10 +71,17 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
 
   const handleFormSubmit = (data: Patient) => {
     onSubmit({ ...data, avatar_url: avatarUrl });
-    // Trigger confetti celebration for new patient registration
     if (!patient) {
       triggerSuccessConfetti();
     }
+  };
+
+  const handleAddressFound = (address: any) => {
+    form.setValue('endereco.logradouro', address.logradouro);
+    form.setValue('endereco.bairro', address.bairro);
+    form.setValue('endereco.cidade', address.cidade);
+    form.setValue('endereco.estado', address.estado);
+    setTimeout(() => document.getElementById('endereco-numero')?.focus(), 100);
   };
 
   return (
@@ -115,7 +123,11 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
                 <FormItem>
                   <FormLabel>CPF *</FormLabel>
                   <FormControl>
-                    <Input placeholder="000.000.000-00" {...field} />
+                    <FormattedInput
+                      type="cpf"
+                      value={field.value}
+                      onChange={(formatted) => field.onChange(formatted)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -129,7 +141,11 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
                 <FormItem>
                   <FormLabel>RG</FormLabel>
                   <FormControl>
-                    <Input placeholder="00.000.000-0" {...field} />
+                    <FormattedInput
+                      type="rg"
+                      value={field.value || ''}
+                      onChange={(formatted) => field.onChange(formatted)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
