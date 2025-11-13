@@ -9,6 +9,7 @@ import { ModulesProvider } from "@/contexts/ModulesContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AppSidebar } from "@/components/AppSidebar";
+import { useHotkeys } from "@/hooks/useHotkeys";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import Dashboard from "./pages/Dashboard";
 import Demo from "./pages/Demo";
@@ -58,11 +59,17 @@ import { ProductTour } from './components/tour/ProductTour';
 
 const queryClient = new QueryClient();
 
+function HotkeysManager() {
+  useHotkeys();
+  return null;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <ThemeProvider>
         <BrowserRouter>
+          <HotkeysManager />
           <AuthProvider>
             <ModulesProvider>
               <Toaster />

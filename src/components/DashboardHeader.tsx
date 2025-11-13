@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ThemePreview } from "@/components/ThemePreview";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export function DashboardHeader() {
   const { user, signOut, userRole, availableClinics, selectedClinic, switchClinic } = useAuth();
@@ -44,8 +45,10 @@ export function DashboardHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm px-6 flex items-center justify-between">
-      <div className="w-80" data-tour="search-bar">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+      {/* Top row with search and user menu */}
+      <div className="h-16 px-6 flex items-center justify-between">
+        <div className="w-80" data-tour="search-bar">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -136,6 +139,12 @@ export function DashboardHeader() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
+      </div>
+
+      {/* Breadcrumbs row */}
+      <div className="h-10 px-6 flex items-center border-t border-border/50 bg-muted/30">
+        <Breadcrumbs />
       </div>
     </header>
   );
