@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
     // Buscar módulo no catálogo
     const { data: catalogModule, error: catalogError } = await supabase
       .from('module_catalog')
-      .select('id')
+      .select('id, module_key')
       .eq('module_key', module_key)
       .single()
 
@@ -121,46 +121,90 @@ Deno.serve(async (req) => {
     const newState = !clinicModule.is_active
     console.log('Current state:', clinicModule.is_active, 'New state:', newState)
 
-    // VERIFICAÇÕES DE DEPENDÊNCIAS (Lógica Praxeológica)
+    // VERIFICAÇÕES E ATIVAÇÃO EM CASCATA
+    const modulesToActivate: number[] = []
+    const modulesToProcess = [catalogModule.id]
+    const processedModules = new Set<number>()
+
     if (newState === true) {
-      // Tentando ATIVAR - verificar dependências
-      const { data: dependencies } = await supabase
-        .from('module_dependencies')
-        .select('depends_on_module_id')
-        .eq('module_id', catalogModule.id)
+      // Tentando ATIVAR - ativar dependências automaticamente em cascata
+      while (modulesToProcess.length > 0) {
+        const currentModuleId = modulesToProcess.shift()!
+        
+        if (processedModules.has(currentModuleId)) {
+          continue
+        }
+        
+        processedModules.add(currentModuleId)
 
-      if (dependencies && dependencies.length > 0) {
-        const requiredIds = dependencies.map((d) => d.depends_on_module_id)
+        // Buscar dependências deste módulo
+        const { data: dependencies } = await supabase
+          .from('module_dependencies')
+          .select('depends_on_module_id')
+          .eq('module_id', currentModuleId)
 
-        const { data: activeModules } = await supabase
+        if (dependencies && dependencies.length > 0) {
+          const requiredIds = dependencies.map((d) => d.depends_on_module_id)
+
+          // Verificar quais dependências não estão ativas
+          const { data: inactiveModules } = await supabase
+            .from('clinic_modules')
+            .select('module_catalog_id')
+            .eq('clinic_id', clinicId)
+            .eq('is_active', false)
+            .in('module_catalog_id', requiredIds)
+
+          if (inactiveModules && inactiveModules.length > 0) {
+            // Adicionar dependências inativas à fila para ativar
+            for (const inactiveMod of inactiveModules) {
+              if (!processedModules.has(inactiveMod.module_catalog_id)) {
+                modulesToProcess.push(inactiveMod.module_catalog_id)
+                modulesToActivate.push(inactiveMod.module_catalog_id)
+              }
+            }
+          }
+        }
+      }
+
+      // Ativar todas as dependências em cascata
+      if (modulesToActivate.length > 0) {
+        console.log('Activating dependencies in cascade:', modulesToActivate)
+        
+        const { error: cascadeError } = await supabase
           .from('clinic_modules')
-          .select('module_catalog_id')
+          .update({ is_active: true })
           .eq('clinic_id', clinicId)
-          .eq('is_active', true)
-          .in('module_catalog_id', requiredIds)
+          .in('module_catalog_id', modulesToActivate)
 
-        const activeIds = new Set(activeModules?.map((m) => m.module_catalog_id) || [])
-        const missingDeps = requiredIds.filter((id) => !activeIds.has(id))
+        if (cascadeError) {
+          throw cascadeError
+        }
 
-        if (missingDeps.length > 0) {
-          const { data: missingModules } = await supabase
-            .from('module_catalog')
-            .select('name')
-            .in('id', missingDeps)
+        // Buscar nomes dos módulos ativados para log
+        const { data: activatedModules } = await supabase
+          .from('module_catalog')
+          .select('name')
+          .in('id', modulesToActivate)
 
-          const missingNames = missingModules?.map((m) => m.name).join(', ') || 'unknown'
+        const activatedNames = activatedModules?.map((m) => m.name).join(', ') || ''
+        console.log('Cascade activated:', activatedNames)
 
-          return new Response(
-            JSON.stringify({
-              error: `Falha ao ativar. Requer o(s) módulo(s): ${missingNames}`,
-              code: 'UNMET_DEPENDENCIES',
-            }),
-            { status: 412, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          )
+        // Registrar auditoria das ativações em cascata
+        for (const moduleId of modulesToActivate) {
+          await supabase.from('audit_logs').insert({
+            user_id: user.id,
+            clinic_id: clinicId,
+            action: 'MODULE_ACTIVATED_CASCADE',
+            target_module_id: moduleId,
+            details: { 
+              triggered_by: module_key,
+              cascade: true,
+            },
+          })
         }
       }
     } else {
-      // Tentando DESATIVAR - verificar dependências reversas
+      // Tentando DESATIVAR - verificar dependências reversas (bloqueio)
       const { data: reverseDeps } = await supabase
         .from('module_dependencies')
         .select('module_id')
@@ -195,7 +239,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    // EXECUTAR TOGGLE
+    // EXECUTAR TOGGLE do módulo principal
     const { data: updatedModule, error: updateError } = await supabase
       .from('clinic_modules')
       .update({ is_active: newState })
@@ -208,19 +252,32 @@ Deno.serve(async (req) => {
       throw updateError
     }
 
-    // REGISTRAR AUDITORIA
+    // REGISTRAR AUDITORIA do módulo principal
     await supabase.from('audit_logs').insert({
       user_id: user.id,
       clinic_id: clinicId,
       action: newState ? 'MODULE_ACTIVATED' : 'MODULE_DEACTIVATED',
       target_module_id: catalogModule.id,
-      details: { module_key, previous_state: clinicModule.is_active, new_state: newState },
+      details: { 
+        module_key, 
+        previous_state: clinicModule.is_active, 
+        new_state: newState,
+        cascade_activated: modulesToActivate.length,
+      },
     })
 
     console.log('Module toggled successfully:', module_key, 'new state:', newState)
 
+    // Retornar resposta com informações sobre ativação em cascata
     return new Response(
-      JSON.stringify({ success: true, module: updatedModule }),
+      JSON.stringify({ 
+        success: true, 
+        module: updatedModule,
+        cascade_activated: modulesToActivate.length,
+        message: modulesToActivate.length > 0 
+          ? `Módulo ativado com sucesso! ${modulesToActivate.length} dependência(s) ativada(s) automaticamente.`
+          : 'Módulo atualizado com sucesso!'
+      }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {

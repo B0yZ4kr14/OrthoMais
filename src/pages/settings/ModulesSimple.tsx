@@ -29,13 +29,16 @@ import {
   Briefcase,
   AlertCircle,
   Eye,
-  Sparkles
+  Sparkles,
+  MapIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { ModuleDependencyGraph } from '@/components/modules/ModuleDependencyGraph';
 import { SidebarPreview } from '@/components/modules/SidebarPreview';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
+import { ModuleAdoptionRoadmap } from '@/components/modules/ModuleAdoptionRoadmap';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 // Mapeamento de ícones por module_key
 const moduleIcons: Record<string, any> = {
@@ -85,6 +88,9 @@ export default function ModulesSimple() {
   const [showPreview, setShowPreview] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
+  const [showRoadmap, setShowRoadmap] = useState(false);
+  const [roadmapData, setRoadmapData] = useState<any>(null);
+  const [loadingRoadmap, setLoadingRoadmap] = useState(false);
 
   const fetchModules = async () => {
     try {
@@ -107,13 +113,19 @@ export default function ModulesSimple() {
     setToggling(moduleKey);
     
     try {
-      const { error } = await supabase.functions.invoke('toggle-module-state', {
+      const { data, error } = await supabase.functions.invoke('toggle-module-state', {
         body: { module_key: moduleKey },
       });
 
       if (error) throw error;
       
-      toast.success('Módulo atualizado com sucesso!');
+      // Mostrar mensagem customizada sobre ativação em cascata
+      if (data?.cascade_activated > 0) {
+        toast.success(data.message);
+      } else {
+        toast.success('Módulo atualizado com sucesso!');
+      }
+      
       await fetchModules();
     } catch (error: any) {
       console.error('Erro ao alterar módulo:', error);
@@ -121,6 +133,41 @@ export default function ModulesSimple() {
     } finally {
       setToggling(null);
     }
+  };
+
+  const handleLoadRoadmap = async () => {
+    setLoadingRoadmap(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('recommend-module-sequence');
+      
+      if (error) throw error;
+      
+      setRoadmapData(data);
+      setShowRoadmap(true);
+      toast.success('Roadmap de adoção gerado com sucesso!');
+    } catch (error: any) {
+      console.error('Erro ao gerar roadmap:', error);
+      toast.error(error.message || 'Erro ao gerar roadmap de adoção');
+    } finally {
+      setLoadingRoadmap(false);
+    }
+  };
+
+  const handleActivatePhase = async (moduleNames: string[]) => {
+    // Mapear nomes de módulos para module_keys
+    const modulesToActivate = modules.filter(m => 
+      moduleNames.some(name => m.name.includes(name) || name.includes(m.name))
+    );
+
+    for (const module of modulesToActivate) {
+      if (!module.is_active) {
+        await handleToggle(module.module_key);
+      }
+    }
+    
+    toast.success(`${modulesToActivate.length} módulo(s) ativado(s) com sucesso!`);
+    setShowRoadmap(false);
   };
 
   const handleWizardActivate = async (moduleKeys: string[]) => {
@@ -172,6 +219,20 @@ export default function ModulesSimple() {
         />
         
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleLoadRoadmap}
+            disabled={loadingRoadmap}
+            className="gap-2"
+          >
+            {loadingRoadmap ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <MapIcon className="h-4 w-4" />
+            )}
+            Roadmap de Adoção
+          </Button>
+          
           <Button
             variant="outline"
             onClick={() => setShowWizard(true)}
@@ -327,6 +388,29 @@ export default function ModulesSimple() {
           onComplete={() => setShowWizard(false)} 
         />
       )}
+
+      {/* Adoption Roadmap Dialog */}
+      <Dialog open={showRoadmap} onOpenChange={setShowRoadmap}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MapIcon className="h-5 w-5" />
+              Roadmap Inteligente de Adoção de Módulos
+            </DialogTitle>
+            <DialogDescription>
+              Sequência recomendada baseada em análise IA do perfil e padrões de clínicas bem-sucedidas
+            </DialogDescription>
+          </DialogHeader>
+          
+          {roadmapData && (
+            <ModuleAdoptionRoadmap 
+              recommendation={roadmapData.recommendation}
+              clinicProfile={roadmapData.clinic_profile}
+              onActivatePhase={handleActivatePhase}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
