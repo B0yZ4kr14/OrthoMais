@@ -301,9 +301,54 @@ function MyComponent() {
    - OpenDyslexic ou Lexend
    - Opcional via toggle
 
-4. **Tamanho de Fonte Ajustável**
-   - Slider para usuários com baixa visão
-   - Range: 12px → 24px
+4. ~~**Tamanho de Fonte Ajustável**~~ ✅ **IMPLEMENTADO**
+   - ✅ Slider para usuários com baixa visão
+   - ✅ Range: 12px → 24px
+   - ✅ Persistência em localStorage
+   - ✅ Aplicação global via CSS variable
+
+---
+
+## 🔤 Ajuste de Tamanho de Fonte (NOVO)
+
+### Slider de Acessibilidade (12px-24px)
+
+**Status:** ✅ **IMPLEMENTADO**
+
+Implementado sistema completo de customização de tipografia para usuários com baixa visão:
+
+**Hook `useFontSize`** (`src/hooks/useFontSize.ts`):
+- Gerencia tamanho de fonte global (12px-24px)
+- Persiste preferência em localStorage (`ortho-font-size`)
+- Aplica via CSS variable `--base-font-size`
+- Funções: `setFontSize`, `resetSize`, valores `min/max/default`
+- Validação automática (clamp) para garantir limites
+
+**Interface no ThemeToggle**:
+- Slider interativo com indicador visual do valor atual
+- Ícone `Type` com tamanho em pixels (ex: "16px")
+- Botão "Resetar" para valor padrão (16px)
+- Indicadores dos limites inferiores e superiores (12px-24px)
+- Atualização em tempo real sem reload da página
+- Separador visual entre seleção de tema e ajuste de fonte
+
+**Aplicação Global**:
+```css
+:root {
+  --base-font-size: 16px; /* Padrão */
+}
+
+body {
+  font-size: var(--base-font-size, 16px);
+}
+```
+
+**Benefícios:**
+- ✅ Customização individual da tipografia
+- ✅ 150% de range de ajuste (12-24px)
+- ✅ Atende WCAG Success Criterion 1.4.4 (Resize Text)
+- ✅ Essencial para usuários com baixa visão
+- ✅ Funciona em conjunto com temas high-contrast
 
 ---
 
@@ -333,6 +378,14 @@ function MyComponent() {
 - [x] WCAG_AAA_UPGRADE.md criado
 - [x] Guia de uso para desenvolvedores
 - [x] Tabela de contraste documentada
+- [x] Slider de fonte documentado
+
+### Acessibilidade Avançada
+- [x] Slider de ajuste de fonte (12px-24px)
+- [x] Hook useFontSize implementado
+- [x] Persistência em localStorage
+- [x] Aplicação global via CSS variable
+- [x] Interface integrada no ThemeToggle
 
 ---
 
@@ -346,4 +399,4 @@ function MyComponent() {
 
 **🎉 Upgrade WCAG AAA Completo! Sistema 100% Acessível! 🎉**
 
-*Contraste 7:1 em todos os elementos. Dois novos temas high-contrast. Logo legível e visível.*
+*Contraste 7:1 em todos os elementos. Dois novos temas high-contrast. Logo legível e visível. Slider de ajuste de fonte 12px-24px.*
