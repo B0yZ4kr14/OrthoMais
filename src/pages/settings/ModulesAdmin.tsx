@@ -51,7 +51,7 @@ export default function ModulesAdmin() {
     try {
       const { data, error } = await supabase.functions.invoke('get-my-modules');
       if (error) throw error;
-      // Fix: A Edge Function retorna {modules: [...]} e não o array direto
+      // A Edge Function retorna {modules: [...]}
       setModules(data?.modules || []);
     } catch (error) {
       console.error('Error fetching modules:', error);

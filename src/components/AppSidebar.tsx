@@ -235,7 +235,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
     }, 600);
   };
 
-  // Module key mapping for permission checks
+  // Module key mapping for permission checks (REFATORADO - Corrigido para incluir sub-módulos)
   const moduleKeyMap: Record<string, string> = {
     '/': 'DASHBOARD',
     '/pacientes': 'PACIENTES',
@@ -246,37 +246,39 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
     '/pep': 'PEP',
     '/orcamentos': 'ORCAMENTOS',
     '/contratos': 'CONTRATOS',
-    '/teleodontologia': 'TELEODONTO',
-    '/historico-teleconsultas': 'TELEODONTO',
+    '/teleodontologia': 'TELEODONTO_CONSULTAS',
+    '/historico-teleconsultas': 'TELEODONTO_HISTORICO',
     '/ia-radiografia': 'IA',
-    '/estoque': 'ESTOQUE',
-    '/estoque/cadastros': 'ESTOQUE',
-    '/estoque/requisicoes': 'ESTOQUE',
-    '/estoque/movimentacoes': 'ESTOQUE',
-    '/estoque/pedidos': 'ESTOQUE',
-    '/estoque/integracoes': 'ESTOQUE',
-    '/estoque/analise-pedidos': 'ESTOQUE',
-    '/estoque/analise-consumo': 'ESTOQUE',
+    '/estoque': 'ESTOQUE_DASHBOARD',
+    '/estoque/cadastros': 'ESTOQUE_CADASTROS',
+    '/estoque/requisicoes': 'ESTOQUE_REQUISICOES',
+    '/estoque/movimentacoes': 'ESTOQUE_MOVIMENTACOES',
+    '/estoque/pedidos': 'ESTOQUE_PEDIDOS',
+    '/estoque/integracoes': 'ESTOQUE_INTEGRACOES',
+    '/estoque/analise-pedidos': 'ESTOQUE_ANALISE_PEDIDOS',
+    '/estoque/analise-consumo': 'ESTOQUE_ANALISE_CONSUMO',
     '/estoque/inventario': 'ESTOQUE_INVENTARIO',
     '/estoque/inventario/dashboard': 'ESTOQUE_INVENTARIO',
     '/estoque/inventario/historico': 'ESTOQUE_INVENTARIO_HISTORICO',
-    '/financeiro': 'FINANCEIRO',
-    '/financeiro/transacoes': 'FINANCEIRO',
-    '/financeiro/contas-receber': 'FINANCEIRO',
-    '/financeiro/contas-pagar': 'FINANCEIRO',
-    '/financeiro/notas-fiscais': 'FINANCEIRO',
-    '/financeiro/crypto': 'FINANCEIRO',
+    '/estoque/scanner-mobile': 'ESTOQUE_SCANNER',
+    '/financeiro': 'FINANCEIRO_DASHBOARD',
+    '/financeiro/transacoes': 'FINANCEIRO_TRANSACOES',
+    '/financeiro/contas-receber': 'FINANCEIRO_RECEBER',
+    '/financeiro/contas-pagar': 'FINANCEIRO_PAGAR',
+    '/financeiro/notas-fiscais': 'FINANCEIRO_NOTAS',
+    '/financeiro/crypto': 'FINANCEIRO_CRYPTO',
     '/cobranca': 'INADIMPLENCIA',
     '/split-pagamento': 'SPLIT_PAGAMENTO',
     '/relatorios': 'RELATORIOS',
     '/business-intelligence': 'BI',
-    '/analise-comportamental': 'BI',
-    '/report-templates': 'RELATORIOS',
+    '/analise-comportamental': 'BI_COMPORTAMENTAL',
+    '/report-templates': 'RELATORIOS_TEMPLATES',
     '/portal-paciente': 'PORTAL_PACIENTE',
     '/crm-funil': 'CRM',
     '/programa-fidelidade': 'FIDELIDADE',
-    '/audit-logs': 'LGPD',
-    '/lgpd-compliance': 'LGPD'
+    '/audit-logs': 'AUDITORIA',
+    '/lgpd-compliance': 'LGPD',
+    '/configuracoes': 'CONFIGURACOES'
   };
   const hasAccessToRoute = (url: string) => {
     // Admin always has access
