@@ -109,12 +109,21 @@ const menuGroups = [{
     icon: BarChart3
   }, {
     title: 'Inventário',
-    url: '/estoque/inventario',
-    icon: ClipboardCheck
-  }, {
-    title: 'Histórico de Inventários',
-    url: '/estoque/inventario/historico',
-    icon: TrendingUp
+    icon: ClipboardCheck,
+    collapsed: true,
+    subItems: [{
+      title: 'Gestão',
+      url: '/estoque/inventario',
+      icon: ClipboardCheck
+    }, {
+      title: 'Dashboard Executivo',
+      url: '/estoque/inventario/dashboard',
+      icon: BarChart3
+    }, {
+      title: 'Histórico',
+      url: '/estoque/inventario/historico',
+      icon: TrendingUp
+    }]
   }, {
     title: 'Scanner Mobile',
     url: '/estoque/scanner-mobile',
@@ -248,8 +257,9 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
     '/estoque/integracoes': 'ESTOQUE',
     '/estoque/analise-pedidos': 'ESTOQUE',
     '/estoque/analise-consumo': 'ESTOQUE',
-    '/estoque/inventario': 'ESTOQUE',
-    '/estoque/inventario/historico': 'ESTOQUE',
+    '/estoque/inventario': 'ESTOQUE_INVENTARIO',
+    '/estoque/inventario/dashboard': 'ESTOQUE_INVENTARIO',
+    '/estoque/inventario/historico': 'ESTOQUE_INVENTARIO_HISTORICO',
     '/financeiro': 'FINANCEIRO',
     '/financeiro/transacoes': 'FINANCEIRO',
     '/financeiro/contas-receber': 'FINANCEIRO',
