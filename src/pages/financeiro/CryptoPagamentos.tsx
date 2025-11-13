@@ -35,7 +35,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ExchangeConfigForm } from '@/components/crypto/ExchangeConfigForm';
 import { WalletForm } from '@/components/crypto/WalletForm';
 import { BitcoinQRCodeDialog } from '@/components/crypto/BitcoinQRCodeDialog';
-import { BitcoinInfo } from './BitcoinInfo';
+import { WalletQRPreview } from '@/components/crypto/WalletQRPreview';
+import { CryptoCalculator } from '@/components/crypto/CryptoCalculator';
+import { CryptoTour } from '@/components/crypto/CryptoTour';
 import { CryptoAnalysisDashboard } from '@/modules/crypto/components/CryptoAnalysisDashboard';
 import { CryptoPriceAlertForm } from '@/modules/crypto/components/CryptoPriceAlertForm';
 import { CascadeAlertWizard } from '@/modules/crypto/components/CascadeAlertWizard';
@@ -141,6 +143,8 @@ export default function CryptoPagamentos() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
+      <CryptoTour />
+      
       <PageHeader
         icon={Bitcoin}
         title="Pagamentos em Criptomoedas"
@@ -164,6 +168,9 @@ export default function CryptoPagamentos() {
           </CardContent>
         </Card>
       )}
+
+      {/* Calculadora de Conversão Cripto */}
+      <CryptoCalculator />
 
       {/* KPIs Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -219,7 +226,7 @@ export default function CryptoPagamentos() {
       </div>
 
       <Tabs defaultValue="transactions" className="mt-8">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="transactions">
             <ArrowRightLeft className="h-4 w-4 mr-2" />
             Transações
@@ -243,10 +250,6 @@ export default function CryptoPagamentos() {
           <TabsTrigger value="alerts">
             <Bell className="h-4 w-4 mr-2" />
             Alertas
-          </TabsTrigger>
-          <TabsTrigger value="info">
-            <Info className="h-4 w-4 mr-2" />
-            Sobre Bitcoin
           </TabsTrigger>
         </TabsList>
 
@@ -516,70 +519,9 @@ export default function CryptoPagamentos() {
               </div>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {wallets.map((wallet) => (
-                <Card key={wallet.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-base">{wallet.wallet_name}</CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {coinLabels[wallet.coin_type]}
-                        </p>
-                      </div>
-                      <Badge variant={wallet.is_active ? 'default' : 'secondary'}>
-                        {wallet.is_active ? 'Ativa' : 'Inativa'}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div>
-                      <span className="text-sm text-muted-foreground">Endereço:</span>
-                      <code className="block text-xs bg-muted p-2 rounded mt-1 break-all">
-                        {wallet.wallet_address}
-                      </code>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-sm text-muted-foreground">Saldo Crypto:</span>
-                        <p className="font-semibold">{wallet.balance} {wallet.coin_type}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-muted-foreground">Saldo BRL:</span>
-                        <p className="font-semibold">
-                          R$ {wallet.balance_brl?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                        </p>
-                      </div>
-                    </div>
-
-                    {wallet.last_sync_at && (
-                      <p className="text-xs text-muted-foreground">
-                        Última sincronização: {format(new Date(wallet.last_sync_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
-                      </p>
-                    )}
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => handleSyncWallet(wallet.id)}
-                      disabled={syncingWallet === wallet.id}
-                    >
-                      {syncingWallet === wallet.id ? (
-                        <>
-                          <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                          Sincronizando...
-                        </>
-                      ) : (
-                        <>
-                          <RefreshCw className="h-4 w-4 mr-2" />
-                          Sincronizar Saldo
-                        </>
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
+                <WalletQRPreview key={wallet.id} wallet={wallet} />
               ))}
             </div>
           )}
@@ -914,10 +856,6 @@ export default function CryptoPagamentos() {
           )}
         </TabsContent>
 
-        {/* Info Tab */}
-        <TabsContent value="info">
-          <BitcoinInfo />
-        </TabsContent>
       </Tabs>
 
       <BitcoinQRCodeDialog

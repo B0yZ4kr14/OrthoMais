@@ -29,7 +29,6 @@ const AVAILABLE_COINS = ['BTC', 'ETH', 'USDT', 'BNB', 'USDC'];
 
 export function ExchangeConfigForm({ onSubmit, onCancel, initialData }: ExchangeConfigFormProps) {
   const form = useForm({
-    resolver: zodResolver(exchangeConfigSchema),
     defaultValues: initialData || {
       exchange_name: 'BINANCE',
       is_active: true,
@@ -37,6 +36,7 @@ export function ExchangeConfigForm({ onSubmit, onCancel, initialData }: Exchange
       auto_convert_to_brl: false,
       conversion_threshold: 0,
       processing_fee_percentage: 0,
+      wallet_address: '',
     },
   });
 
@@ -109,26 +109,6 @@ export function ExchangeConfigForm({ onSubmit, onCancel, initialData }: Exchange
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="api_key_encrypted"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>API Key (Opcional)</FormLabel>
-              <FormControl>
-                <Input 
-                  type="password"
-                  placeholder="Sua API Key da exchange" 
-                  {...field} 
-                />
-              </FormControl>
-              <FormDescription>
-                Para sincronização automática de saldos e conversões
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <div className="space-y-3">
           <FormLabel>Moedas Suportadas</FormLabel>
