@@ -20,7 +20,8 @@ import {
   ExternalLink,
   QrCode,
   Info,
-  Bell
+  Bell,
+  Activity
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -39,6 +40,8 @@ import { WalletQRPreview } from '@/components/crypto/WalletQRPreview';
 import { CryptoCalculator } from '@/components/crypto/CryptoCalculator';
 import { CryptoTour } from '@/components/crypto/CryptoTour';
 import { CryptoAnalysisDashboard } from '@/modules/crypto/components/CryptoAnalysisDashboard';
+import { AdvancedTechnicalAnalysis } from '@/components/crypto/AdvancedTechnicalAnalysis';
+import { ConversionSimulator } from '@/components/crypto/ConversionSimulator';
 import { CryptoPriceAlertForm } from '@/modules/crypto/components/CryptoPriceAlertForm';
 import { CascadeAlertWizard } from '@/modules/crypto/components/CascadeAlertWizard';
 import { CryptoComparativeDashboard } from '@/modules/crypto/components/CryptoComparativeDashboard';
@@ -226,28 +229,36 @@ export default function CryptoPagamentos() {
       </div>
 
       <Tabs defaultValue="transactions" className="mt-8">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="transactions">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+          <TabsTrigger value="transactions" data-tour="transactions-tab">
             <ArrowRightLeft className="h-4 w-4 mr-2" />
             Transações
           </TabsTrigger>
-          <TabsTrigger value="wallets">
+          <TabsTrigger value="wallets" data-tour="wallets-tab">
             <Wallet className="h-4 w-4 mr-2" />
             Carteiras
           </TabsTrigger>
-          <TabsTrigger value="exchanges">
+          <TabsTrigger value="exchanges" data-tour="exchange-tab">
             <Settings className="h-4 w-4 mr-2" />
             Exchanges
           </TabsTrigger>
+          <TabsTrigger value="technical">
+            <Activity className="h-4 w-4 mr-2" />
+            Análise Técnica
+          </TabsTrigger>
+          <TabsTrigger value="simulator">
+            <ArrowRightLeft className="h-4 w-4 mr-2" />
+            Simulador
+          </TabsTrigger>
           <TabsTrigger value="analysis">
             <TrendingUp className="h-4 w-4 mr-2" />
-            Análise
+            Dashboard
           </TabsTrigger>
           <TabsTrigger value="comparative">
             <BarChart3 className="h-4 w-4 mr-2" />
             Comparativo
           </TabsTrigger>
-          <TabsTrigger value="alerts">
+          <TabsTrigger value="alerts" data-tour="alerts-tab">
             <Bell className="h-4 w-4 mr-2" />
             Alertas
           </TabsTrigger>
@@ -658,6 +669,45 @@ export default function CryptoPagamentos() {
         {/* Analysis Tab */}
         <TabsContent value="analysis">
           <CryptoAnalysisDashboard clinicId={clinicId} />
+        </TabsContent>
+
+        {/* Technical Analysis Tab */}
+        <TabsContent value="technical" className="space-y-4">
+          <div className="space-y-2 mb-6">
+            <h3 className="text-lg font-semibold">Análise Técnica Avançada</h3>
+            <p className="text-sm text-muted-foreground">
+              Indicadores técnicos profissionais (RSI, MACD, Bollinger Bands) e histórico de preços
+            </p>
+          </div>
+
+          <Tabs defaultValue="BTC" className="w-full">
+            <TabsList>
+              <TabsTrigger value="BTC">Bitcoin (BTC)</TabsTrigger>
+              <TabsTrigger value="ETH">Ethereum (ETH)</TabsTrigger>
+              <TabsTrigger value="USDT">Tether (USDT)</TabsTrigger>
+            </TabsList>
+            <TabsContent value="BTC">
+              <AdvancedTechnicalAnalysis coinType="BTC" />
+            </TabsContent>
+            <TabsContent value="ETH">
+              <AdvancedTechnicalAnalysis coinType="ETH" />
+            </TabsContent>
+            <TabsContent value="USDT">
+              <AdvancedTechnicalAnalysis coinType="USDT" />
+            </TabsContent>
+          </Tabs>
+        </TabsContent>
+
+        {/* Simulator Tab */}
+        <TabsContent value="simulator" className="space-y-4">
+          <div className="space-y-2 mb-6">
+            <h3 className="text-lg font-semibold">Simulador de Conversão Cripto → BRL</h3>
+            <p className="text-sm text-muted-foreground">
+              Compare taxas entre exchanges e identifique o melhor momento para converter baseado em histórico
+            </p>
+          </div>
+
+          <ConversionSimulator />
         </TabsContent>
 
         {/* Comparative Dashboard Tab */}
