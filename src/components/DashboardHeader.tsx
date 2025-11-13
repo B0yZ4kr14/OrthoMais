@@ -1,4 +1,4 @@
-import { LogOut, Building2, Palette } from "lucide-react";
+import { LogOut, Building2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -7,9 +7,7 @@ import { HotkeysHelp } from "@/components/HotkeysHelp";
 import { NotificationDropdown } from "@/components/NotificationDropdown";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { ThemePreview } from "@/components/ThemePreview";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { cn } from "@/lib/utils";
 
@@ -64,26 +62,7 @@ export function DashboardHeader({ className, onMenuClick }: DashboardHeaderProps
           <div className="flex items-center gap-3">
             <NotificationDropdown />
 
-            <div data-tour="theme-toggle" className="flex items-center gap-1">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
-                    <Palette className="h-4 w-4" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-5xl">
-                  <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                      <Palette className="h-5 w-5" />
-                      Escolher Tema
-                    </DialogTitle>
-                    <DialogDescription>
-                      Selecione o tema visual que melhor se adapta à sua preferência.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <ThemePreview />
-                </DialogContent>
-              </Dialog>
+            <div data-tour="theme-toggle">
               <ThemeToggle />
             </div>
 

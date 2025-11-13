@@ -1,12 +1,23 @@
 import { Moon, Sun, Palette, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { Slider } from "@/components/ui/slider";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useFontSize } from "@/hooks/useFontSize";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const { fontSize, setFontSize, resetSize, min, max } = useFontSize();
+
+  const themes = [
+    { id: 'professional-dark', name: 'Professional Dark', icon: Palette, description: 'Tema padrão profissional', badge: undefined },
+    { id: 'dark', name: 'Dark', icon: Moon, description: 'Tema escuro clássico', badge: undefined },
+    { id: 'light', name: 'Light', icon: Sun, description: 'Tema claro', badge: undefined },
+    { id: 'dark-gold', name: 'Dark Gold', icon: Palette, description: 'Tema escuro com dourado', badge: undefined },
+    { id: 'high-contrast', name: 'High Contrast Light', icon: Sun, description: 'Alto contraste claro (WCAG AAA)', badge: 'AAA' as const },
+    { id: 'high-contrast-dark', name: 'High Contrast Dark', icon: Moon, description: 'Alto contraste escuro (WCAG AAA)', badge: 'AAA' as const },
+  ];
   const getIcon = () => {
     switch (theme) {
       case 'light':
@@ -28,49 +39,57 @@ export function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Alternar tema e acessibilidade">
+        <Button variant="ghost" size="icon" className="h-9 w-9" aria-label="Configurações de aparência">
           {getIcon()}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-72">
-        <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-          Temas
-        </DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => setTheme('professional-dark')} className="cursor-pointer">
-          <Palette className="mr-2 h-4 w-4" />
-          <span>Professional Dark</span>
-          {theme === 'professional-dark' && <span className="ml-auto text-xs text-primary">✓</span>}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')} className="cursor-pointer">
-          <Moon className="mr-2 h-4 w-4" />
-          <span>Dark</span>
-          {theme === 'dark' && <span className="ml-auto text-xs text-primary">✓</span>}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('light')} className="cursor-pointer">
-          <Sun className="mr-2 h-4 w-4" />
-          <span>Light</span>
-          {theme === 'light' && <span className="ml-auto text-xs text-primary">✓</span>}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark-gold')} className="cursor-pointer">
-          <Palette className="mr-2 h-4 w-4 text-yellow-500" />
-          <span>Dark Gold</span>
-          {theme === 'dark-gold' && <span className="ml-auto text-xs text-primary">✓</span>}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('high-contrast')} className="cursor-pointer border-t mt-1 pt-1">
-          <Sun className="mr-2 h-4 w-4" />
-          <span>High Contrast Light</span>
-          {theme === 'high-contrast' && <span className="ml-auto text-xs text-primary">✓</span>}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('high-contrast-dark')} className="cursor-pointer">
-          <Moon className="mr-2 h-4 w-4" />
-          <span>High Contrast Dark</span>
-          {theme === 'high-contrast-dark' && <span className="ml-auto text-xs text-primary">✓</span>}
-        </DropdownMenuItem>
+      <DropdownMenuContent align="end" className="w-96 p-0">
+        {/* Temas Section */}
+        <div className="p-4 space-y-3">
+          <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-0">
+            Temas
+          </DropdownMenuLabel>
+          <div className="grid grid-cols-2 gap-2">
+            {themes.map((t) => {
+              const Icon = t.icon;
+              const isActive = theme === t.id;
+              return (
+                <Card
+                  key={t.id}
+                  className={`cursor-pointer transition-all hover:shadow-md ${
+                    isActive ? 'ring-2 ring-primary bg-accent' : 'hover:bg-accent/50'
+                  }`}
+                  onClick={() => setTheme(t.id as any)}
+                >
+                  <CardContent className="p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                      {t.badge && (
+                        <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">
+                          {t.badge}
+                        </Badge>
+                      )}
+                    </div>
+                    <div>
+                      <p className={`text-xs font-medium ${isActive ? 'text-primary' : ''}`}>
+                        {t.name}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground line-clamp-1">
+                        {t.description}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
         
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="my-0" />
         
-        <div className="px-2 py-3">
-          <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-0">
+        {/* Font Size Section */}
+        <div className="p-4 space-y-3">
+          <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-0">
             Tamanho da Fonte
           </DropdownMenuLabel>
           <div className="space-y-3">
@@ -102,6 +121,7 @@ export function ThemeToggle() {
             />
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>{min}px</span>
+              <span>Padrão: 16px</span>
               <span>{max}px</span>
             </div>
           </div>

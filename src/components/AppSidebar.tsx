@@ -270,12 +270,12 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
   return <Sidebar className={collapsed ? 'w-16' : 'w-64'} collapsible="icon">
       <SidebarHeader className="border-b p-4">
         {!collapsed ? (
-          <div className="flex items-center justify-center py-2">
-            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-16 w-auto object-contain transition-all duration-200" />
+          <div className="flex items-center justify-center py-3">
+            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-24 w-auto object-contain transition-all duration-200" />
           </div>
         ) : (
           <div className="flex justify-center">
-            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-16 w-auto object-contain transition-all duration-200" />
+            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-20 w-auto object-contain transition-all duration-200" />
           </div>
         )}
       </SidebarHeader>
