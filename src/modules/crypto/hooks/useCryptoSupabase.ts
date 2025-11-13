@@ -96,67 +96,70 @@ export const useCryptoSupabase = (clinicId: string) => {
   };
 
   useEffect(() => {
-    if (clinicId) {
-      loadData();
+    // Sempre tentar carregar uma vez; se não houver clinicId o loadData encerra o loading rapidamente
+    loadData();
 
-      // Setup realtime subscriptions
-      const exchangesChannel = supabase
-        .channel('crypto-exchanges-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'crypto_exchange_config',
-            filter: `clinic_id=eq.${clinicId}`,
-          },
-          () => {
-            console.log('Exchanges changed, reloading...');
-            loadData();
-          }
-        )
-        .subscribe();
-
-      const walletsChannel = supabase
-        .channel('crypto-wallets-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'crypto_wallets',
-            filter: `clinic_id=eq.${clinicId}`,
-          },
-          () => {
-            console.log('Wallets changed, reloading...');
-            loadData();
-          }
-        )
-        .subscribe();
-
-      const transactionsChannel = supabase
-        .channel('crypto-transactions-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'crypto_transactions',
-            filter: `clinic_id=eq.${clinicId}`,
-          },
-          () => {
-            console.log('Crypto transactions changed, reloading...');
-            loadData();
-          }
-        )
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(exchangesChannel);
-        supabase.removeChannel(walletsChannel);
-        supabase.removeChannel(transactionsChannel);
-      };
+    if (!clinicId) {
+      return; // sem subscriptions sem clínica selecionada
     }
+
+    // Setup realtime subscriptions
+    const exchangesChannel = supabase
+      .channel('crypto-exchanges-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'crypto_exchange_config',
+          filter: `clinic_id=eq.${clinicId}`,
+        },
+        () => {
+          console.log('Exchanges changed, reloading...');
+          loadData();
+        }
+      )
+      .subscribe();
+
+    const walletsChannel = supabase
+      .channel('crypto-wallets-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'crypto_wallets',
+          filter: `clinic_id=eq.${clinicId}`,
+        },
+        () => {
+          console.log('Wallets changed, reloading...');
+          loadData();
+        }
+      )
+      .subscribe();
+
+    const transactionsChannel = supabase
+      .channel('crypto-transactions-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'crypto_transactions',
+          filter: `clinic_id=eq.${clinicId}`,
+        },
+        () => {
+          console.log('Crypto transactions changed, reloading...');
+          loadData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(exchangesChannel);
+      supabase.removeChannel(walletsChannel);
+      supabase.removeChannel(transactionsChannel);
+    };
   }, [clinicId]);
 
   const createExchangeConfig = async (data: Partial<ExchangeConfig>) => {

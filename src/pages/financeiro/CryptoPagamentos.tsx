@@ -45,8 +45,7 @@ import { Switch } from '@/components/ui/switch';
 import { Trash2, TrendingDown, BarChart3 } from 'lucide-react';
 
 export default function CryptoPagamentos() {
-  const { user } = useAuth();
-  const clinicId = user?.user_metadata?.clinic_id;
+  const { clinicId } = useAuth();
   
   const { 
     exchanges, 
