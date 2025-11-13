@@ -15,6 +15,8 @@ import { tipoRadiografiaLabels } from '@/modules/ia-radiografia/types/radiografi
 import type { AnaliseComplete } from '@/modules/ia-radiografia/types/radiografia.types';
 import { useToast } from '@/hooks/use-toast';
 import { AnaliseDetailsDialog } from '@/modules/ia-radiografia/components/AnaliseDetailsDialog';
+import { AnaliseCharts } from '@/modules/ia-radiografia/components/AnaliseCharts';
+import { RadiografiaComparison } from '@/modules/ia-radiografia/components/RadiografiaComparison';
 
 export default function IARadiografia() {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -280,6 +282,16 @@ export default function IARadiografia() {
           </div>
         </div>
       </Card>
+
+      {/* Gráficos Estatísticos */}
+      {!loading && analises.length > 0 && (
+        <AnaliseCharts analises={analises} />
+      )}
+
+      {/* Comparação de Radiografias */}
+      {!loading && analises.length > 0 && (
+        <RadiografiaComparison analises={analises} />
+      )}
 
       {/* Lista de Análises */}
       <Card className="p-6" depth="intense">
