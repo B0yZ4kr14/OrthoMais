@@ -143,13 +143,19 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Solicitação enviada com sucesso! Nossa equipe entrará em contato em breve.',
+        message: `Solicitação de "${module.name}" enviada com sucesso! Nossa equipe de vendas entrará em contato em breve.`,
+        module: {
+          key: module_key,
+          name: module.name,
+          category: module.category,
+        },
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
   } catch (error) {
+    console.error('Error in requestNewModule:', error);
     const message = error instanceof Error ? error.message : 'Unknown error';
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
