@@ -86,10 +86,10 @@ export function DashboardHeader({ className, onMenuClick }: DashboardHeaderProps
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-2 h-9 px-2" data-tour="user-menu">
                   <Avatar className="h-7 w-7 bg-primary border-2 border-primary/20">
-                    {user?.user_metadata?.avatar_url && (
+                    {user && 'user_metadata' in user && user.user_metadata?.avatar_url && (
                       <AvatarImage 
                         src={user.user_metadata.avatar_url} 
-                        alt={user?.user_metadata?.full_name || user?.email || 'Avatar'} 
+                        alt={user.user_metadata?.full_name || user.email || 'Avatar'} 
                       />
                     )}
                     <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">

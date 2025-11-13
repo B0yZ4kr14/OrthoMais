@@ -20,7 +20,7 @@ export default function ProfileSettings() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user) {
+    if (user && 'user_metadata' in user) {
       setFullName(user.user_metadata?.full_name || '');
       setAvatarUrl(user.user_metadata?.avatar_url || null);
     }
