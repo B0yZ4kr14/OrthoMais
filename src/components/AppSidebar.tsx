@@ -268,152 +268,158 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
   const collapsed = state === 'collapsed';
   const isActive = (path: string) => currentPath === path;
   return <Sidebar className={collapsed ? 'w-16' : 'w-64'} collapsible="icon">
-      <SidebarHeader className="border-b p-4">
+      <SidebarHeader className="border-b border-sidebar-border p-4 shadow-lg">
         {!collapsed ? (
           <div className="flex items-center justify-center py-3">
-            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-24 w-auto object-contain transition-all duration-200" />
+            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-24 w-auto object-contain transition-all duration-200 drop-shadow-2xl" />
           </div>
         ) : (
           <div className="flex justify-center">
-            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-20 w-auto object-contain transition-all duration-200" />
+            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-20 w-auto object-contain transition-all duration-200 drop-shadow-2xl" />
           </div>
         )}
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="space-y-3 px-2">
         {menuGroups.map((group, index) => (
-          <div key={group.label} className={index > 0 ? 'mt-2' : ''}>
+          <div key={group.label} className={index > 0 ? '' : ''}>
             
             {group.collapsed ? (
               <Collapsible defaultOpen={false} className="group/collapsible">
-                <SidebarGroup>
-                  <SidebarGroupLabel className="text-xs font-medium text-muted-foreground px-3">
-                    <CollapsibleTrigger className="flex w-full items-center justify-between hover:text-foreground transition-colors">
-                      {!collapsed && (
-                        <>
-                          <span>{group.label}</span>
-                          <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
-                        </>
-                      )}
-                    </CollapsibleTrigger>
-                  </SidebarGroupLabel>
-                  <CollapsibleContent>
-                    <SidebarGroupContent>
-                      <SidebarMenu>
-                        {group.items.map(item => (
-                          <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton asChild isActive={isActive(item.url)} className="group/button my-0.5 mx-2 rounded-md hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors min-h-[44px]">
-                              <NavLink to={item.url} end className="flex items-center gap-3 px-3 py-2" onClick={onNavigate}>
-                                <item.icon className="h-4 w-4 shrink-0" />
-                                {!collapsed && <span className="text-sm flex-1">{item.title}</span>}
-                                {!collapsed && item.badge && (
-                                  <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5 group-data-[active=true]/button:bg-accent-foreground group-data-[active=true]/button:text-accent group-data-[active=true]/button:border-transparent"> 
-                                    {item.badge}
-                                  </Badge>
-                                )}
-                              </NavLink>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        ))}
-                      </SidebarMenu>
-                    </SidebarGroupContent>
-                  </CollapsibleContent>
-                </SidebarGroup>
+                <div className="rounded-2xl bg-gradient-to-br from-sidebar-accent/50 to-sidebar-accent/30 shadow-lg backdrop-blur-sm border border-sidebar-border/50 p-2">
+                  <SidebarGroup>
+                    <SidebarGroupLabel className="text-sm font-bold text-sidebar-foreground px-3 py-2 drop-shadow-md">
+                      <CollapsibleTrigger className="flex w-full items-center justify-between hover:text-primary transition-all duration-200">
+                        {!collapsed && (
+                          <>
+                            <span className="tracking-wide">{group.label}</span>
+                            <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]/collapsible:rotate-180" />
+                          </>
+                        )}
+                      </CollapsibleTrigger>
+                    </SidebarGroupLabel>
+                    <CollapsibleContent>
+                      <SidebarGroupContent className="mt-1">
+                        <SidebarMenu>
+                          {group.items.map(item => (
+                            <SidebarMenuItem key={item.title}>
+                              <SidebarMenuButton asChild isActive={isActive(item.url)} className="group/button my-1 rounded-xl hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-l-4 data-[active=true]:border-l-primary data-[active=true]:shadow-lg transition-all duration-200 min-h-[44px]">
+                                <NavLink to={item.url} end className="flex items-center gap-3 px-3 py-2" onClick={onNavigate}>
+                                  <item.icon className="h-5 w-5 shrink-0" />
+                                  {!collapsed && <span className="text-sm flex-1 font-medium">{item.title}</span>}
+                                  {!collapsed && item.badge && (
+                                    <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-2 py-0.5 shadow-sm group-data-[active=true]/button:bg-primary group-data-[active=true]/button:text-primary-foreground group-data-[active=true]/button:border-transparent"> 
+                                      {item.badge}
+                                    </Badge>
+                                  )}
+                                </NavLink>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          ))}
+                        </SidebarMenu>
+                      </SidebarGroupContent>
+                    </CollapsibleContent>
+                  </SidebarGroup>
+                </div>
               </Collapsible>
             ) : (
-              <SidebarGroup>
-                <SidebarGroupLabel className="text-xs font-medium text-muted-foreground px-3">
-                  {!collapsed && group.label}
-                </SidebarGroupLabel>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {group.items.map(item => item.subItems ? (
-                      <Collapsible key={item.title} defaultOpen={false} className="group/submenu">
-                        <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton className="group/button my-0.5 mx-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors">
-                              <div className="flex items-center gap-3 px-3 py-2 w-full">
-                                <item.icon className="h-4 w-4 shrink-0" />
-                                {!collapsed && (
-                                  <>
-                                    <span className="text-sm flex-1">{item.title}</span>
-                                    {item.badge && (
-                                      <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5 group-data-[active=true]/button:bg-accent-foreground group-data-[active=true]/button:text-accent group-data-[active=true]/button:border-transparent">
-                                        {item.badge}
-                                      </Badge>
-                                    )}
-                                    <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-data-[state=open]/submenu:rotate-180" />
-                                  </>
-                                )}
-                              </div>
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              {item.subItems.map(subItem => (
-                                <SidebarMenuSubItem key={subItem.title}>
-                                  <SidebarMenuSubButton asChild isActive={isActive(subItem.url)} className="hover:bg-accent/50 hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground min-h-[44px]">
-                                    <NavLink to={subItem.url} className="flex items-center gap-2" onClick={onNavigate}>
-                                      <subItem.icon className="h-4 w-4" />
-                                      {!collapsed && <span className="text-sm">{subItem.title}</span>}
-                                    </NavLink>
-                                  </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                              ))}
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
+              <div className="rounded-2xl bg-gradient-to-br from-sidebar-accent/50 to-sidebar-accent/30 shadow-lg backdrop-blur-sm border border-sidebar-border/50 p-2">
+                <SidebarGroup>
+                  <SidebarGroupLabel className="text-sm font-bold text-sidebar-foreground px-3 py-2 drop-shadow-md">
+                    {!collapsed && <span className="tracking-wide">{group.label}</span>}
+                  </SidebarGroupLabel>
+                  <SidebarGroupContent className="mt-1">
+                    <SidebarMenu>
+                      {group.items.map(item => item.subItems ? (
+                        <Collapsible key={item.title} defaultOpen={false} className="group/submenu">
+                          <SidebarMenuItem>
+                            <CollapsibleTrigger asChild>
+                              <SidebarMenuButton className="group/button my-1 rounded-xl hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md transition-all duration-200">
+                                <div className="flex items-center gap-3 px-3 py-2 w-full">
+                                  <item.icon className="h-5 w-5 shrink-0" />
+                                  {!collapsed && (
+                                    <>
+                                      <span className="text-sm flex-1 font-medium">{item.title}</span>
+                                      {item.badge && (
+                                        <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-2 py-0.5 shadow-sm group-data-[active=true]/button:bg-primary group-data-[active=true]/button:text-primary-foreground group-data-[active=true]/button:border-transparent">
+                                          {item.badge}
+                                        </Badge>
+                                      )}
+                                      <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]/submenu:rotate-180" />
+                                    </>
+                                  )}
+                                </div>
+                              </SidebarMenuButton>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <SidebarMenuSub>
+                                {item.subItems.map(subItem => (
+                                  <SidebarMenuSubItem key={subItem.title}>
+                                    <SidebarMenuSubButton asChild isActive={isActive(subItem.url)} className="rounded-lg hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground hover:shadow-sm data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:shadow-md min-h-[44px]">
+                                      <NavLink to={subItem.url} className="flex items-center gap-2" onClick={onNavigate}>
+                                        <subItem.icon className="h-4 w-4" />
+                                        {!collapsed && <span className="text-sm font-medium">{subItem.title}</span>}
+                                      </NavLink>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
+                                ))}
+                              </SidebarMenuSub>
+                            </CollapsibleContent>
+                          </SidebarMenuItem>
+                        </Collapsible>
+                      ) : (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton asChild isActive={isActive(item.url)} className="group/button my-1 rounded-xl hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-l-4 data-[active=true]:border-l-primary data-[active=true]:shadow-lg transition-all duration-200 min-h-[44px]">
+                            <NavLink to={item.url} end className="flex items-center gap-3 px-3 py-2" onClick={onNavigate}>
+                              <item.icon className="h-5 w-5 shrink-0" />
+                              {!collapsed && <span className="text-sm flex-1 font-medium">{item.title}</span>}
+                              {!collapsed && item.badge && (
+                                <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-2 py-0.5 shadow-sm group-data-[active=true]/button:bg-primary group-data-[active=true]/button:text-primary-foreground group-data-[active=true]/button:border-transparent">
+                                  {item.badge}
+                                </Badge>
+                              )}
+                            </NavLink>
+                          </SidebarMenuButton>
                         </SidebarMenuItem>
-                      </Collapsible>
-                    ) : (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild isActive={isActive(item.url)} className="group/button my-0.5 mx-2 rounded-md hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors min-h-[44px]">
-                          <NavLink to={item.url} end className="flex items-center gap-3 px-3 py-2" onClick={onNavigate}>
-                            <item.icon className="h-4 w-4 shrink-0" />
-                            {!collapsed && <span className="text-sm flex-1">{item.title}</span>}
-                            {!collapsed && item.badge && (
-                              <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5 group-data-[active=true]/button:bg-accent-foreground group-data-[active=true]/button:text-accent group-data-[active=true]/button:border-transparent">
-                                {item.badge}
-                              </Badge>
-                            )}
-                          </NavLink>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              </div>
             )}
           </div>
         ))}
 
         {isAdmin && (
           <>
-            <SidebarGroup className="mt-4">
-              <SidebarGroupLabel className="text-xs font-medium text-muted-foreground px-3">
-                {!collapsed && 'Administração'}
-              </SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/configuracoes')} className="group/button my-0.5 mx-2 rounded-md hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors min-h-[44px]">
-                      <NavLink to="/configuracoes" className="flex items-center gap-3 px-3 py-2" onClick={onNavigate}>
-                        <Settings className="h-4 w-4 shrink-0" />
-                        {!collapsed && <span className="text-sm">Configurações</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+            <div className="rounded-2xl bg-gradient-to-br from-sidebar-accent/50 to-sidebar-accent/30 shadow-lg backdrop-blur-sm border border-sidebar-border/50 p-2 mt-3">
+              <SidebarGroup>
+                <SidebarGroupLabel className="text-sm font-bold text-sidebar-foreground px-3 py-2 drop-shadow-md">
+                  {!collapsed && <span className="tracking-wide">Administração</span>}
+                </SidebarGroupLabel>
+                <SidebarGroupContent className="mt-1">
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/configuracoes')} className="group/button my-1 rounded-xl hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-l-4 data-[active=true]:border-l-primary data-[active=true]:shadow-lg transition-all duration-200 min-h-[44px]">
+                        <NavLink to="/configuracoes" className="flex items-center gap-3 px-3 py-2" onClick={onNavigate}>
+                          <Settings className="h-5 w-5 shrink-0" />
+                          {!collapsed && <span className="text-sm font-medium">Configurações</span>}
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </div>
           </>
         )}
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-3">
+      <SidebarFooter className="border-t border-sidebar-border p-3 shadow-lg">
         {!collapsed && (
           <div className="text-center space-y-0.5">
-            <p className="text-xs text-muted-foreground font-medium">Ortho + v1.0</p>
-            <p className="text-[10px] text-muted-foreground/60">© 2025 TSI Telecom</p>
+            <p className="text-xs text-sidebar-foreground/80 font-semibold drop-shadow">Ortho + v1.0</p>
+            <p className="text-[10px] text-sidebar-foreground/60 font-medium">© 2025 TSI Telecom</p>
           </div>
         )}
       </SidebarFooter>
