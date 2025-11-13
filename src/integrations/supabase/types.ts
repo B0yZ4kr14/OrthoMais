@@ -643,43 +643,94 @@ export type Database = {
           },
         ]
       }
+      crypto_candlestick_data: {
+        Row: {
+          close_price: number
+          close_time: string
+          coin_type: string
+          created_at: string
+          high_price: number
+          id: string
+          interval: string
+          low_price: number
+          open_price: number
+          open_time: string
+          volume: number
+        }
+        Insert: {
+          close_price: number
+          close_time: string
+          coin_type: string
+          created_at?: string
+          high_price: number
+          id?: string
+          interval: string
+          low_price: number
+          open_price: number
+          open_time: string
+          volume?: number
+        }
+        Update: {
+          close_price?: number
+          close_time?: string
+          coin_type?: string
+          created_at?: string
+          high_price?: number
+          id?: string
+          interval?: string
+          low_price?: number
+          open_price?: number
+          open_time?: string
+          volume?: number
+        }
+        Relationships: []
+      }
       crypto_price_alerts: {
         Row: {
           alert_type: string
+          auto_convert_on_trigger: boolean | null
           clinic_id: string
           coin_type: string
+          conversion_percentage: number | null
           created_at: string
           created_by: string
           id: string
           is_active: boolean
           last_triggered_at: string | null
           notification_method: string[]
+          stop_loss_enabled: boolean | null
           target_rate_brl: number
           updated_at: string
         }
         Insert: {
           alert_type: string
+          auto_convert_on_trigger?: boolean | null
           clinic_id: string
           coin_type: string
+          conversion_percentage?: number | null
           created_at?: string
           created_by: string
           id?: string
           is_active?: boolean
           last_triggered_at?: string | null
           notification_method?: string[]
+          stop_loss_enabled?: boolean | null
           target_rate_brl: number
           updated_at?: string
         }
         Update: {
           alert_type?: string
+          auto_convert_on_trigger?: boolean | null
           clinic_id?: string
           coin_type?: string
+          conversion_percentage?: number | null
           created_at?: string
           created_by?: string
           id?: string
           is_active?: boolean
           last_triggered_at?: string | null
           notification_method?: string[]
+          stop_loss_enabled?: boolean | null
           target_rate_brl?: number
           updated_at?: string
         }

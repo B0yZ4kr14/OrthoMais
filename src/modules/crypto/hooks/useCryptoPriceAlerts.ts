@@ -12,6 +12,9 @@ interface PriceAlert {
   is_active: boolean;
   last_triggered_at: string | null;
   created_at: string;
+  stop_loss_enabled?: boolean;
+  auto_convert_on_trigger?: boolean;
+  conversion_percentage?: number;
 }
 
 export function useCryptoPriceAlerts() {
@@ -56,11 +59,15 @@ export function useCryptoPriceAlerts() {
           clinic_id: clinicId,
           created_by: user.id,
           target_rate_brl: Number(alertData.target_rate_brl),
+          conversion_percentage: Number(alertData.conversion_percentage || 100),
         });
 
       if (error) throw error;
 
-      toast.success('Alerta criado com sucesso!');
+      const successMsg = alertData.stop_loss_enabled
+        ? 'Stop-Loss configurado com sucesso!'
+        : 'Alerta criado com sucesso!';
+      toast.success(successMsg);
       fetchAlerts();
     } catch (error: any) {
       console.error('Error creating alert:', error);

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import TechnicalIndicators from "./TechnicalIndicators";
+import { CandlestickChart } from "./CandlestickChart";
 
 interface ExchangeRate {
   id: number;
@@ -26,6 +27,15 @@ interface Transaction {
   coin_type: string;
 }
 
+interface CandlestickDataPoint {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
 interface CryptoAnalysisDashboardProps {
   clinicId: string;
 }
@@ -33,6 +43,7 @@ interface CryptoAnalysisDashboardProps {
 export function CryptoAnalysisDashboard({ clinicId }: CryptoAnalysisDashboardProps) {
   const [exchangeRates, setExchangeRates] = useState<ExchangeRate[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [candlestickData, setCandlestickData] = useState<CandlestickDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,6 +70,32 @@ export function CryptoAnalysisDashboard({ clinicId }: CryptoAnalysisDashboardPro
 
       if (rates) setExchangeRates(rates as unknown as ExchangeRate[]);
       if (txs) setTransactions(txs as unknown as Transaction[]);
+
+      // Buscar dados candlestick
+      const { data: candleData } = await supabase
+        .from('crypto_candlestick_data' as any)
+        .select('*')
+        .eq('coin_type', 'BTC')
+        .eq('interval', '15m')
+        .order('open_time', { ascending: true })
+        .limit(100);
+
+      if (candleData && candleData.length > 0) {
+        setCandlestickData(
+          candleData.map((c: any) => ({
+            time: c.open_time,
+            open: parseFloat(c.open_price),
+            high: parseFloat(c.high_price),
+            low: parseFloat(c.low_price),
+            close: parseFloat(c.close_price),
+            volume: parseFloat(c.volume),
+          }))
+        );
+      } else {
+        // Generate mock candlestick data if none exists
+        const mockData = generateMockCandlestickData();
+        setCandlestickData(mockData);
+      }
     } catch (error) {
       console.error('Error fetching analysis data:', error);
     } finally {
@@ -193,6 +230,11 @@ export function CryptoAnalysisDashboard({ clinicId }: CryptoAnalysisDashboardPro
           </CardContent>
         </Card>
       </div>
+
+      {/* Candlestick Chart */}
+      {candlestickData.length > 0 && (
+        <CandlestickChart data={candlestickData} coinType="BTC" />
+      )}
 
       {/* Gráficos de Análise */}
       <Tabs defaultValue="rates" className="w-full">
@@ -349,4 +391,35 @@ export function CryptoAnalysisDashboard({ clinicId }: CryptoAnalysisDashboardPro
       </Tabs>
     </div>
   );
+}
+
+function generateMockCandlestickData(): CandlestickDataPoint[] {
+  const data: CandlestickDataPoint[] = [];
+  const now = new Date();
+  let price = 320000 + Math.random() * 20000;
+
+  for (let i = 96; i >= 0; i--) {
+    const time = new Date(now.getTime() - i * 15 * 60 * 1000); // 15 min intervals
+    
+    const open = price;
+    const volatility = 2000 + Math.random() * 3000;
+    const high = open + Math.random() * volatility;
+    const low = open - Math.random() * volatility;
+    const close = low + Math.random() * (high - low);
+    const volume = 1000000 + Math.random() * 5000000;
+
+    data.push({
+      time: time.toISOString(),
+      open,
+      high,
+      low,
+      close,
+      volume,
+    });
+
+    // Random walk for next candle
+    price = close + (Math.random() - 0.5) * 5000;
+  }
+
+  return data;
 }

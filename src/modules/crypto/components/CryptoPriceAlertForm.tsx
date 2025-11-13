@@ -6,13 +6,18 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { coinLabels } from "@/modules/crypto/types/crypto.types";
+import { TrendingDown } from "lucide-react";
 
 const alertSchema = z.object({
   coin_type: z.string().min(1, "Selecione uma moeda"),
   target_rate_brl: z.string().min(1, "Digite a taxa alvo"),
   alert_type: z.enum(['ABOVE', 'BELOW']),
   notification_method: z.array(z.string()).min(1, "Selecione pelo menos um método"),
+  stop_loss_enabled: z.boolean().default(false),
+  auto_convert_on_trigger: z.boolean().default(false),
+  conversion_percentage: z.string().default('100'),
 });
 
 type AlertFormData = z.infer<typeof alertSchema>;
@@ -32,8 +37,14 @@ export function CryptoPriceAlertForm({ onSubmit, onCancel }: CryptoPriceAlertFor
       target_rate_brl: '',
       alert_type: 'BELOW',
       notification_method: ['EMAIL'],
+      stop_loss_enabled: false,
+      auto_convert_on_trigger: false,
+      conversion_percentage: '100',
     },
   });
+
+  const stopLossEnabled = form.watch('stop_loss_enabled');
+  const autoConvert = form.watch('auto_convert_on_trigger');
 
   return (
     <Form {...form}>
@@ -167,12 +178,86 @@ export function CryptoPriceAlertForm({ onSubmit, onCancel }: CryptoPriceAlertFor
           )}
         />
 
+        {/* Stop-Loss Configuration */}
+        <div className="space-y-4 p-4 border border-warning/20 rounded-lg bg-warning/5">
+          <FormField
+            control={form.control}
+            name="stop_loss_enabled"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <TrendingDown className="h-5 w-5 text-warning" />
+                  <div>
+                    <FormLabel className="font-semibold">Stop-Loss Automático</FormLabel>
+                    <FormDescription>
+                      Ativar conversão automática quando threshold é atingido
+                    </FormDescription>
+                  </div>
+                </div>
+                <FormControl>
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {stopLossEnabled && (
+            <>
+              <FormField
+                control={form.control}
+                name="auto_convert_on_trigger"
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between">
+                    <div>
+                      <FormLabel className="text-sm">Converter Automaticamente</FormLabel>
+                      <FormDescription>
+                        Executar conversão para BRL quando alerta disparar
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              {autoConvert && (
+                <FormField
+                  control={form.control}
+                  name="conversion_percentage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor="conversionPercentage">
+                        Percentual a Converter (%)
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          id="conversionPercentage"
+                          type="number"
+                          min="1"
+                          max="100"
+                          {...field}
+                          placeholder="100"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {field.value}% do saldo da carteira será convertido automaticamente
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </>
+          )}
+        </div>
+
         <div className="flex justify-end gap-3 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancelar
           </Button>
           <Button type="submit">
-            Criar Alerta
+            {stopLossEnabled ? 'Criar Stop-Loss' : 'Criar Alerta'}
           </Button>
         </div>
       </form>

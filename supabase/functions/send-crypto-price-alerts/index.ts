@@ -83,6 +83,11 @@ serve(async (req) => {
 
       alertsTriggered++;
 
+      // Execute auto-conversion if stop-loss is enabled
+      if (alert.stop_loss_enabled && alert.auto_convert_on_trigger) {
+        await executeAutoConversion(supabaseClient, alert, currentRate);
+      }
+
       // Buscar email do criador do alerta
       const { data: creator } = await supabaseClient
         .from('profiles')
@@ -96,15 +101,25 @@ serve(async (req) => {
         if (user && user.user && user.user.email) {
           const email = user.user.email;
 
+          const alertTypeLabel = alert.stop_loss_enabled ? '🛑 Stop-Loss Acionado' : '🔔 Alerta de Taxa';
+          let extraMessage = '';
+          
+          if (alert.stop_loss_enabled && alert.auto_convert_on_trigger) {
+            extraMessage = `<p style="background: #fff3cd; padding: 15px; border-radius: 6px; border-left: 4px solid #ffc107;">
+              <strong>⚠️ Conversão Automática Iniciada</strong><br>
+              ${alert.conversion_percentage}% do saldo da carteira será convertido automaticamente para BRL.
+            </p>`;
+          }
+
           // Enviar email
           if (alert.notification_method.includes('EMAIL')) {
             try {
               await resend.emails.send({
                 from: 'Ortho+ <onboarding@resend.dev>',
                 to: [email],
-                subject: `🔔 Alerta de Taxa ${alert.coin_type}`,
+                subject: `${alertTypeLabel} ${alert.coin_type}`,
                 html: `
-                  <h2>Alerta de Taxa de Câmbio Atingida!</h2>
+                  <h2>${alertTypeLabel}</h2>
                   <p>Olá,</p>
                   <p>A taxa de câmbio do <strong>${alert.coin_type}</strong> atingiu o valor configurado no alerta.</p>
                   <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -113,8 +128,8 @@ serve(async (req) => {
                     <p><strong>Taxa Alvo:</strong> R$ ${alert.target_rate_brl.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                     <p><strong>Condição:</strong> ${alert.alert_type === 'ABOVE' ? 'Acima de' : 'Abaixo de'}</p>
                   </div>
-                  <p>Este é o momento ideal para converter suas criptomoedas!</p>
-                  <p>Acesse o sistema Ortho+ para realizar a conversão.</p>
+                  ${extraMessage}
+                  <p>Acesse o sistema Ortho+ para visualizar os detalhes.</p>
                   <br>
                   <p>Atenciosamente,<br><strong>Equipe Ortho+</strong></p>
                 `,
@@ -134,14 +149,18 @@ serve(async (req) => {
             .eq('id', alert.id);
 
           // Criar notificação in-app
+          const notificationMessage = alert.stop_loss_enabled && alert.auto_convert_on_trigger
+            ? `Stop-Loss acionado! ${alert.conversion_percentage}% do saldo está sendo convertido automaticamente. Taxa: R$ ${currentRate.toFixed(2)}`
+            : `A taxa de câmbio do ${alert.coin_type} atingiu R$ ${currentRate.toFixed(2)} (${alert.alert_type === 'ABOVE' ? 'acima' : 'abaixo'} de R$ ${alert.target_rate_brl.toFixed(2)}). Momento ideal para converter!`;
+
           await supabaseClient
             .from('notifications')
             .insert({
               clinic_id: alert.clinic_id,
               user_id: alert.created_by,
-              tipo: 'CRYPTO_ALERT',
-              titulo: `Taxa ${alert.coin_type} Atingida!`,
-              mensagem: `A taxa de câmbio do ${alert.coin_type} atingiu R$ ${currentRate.toFixed(2)} (${alert.alert_type === 'ABOVE' ? 'acima' : 'abaixo'} de R$ ${alert.target_rate_brl.toFixed(2)}). Momento ideal para converter!`,
+              tipo: alert.stop_loss_enabled ? 'CRYPTO_STOP_LOSS' : 'CRYPTO_ALERT',
+              titulo: alert.stop_loss_enabled ? `🛑 Stop-Loss ${alert.coin_type}` : `Taxa ${alert.coin_type} Atingida!`,
+              mensagem: notificationMessage,
               link_acao: '/financeiro/crypto-pagamentos',
             });
         }
@@ -168,3 +187,73 @@ serve(async (req) => {
     );
   }
 });
+
+async function executeAutoConversion(supabaseClient: any, alert: any, currentRate: number) {
+  console.log(`🔄 Executing auto-conversion for alert ${alert.id}`);
+  
+  try {
+    // Get wallet for this coin type
+    const { data: wallet, error: walletError } = await supabaseClient
+      .from('crypto_wallets')
+      .select('*')
+      .eq('clinic_id', alert.clinic_id)
+      .eq('coin_type', alert.coin_type)
+      .eq('is_active', true)
+      .single();
+
+    if (walletError || !wallet) {
+      console.error('❌ Wallet not found for auto-conversion:', walletError);
+      return;
+    }
+
+    if (wallet.balance <= 0) {
+      console.log('⚠️ Wallet balance is zero, skipping conversion');
+      return;
+    }
+
+    // Calculate amount to convert
+    const amountToConvert = (wallet.balance * alert.conversion_percentage) / 100;
+    const convertedBRL = amountToConvert * currentRate;
+
+    console.log(`💰 Converting ${amountToConvert} ${alert.coin_type} → R$ ${convertedBRL.toFixed(2)}`);
+
+    // Call convert-crypto-to-brl edge function
+    const { error: conversionError } = await supabaseClient.functions.invoke(
+      'convert-crypto-to-brl',
+      {
+        body: {
+          wallet_id: wallet.id,
+          amount_crypto: amountToConvert,
+          rate_brl: currentRate,
+          auto_conversion: true,
+          stop_loss_alert_id: alert.id,
+        },
+      }
+    );
+
+    if (conversionError) {
+      console.error('❌ Error executing auto-conversion:', conversionError);
+      return;
+    }
+
+    console.log(`✅ Auto-conversion successful: ${amountToConvert} ${alert.coin_type} → R$ ${convertedBRL.toFixed(2)}`);
+    
+    // Log audit
+    await supabaseClient.from('audit_logs').insert({
+      clinic_id: alert.clinic_id,
+      user_id: alert.created_by,
+      action: 'AUTO_CONVERSION_STOP_LOSS',
+      details: {
+        alert_id: alert.id,
+        coin_type: alert.coin_type,
+        amount_crypto: amountToConvert,
+        rate_brl: currentRate,
+        converted_brl: convertedBRL,
+        conversion_percentage: alert.conversion_percentage,
+      },
+    });
+
+  } catch (error) {
+    console.error('💥 Exception during auto-conversion:', error);
+  }
+}
