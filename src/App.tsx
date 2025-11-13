@@ -72,6 +72,7 @@ import TestNotifications from '@/pages/TestNotifications';
 import { ProductTour } from './components/tour/ProductTour';
 import ScheduledBackupsManagement from './pages/settings/ScheduledBackupsManagement';
 import BackupExecutivePage from './pages/settings/BackupExecutivePage';
+import ModulesPage from './pages/settings/ModulesPage';
 import DashboardVendasPDV from './pages/financeiro/DashboardVendasPDV';
 import MetasGamificacao from './pages/pdv/MetasGamificacao';
 import DashboardExecutivoPDV from './pages/pdv/DashboardExecutivoPDV';
@@ -149,6 +150,7 @@ const App = () => (
                 <Route path="/report-templates" element={<ProtectedRoute requireAdmin><AppLayout><ReportTemplates /></AppLayout></ProtectedRoute>} />
                 <Route path="/audit-logs" element={<ProtectedRoute requireAdmin><AppLayout><AuditLogs /></AppLayout></ProtectedRoute>} />
                 <Route path="/configuracoes" element={<ProtectedRoute requireAdmin><AppLayout><Configuracoes /></AppLayout></ProtectedRoute>} />
+                <Route path="/configuracoes/modulos" element={<ProtectedRoute requireAdmin><AppLayout><ModulesPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/ajuda" element={<ProtectedRoute><AppLayout><HelpCenter /></AppLayout></ProtectedRoute>} />
                 <Route path="/configuracoes/analytics" element={<ProtectedRoute requireAdmin><AppLayout><Suspense fallback={<LoadingState />}><OnboardingAnalytics /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/configuracoes/backups-agendados" element={<ProtectedRoute requireAdmin><AppLayout><ScheduledBackupsManagement /></AppLayout></ProtectedRoute>} />
