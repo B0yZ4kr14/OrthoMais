@@ -20,22 +20,25 @@ import { ReceitaForm } from '@/modules/pep/components/ReceitaForm';
 import { ProntuarioPDF } from '@/modules/pep/components/ProntuarioPDF';
 import { useOdontogramaSupabase } from '@/modules/pep/hooks/useOdontogramaSupabase';
 import { supabase } from '@/integrations/supabase/client';
+import { PatientSelector } from '@/components/shared/PatientSelector';
+import { Patient } from '@/modules/pacientes/types/patient.types';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function PEP() {
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [activeTab, setActiveTab] = useState('historico');
   const [isHistoricoDialogOpen, setIsHistoricoDialogOpen] = useState(false);
   const [isTratamentoDialogOpen, setIsTratamentoDialogOpen] = useState(false);
   const [isPrescricaoDialogOpen, setIsPrescricaoDialogOpen] = useState(false);
   const [isReceitaDialogOpen, setIsReceitaDialogOpen] = useState(false);
   
-  // Mock prontuario ID - em produção viria da seleção do paciente
-  // UUID válido de exemplo
-  const prontuarioId = '00000000-0000-0000-0000-000000000001';
+  const prontuarioId = selectedPatient?.prontuarioId || null;
 
   // Estados para comparação de odontogramas
   const [selectedForComparison, setSelectedForComparison] = useState<[string | null, string | null]>([null, null]);
   
-  const { history, restoreFromHistory } = useOdontogramaSupabase(prontuarioId);
+  const { history, restoreFromHistory } = useOdontogramaSupabase(prontuarioId || '');
 
   const handleCompareSelect = (historyId: string) => {
     if (selectedForComparison[0] === historyId) {
@@ -82,6 +85,31 @@ export default function PEP() {
     }
   };
 
+  // Se nenhum paciente foi selecionado, mostrar apenas o seletor
+  if (!selectedPatient) {
+    return (
+      <div className="container mx-auto p-6 space-y-6">
+        <PageHeader 
+          title="Prontuário Eletrônico do Paciente (PEP)" 
+          icon={FileText}
+          description="Gestão completa do histórico clínico, tratamentos e documentação do paciente"
+        />
+
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Selecione um paciente para acessar e gerenciar o prontuário eletrônico.
+          </AlertDescription>
+        </Alert>
+
+        <PatientSelector 
+          onSelect={setSelectedPatient}
+          selectedPatient={selectedPatient}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       <PageHeader 
@@ -90,31 +118,12 @@ export default function PEP() {
         description="Gestão completa do histórico clínico, tratamentos e documentação do paciente"
       />
 
-      {/* Informações do Paciente */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Paciente Selecionado</CardTitle>
-          <CardDescription>
-            Visualize e gerencie todas as informações clínicas
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Nome</p>
-              <p className="font-medium">João da Silva</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">CPF</p>
-              <p className="font-medium">123.456.789-00</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Data de Nascimento</p>
-              <p className="font-medium">15/03/1985 (39 anos)</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Seletor compacto de paciente */}
+      <PatientSelector 
+        onSelect={setSelectedPatient}
+        selectedPatient={selectedPatient}
+        compact
+      />
 
       {/* Tabs Principais */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>

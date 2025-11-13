@@ -3,6 +3,7 @@ import { z } from 'zod';
 // Patient validation schema
 export const patientSchema = z.object({
   id: z.string().optional(),
+  prontuarioId: z.string().optional(),
   nome: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres').max(100),
   cpf: z.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, 'CPF inválido'),
   rg: z.string().optional(),
