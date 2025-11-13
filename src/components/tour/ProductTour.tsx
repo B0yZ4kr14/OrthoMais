@@ -26,12 +26,12 @@ export function ProductTour() {
     {
       target: 'body',
       content: (
-        <div className="space-y-3">
-          <h2 className="text-2xl font-bold text-foreground">Bem-vindo ao Ortho+ 🦷</h2>
-          <p className="text-muted-foreground">
-            Vamos fazer um tour rápido pelas principais funcionalidades do sistema!
-          </p>
+        <div className="space-y-2">
+          <h2 className="text-lg font-bold text-foreground">Bem-vindo ao Ortho+ 🦷</h2>
           <p className="text-sm text-muted-foreground">
+            Tour rápido pelas principais funcionalidades!
+          </p>
+          <p className="text-xs text-muted-foreground">
             Desenvolvido por <strong>TSI Telecom</strong>
           </p>
         </div>
@@ -42,11 +42,10 @@ export function ProductTour() {
     {
       target: '[data-tour="sidebar"]',
       content: (
-        <div className="space-y-2">
-          <h3 className="font-bold text-foreground">Menu de Navegação</h3>
-          <p className="text-sm text-muted-foreground">
-            Aqui você encontra todos os módulos do sistema organizados por categoria. 
-            Clique para navegar entre as diferentes seções.
+        <div className="space-y-1.5">
+          <h3 className="text-sm font-semibold text-foreground">Menu de Navegação</h3>
+          <p className="text-xs text-muted-foreground">
+            Acesse todos os módulos organizados por categoria.
           </p>
         </div>
       ),
@@ -55,11 +54,10 @@ export function ProductTour() {
     {
       target: '[data-tour="dashboard-stats"]',
       content: (
-        <div className="space-y-2">
-          <h3 className="font-bold text-foreground">KPIs em Tempo Real</h3>
-          <p className="text-sm text-muted-foreground">
-            Visualize os principais indicadores da sua clínica: pacientes ativos, 
-            consultas do dia, receita mensal e taxa de ocupação.
+        <div className="space-y-1.5">
+          <h3 className="text-sm font-semibold text-foreground">KPIs em Tempo Real</h3>
+          <p className="text-xs text-muted-foreground">
+            Principais indicadores: pacientes, consultas e receita.
           </p>
         </div>
       ),
@@ -68,11 +66,10 @@ export function ProductTour() {
     {
       target: '[data-tour="action-cards"]',
       content: (
-        <div className="space-y-2">
-          <h3 className="font-bold text-foreground">Ações Rápidas</h3>
-          <p className="text-sm text-muted-foreground">
-            Acesse rapidamente as funcionalidades mais utilizadas: cadastrar paciente, 
-            agendar consulta, abrir prontuário e muito mais!
+        <div className="space-y-1.5">
+          <h3 className="text-sm font-semibold text-foreground">Ações Rápidas</h3>
+          <p className="text-xs text-muted-foreground">
+            Acesse funcionalidades mais usadas rapidamente.
           </p>
         </div>
       ),
@@ -81,10 +78,10 @@ export function ProductTour() {
     {
       target: '[data-tour="search-bar"]',
       content: (
-        <div className="space-y-2">
-          <h3 className="font-bold text-foreground">Busca Global</h3>
-          <p className="text-sm text-muted-foreground">
-            Encontre rapidamente pacientes, procedimentos e informações usando a busca global.
+        <div className="space-y-1.5">
+          <h3 className="text-sm font-semibold text-foreground">Busca Global</h3>
+          <p className="text-xs text-muted-foreground">
+            Encontre pacientes e procedimentos instantaneamente.
           </p>
         </div>
       ),
@@ -93,11 +90,10 @@ export function ProductTour() {
     {
       target: '[data-tour="theme-toggle"]',
       content: (
-        <div className="space-y-2">
-          <h3 className="font-bold text-foreground">Temas Visuais</h3>
-          <p className="text-sm text-muted-foreground">
-            Personalize a aparência do sistema escolhendo entre tema claro, escuro profissional 
-            ou dark-gold premium.
+        <div className="space-y-1.5">
+          <h3 className="text-sm font-semibold text-foreground">Temas e Acessibilidade</h3>
+          <p className="text-xs text-muted-foreground">
+            Personalize aparência, fonte e contraste.
           </p>
         </div>
       ),
@@ -106,10 +102,10 @@ export function ProductTour() {
     {
       target: '[data-tour="user-menu"]',
       content: (
-        <div className="space-y-2">
-          <h3 className="font-bold text-foreground">Menu do Usuário</h3>
-          <p className="text-sm text-muted-foreground">
-            Acesse suas configurações de perfil e faça logout do sistema.
+        <div className="space-y-1.5">
+          <h3 className="text-sm font-semibold text-foreground">Menu do Usuário</h3>
+          <p className="text-xs text-muted-foreground">
+            Configurações de perfil e logout.
           </p>
         </div>
       ),
@@ -118,15 +114,14 @@ export function ProductTour() {
     {
       target: 'body',
       content: (
-        <div className="space-y-3">
-          <h2 className="text-2xl font-bold text-foreground">Tour Completo! ✨</h2>
-          <p className="text-muted-foreground">
-            Você está pronto para usar o Ortho+! Explore as funcionalidades e aproveite 
-            todo o poder do sistema modular mais completo para clínicas odontológicas.
+        <div className="space-y-2">
+          <h2 className="text-lg font-bold text-foreground">Tour Completo! ✨</h2>
+          <p className="text-sm text-muted-foreground">
+            Você está pronto para usar o Ortho+! Explore todas as funcionalidades.
           </p>
           <div className="pt-2 border-t border-border">
             <p className="text-xs text-muted-foreground text-center">
-              Desenvolvido com 💙 por <strong>TSI Telecom</strong>
+              💙 <strong>TSI Telecom</strong>
             </p>
           </div>
         </div>
@@ -165,40 +160,58 @@ export function ProductTour() {
       showSkipButton
       scrollToFirstStep
       scrollOffset={100}
-      disableOverlayClose
+      disableOverlayClose={false}
       callback={handleJoyrideCallback}
       styles={{
         options: {
           primaryColor: 'hsl(var(--primary))',
           backgroundColor: 'hsl(var(--card))',
           textColor: 'hsl(var(--card-foreground))',
-          overlayColor: 'rgba(0, 0, 0, 0.7)',
+          overlayColor: 'rgba(0, 0, 0, 0.5)',
           zIndex: 10000,
           arrowColor: 'hsl(var(--card))',
+          width: 320,
         },
         buttonNext: {
           backgroundColor: 'hsl(var(--primary))',
           color: 'hsl(var(--primary-foreground))',
-          borderRadius: '0.5rem',
-          padding: '0.5rem 1.5rem',
-          fontSize: '0.875rem',
-          fontWeight: '600',
+          borderRadius: '0.375rem',
+          padding: '0.375rem 1rem',
+          fontSize: '0.8125rem',
+          fontWeight: '500',
         },
         buttonBack: {
           color: 'hsl(var(--muted-foreground))',
           marginRight: '0.5rem',
+          fontSize: '0.8125rem',
         },
         buttonSkip: {
           color: 'hsl(var(--muted-foreground))',
+          fontSize: '0.8125rem',
+        },
+        buttonClose: {
+          color: 'hsl(var(--muted-foreground))',
+          fontSize: '1.25rem',
+          padding: '0.25rem',
+          width: '24px',
+          height: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         },
         tooltip: {
-          borderRadius: '0.75rem',
-          padding: '1.5rem',
-          fontSize: '0.875rem',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          borderRadius: '0.5rem',
+          padding: '1rem',
+          fontSize: '0.8125rem',
+          maxWidth: '320px',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         },
         tooltipContent: {
-          padding: '0.5rem 0',
+          padding: '0.25rem 0',
+        },
+        tooltipTitle: {
+          fontSize: '0.9375rem',
+          marginBottom: '0.5rem',
         },
         spotlight: {
           borderRadius: '0.5rem',
@@ -209,7 +222,7 @@ export function ProductTour() {
         close: 'Fechar',
         last: 'Finalizar',
         next: 'Próximo',
-        skip: 'Pular Tour',
+        skip: 'Pular',
       }}
     />
   );
