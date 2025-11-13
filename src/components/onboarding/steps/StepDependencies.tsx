@@ -1,127 +1,103 @@
 import { Card } from '@/components/ui/card';
-import { ArrowRight, GitBranch, Lock, Unlock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { GitBranch, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export function StepDependencies() {
+  const dependencies = [
+    {
+      module: 'Split de Pagamento',
+      requires: ['Gestão Financeira'],
+      reason: 'O split de pagamento precisa dividir transações financeiras já registradas',
+    },
+    {
+      module: 'Controle de Inadimplência',
+      requires: ['Gestão Financeira'],
+      reason: 'A cobrança automática monitora contas a receber do módulo financeiro',
+    },
+    {
+      module: 'IA de Análise de Raio-X',
+      requires: ['Prontuário Eletrônico (PEP)'],
+      reason: 'Os resultados da análise de IA são salvos diretamente no prontuário',
+    },
+    {
+      module: 'Assinatura Digital ICP-Brasil',
+      requires: ['Prontuário Eletrônico (PEP)'],
+      reason: 'A assinatura digital valida documentos e evoluções do prontuário',
+    },
+  ];
+
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-xl font-bold text-foreground mb-2">
-          Entendendo Dependências
+      <Alert>
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          Alguns módulos dependem de outros para funcionar corretamente. 
+          O sistema não permitirá que você desative um módulo se outro módulo ativo depende dele.
+        </AlertDescription>
+      </Alert>
+
+      <div className="space-y-4">
+        <h3 className="font-semibold flex items-center gap-2">
+          <GitBranch className="h-5 w-5" />
+          Mapa de Dependências
         </h3>
-        <p className="text-muted-foreground">
-          Alguns módulos dependem de outros para funcionar corretamente. Veja como isso funciona.
-        </p>
-      </div>
 
-      <Card className="p-6">
-        <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-          <GitBranch className="h-5 w-5 text-primary" />
-          Como Funcionam as Dependências
-        </h4>
-
-        <div className="space-y-4">
-          <div className="p-4 rounded-lg bg-muted border border-border">
-            <p className="text-sm text-foreground mb-3 font-medium">
-              Exemplo: Split de Pagamento depende do Financeiro
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="px-4 py-2 rounded-lg bg-primary/10 border border-primary/20">
-                <span className="text-sm font-medium text-primary">Financeiro</span>
+        <div className="space-y-3">
+          {dependencies.map((dep, index) => (
+            <Card key={index} className="p-4">
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-semibold">{dep.module}</span>
+                      <span className="text-muted-foreground">depende de</span>
+                      {dep.requires.map((req, i) => (
+                        <Badge key={i} variant="secondary">
+                          {req}
+                        </Badge>
+                      ))}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {dep.reason}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <ArrowRight className="h-4 w-4 text-muted-foreground" />
-              <div className="px-4 py-2 rounded-lg bg-secondary border border-border">
-                <span className="text-sm font-medium text-foreground">Split de Pagamento</span>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground mt-3">
-              O módulo Split de Pagamento precisa das funcionalidades do módulo Financeiro
-              para processar transações divididas.
-            </p>
-          </div>
+            </Card>
+          ))}
         </div>
-      </Card>
-
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="p-5">
-          <div className="flex items-start gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
-              <Unlock className="h-5 w-5 text-success" />
-            </div>
-            <div>
-              <h5 className="font-semibold text-foreground mb-1">
-                Pode Ativar
-              </h5>
-              <p className="text-xs text-muted-foreground">
-                Todas as dependências estão ativas
-              </p>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm">
-              <div className="w-2 h-2 rounded-full bg-success" />
-              <span className="text-foreground">Toggle habilitado</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="w-2 h-2 rounded-full bg-success" />
-              <span className="text-foreground">Sem avisos</span>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-5">
-          <div className="flex items-start gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center">
-              <Lock className="h-5 w-5 text-destructive" />
-            </div>
-            <div>
-              <h5 className="font-semibold text-foreground mb-1">
-                Não Pode Ativar
-              </h5>
-              <p className="text-xs text-muted-foreground">
-                Dependências não atendidas
-              </p>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm">
-              <div className="w-2 h-2 rounded-full bg-destructive" />
-              <span className="text-foreground">Toggle desabilitado</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="w-2 h-2 rounded-full bg-destructive" />
-              <span className="text-foreground">Tooltip com aviso</span>
-            </div>
-          </div>
-        </Card>
       </div>
 
-      <Card className="p-6 bg-warning/5 border-warning/20">
-        <h4 className="font-semibold text-foreground mb-3">
-          ⚠️ Desativação de Módulos
-        </h4>
-        <p className="text-sm text-muted-foreground mb-3">
-          Ao tentar desativar um módulo, o sistema verifica se outros módulos dependem dele:
-        </p>
+      <Card className="p-6 bg-amber-500/10 border-amber-500/20">
+        <h3 className="font-semibold mb-3 flex items-center gap-2">
+          <AlertCircle className="h-5 w-5 text-amber-500" />
+          Exemplos Práticos
+        </h3>
         <ul className="space-y-2 text-sm text-muted-foreground">
-          <li className="flex items-start gap-2">
-            <span className="text-warning mt-0.5">•</span>
-            <span>
-              Se houver módulos dependentes ativos, você precisará desativá-los primeiro
-            </span>
+          <li>
+            ✅ <strong>Pode:</strong> Desativar "Split de Pagamento" a qualquer momento
           </li>
-          <li className="flex items-start gap-2">
-            <span className="text-warning mt-0.5">•</span>
-            <span>
-              O sistema mostra quais módulos estão bloqueando a desativação
-            </span>
+          <li>
+            ❌ <strong>Não pode:</strong> Desativar "Financeiro" se "Split de Pagamento" estiver ativo
           </li>
-          <li className="flex items-start gap-2">
-            <span className="text-warning mt-0.5">•</span>
-            <span>
-              Isso garante que o sistema sempre esteja em um estado consistente
-            </span>
+          <li>
+            ✅ <strong>Pode:</strong> Ativar "Split de Pagamento" se "Financeiro" já estiver ativo
+          </li>
+          <li>
+            ❌ <strong>Não pode:</strong> Ativar "Split de Pagamento" se "Financeiro" estiver inativo
           </li>
         </ul>
+      </Card>
+
+      <Card className="p-6 bg-primary/5 border-primary/20">
+        <h3 className="font-semibold mb-3">💡 Dica Pro</h3>
+        <p className="text-sm text-muted-foreground">
+          O sistema validará automaticamente as dependências antes de ativar ou desativar módulos.
+          Se uma ação não for permitida, você receberá uma mensagem clara explicando o motivo
+          e quais módulos precisam ser ativados/desativados primeiro.
+        </p>
       </Card>
     </div>
   );

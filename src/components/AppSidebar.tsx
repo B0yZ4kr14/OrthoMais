@@ -207,11 +207,11 @@ export function AppSidebar() {
     <Sidebar className={`${collapsed ? 'w-16' : 'w-72'} shadow-[4px_0_24px_-2px_rgba(0,0,0,0.2)]`} collapsible="icon">
       <SidebarHeader className="border-b border-border p-6 bg-gradient-to-br from-sidebar via-sidebar/95 to-sidebar/90 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
         {!collapsed ? (
-          <div className="flex items-center justify-center px-2 py-2 bg-background/10 rounded-lg backdrop-blur-sm shadow-[inset_0_2px_10px_rgba(0,0,0,0.2),0_4px_20px_rgba(0,0,0,0.15)]">
+          <div className="flex items-center justify-center px-3 py-3 bg-gradient-to-br from-primary/10 via-background/5 to-transparent rounded-xl backdrop-blur-sm shadow-xl border border-primary/20 relative z-20">
             <img 
               src="/src/assets/ortho-logo-full.png" 
               alt="Ortho +" 
-              className="h-20 w-auto object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] filter brightness-110"
+              className="h-16 w-auto object-contain drop-shadow-2xl filter brightness-110 contrast-110"
             />
           </div>
         ) : (

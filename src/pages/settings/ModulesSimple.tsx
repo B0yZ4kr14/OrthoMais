@@ -320,12 +320,11 @@ export default function ModulesSimple() {
       </div>
 
       {/* Onboarding Wizard */}
-      <OnboardingWizard
-        isOpen={showWizard}
-        onClose={setShowWizard}
-        modules={modules}
-        onActivateModules={handleWizardActivate}
-      />
+      {showWizard && (
+        <div className="fixed inset-0 z-50 bg-background">
+          <OnboardingWizard onComplete={() => setShowWizard(false)} />
+        </div>
+      )}
     </div>
   );
 }

@@ -110,10 +110,10 @@ export default function CryptoPagamentos() {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto py-6 space-y-6">
       <PageHeader
         title="Pagamentos em Criptomoedas"
-        description="Receba pagamentos em Bitcoin e outras criptomoedas de forma profissional"
+        description="Receba pagamentos em Bitcoin e outras criptomoedas de forma profissional e segura"
       />
 
       {/* KPIs Dashboard */}

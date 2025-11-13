@@ -1,108 +1,136 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import { Info, CheckCircle2, XCircle } from 'lucide-react';
+
+const SAMPLE_MODULES = [
+  { id: 'DASHBOARD', name: 'Dashboard', category: 'Core', essential: true },
+  { id: 'PACIENTES', name: 'Pacientes', category: 'Cadastros', essential: true },
+  { id: 'PEP', name: 'Prontuário Eletrônico', category: 'Clínica', essential: true },
+  { id: 'AGENDA', name: 'Agenda Inteligente', category: 'Clínica', essential: false },
+  { id: 'FINANCEIRO', name: 'Gestão Financeira', category: 'Financeiro', essential: false },
+  { id: 'SPLIT_PAGAMENTO', name: 'Split de Pagamento', category: 'Financeiro', essential: false },
+  { id: 'ESTOQUE', name: 'Controle de Estoque', category: 'Operacional', essential: false },
+  { id: 'BI', name: 'Business Intelligence', category: 'Analytics', essential: false },
+];
 
 export function StepActivation() {
+  const [activeModules, setActiveModules] = useState<string[]>(
+    SAMPLE_MODULES.filter(m => m.essential).map(m => m.id)
+  );
+
+  const toggleModule = (id: string) => {
+    const module = SAMPLE_MODULES.find(m => m.id === id);
+    if (module?.essential) return;
+
+    if (activeModules.includes(id)) {
+      setActiveModules(activeModules.filter(m => m !== id));
+    } else {
+      setActiveModules([...activeModules, id]);
+    }
+  };
+
+  const groupedModules = SAMPLE_MODULES.reduce((acc, module) => {
+    if (!acc[module.category]) {
+      acc[module.category] = [];
+    }
+    acc[module.category].push(module);
+    return acc;
+  }, {} as Record<string, typeof SAMPLE_MODULES>);
+
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-xl font-bold text-foreground mb-2">
-          Ativação de Módulos
-        </h3>
-        <p className="text-muted-foreground">
-          Aprenda como ativar e desativar módulos de forma segura e eficiente.
-        </p>
+      <Card className="p-4 bg-blue-500/10 border-blue-500/20">
+        <div className="flex gap-3">
+          <Info className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+          <div>
+            <h3 className="font-semibold mb-1">Como funciona a ativação de módulos?</h3>
+            <p className="text-sm text-muted-foreground">
+              Você pode ativar ou desativar módulos a qualquer momento. Módulos marcados como 
+              <strong> "Essencial"</strong> não podem ser desativados pois são fundamentais para o funcionamento do sistema.
+              Esta é uma demonstração - após o onboarding, você poderá configurar os módulos reais em <strong>Configurações → Meus Módulos</strong>.
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      <div className="flex justify-between items-center">
+        <div>
+          <p className="text-sm text-muted-foreground">
+            {activeModules.length} de {SAMPLE_MODULES.length} módulos ativos
+          </p>
+        </div>
+        <div className="flex gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-green-500" />
+            <span>{activeModules.length} Ativos</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <XCircle className="h-4 w-4 text-red-500" />
+            <span>{SAMPLE_MODULES.length - activeModules.length} Inativos</span>
+          </div>
+        </div>
       </div>
 
-      <Card className="p-6">
-        <h4 className="font-semibold text-foreground mb-4">
-          Como Funciona o Toggle
-        </h4>
+      <div className="space-y-6">
+        {Object.entries(groupedModules).map(([category, modules]) => (
+          <div key={category} className="space-y-3">
+            <h3 className="font-semibold flex items-center gap-2">
+              {category}
+              <Badge variant="outline">{modules.length}</Badge>
+            </h3>
 
-        <div className="space-y-4">
-          <div className="flex items-start gap-4 p-4 rounded-lg bg-success/5 border border-success/20">
-            <CheckCircle2 className="h-5 w-5 text-success mt-0.5" />
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
-                <p className="font-medium text-foreground">Módulo Ativo</p>
-                <Switch checked disabled />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Quando um módulo está ativo, ele aparece no menu lateral e todas as suas
-                funcionalidades estão disponíveis para os usuários.
-              </p>
+            <div className="space-y-2">
+              {modules.map((module) => {
+                const isActive = activeModules.includes(module.id);
+                return (
+                  <Card
+                    key={module.id}
+                    className={`p-4 transition-all ${
+                      isActive ? 'bg-card' : 'bg-muted/30 opacity-70'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            isActive ? 'bg-green-500' : 'bg-gray-400'
+                          }`}
+                        />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{module.name}</span>
+                            {module.essential && (
+                              <Badge variant="secondary" className="text-xs">
+                                Essencial
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {module.category}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-muted-foreground">
+                          {isActive ? 'Ativo' : 'Inativo'}
+                        </span>
+                        <Switch
+                          checked={isActive}
+                          onCheckedChange={() => toggleModule(module.id)}
+                          disabled={module.essential}
+                        />
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
           </div>
-
-          <div className="flex items-start gap-4 p-4 rounded-lg bg-muted border border-border">
-            <XCircle className="h-5 w-5 text-muted-foreground mt-0.5" />
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
-                <p className="font-medium text-foreground">Módulo Inativo</p>
-                <Switch checked={false} disabled />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Quando desativado, o módulo é removido do menu e suas funcionalidades ficam
-                inacessíveis. Os dados são preservados.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4 p-4 rounded-lg bg-warning/5 border border-warning/20">
-            <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
-                <p className="font-medium text-foreground">Toggle Desabilitado</p>
-                <Switch checked={false} disabled className="opacity-50" />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Quando o toggle está desabilitado (acinzentado), significa que há dependências
-                não atendidas ou módulos dependentes ativos.
-              </p>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-6">
-        <h4 className="font-semibold text-foreground mb-4">
-          Estados de Módulos
-        </h4>
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 rounded-lg border border-border">
-            <div className="flex items-center gap-3">
-              <Badge variant="default">Contratado & Ativo</Badge>
-              <span className="text-sm text-foreground">Pronto para uso</span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between p-3 rounded-lg border border-border">
-            <div className="flex items-center gap-3">
-              <Badge variant="secondary">Contratado & Inativo</Badge>
-              <span className="text-sm text-foreground">Pode ser ativado</span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between p-3 rounded-lg border border-border">
-            <div className="flex items-center gap-3">
-              <Badge variant="outline">Não Contratado</Badge>
-              <span className="text-sm text-foreground">Solicite contratação</span>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-6 bg-blue-500/5 border-blue-500/20">
-        <h4 className="font-semibold text-foreground mb-3">
-          🎯 Próximo Passo
-        </h4>
-        <p className="text-sm text-muted-foreground">
-          Agora que você entende como ativar módulos, vamos aprender sobre as dependências
-          entre eles e como elas funcionam.
-        </p>
-      </Card>
+        ))}
+      </div>
     </div>
   );
 }

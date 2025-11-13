@@ -1,125 +1,199 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Zap, Eye, AlertTriangle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { PlayCircle, RefreshCw, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
+
+const SIMULATION_MODULES = [
+  { id: 'FINANCEIRO', name: 'Financeiro', active: true, essential: false },
+  { id: 'SPLIT', name: 'Split de Pagamento', active: true, essential: false, requires: ['FINANCEIRO'] },
+  { id: 'COBRANCA', name: 'Inadimplência', active: false, essential: false, requires: ['FINANCEIRO'] },
+];
 
 export function StepSimulation() {
+  const [modules, setModules] = useState(SIMULATION_MODULES);
+  const [lastAction, setLastAction] = useState<string | null>(null);
+
+  const canDeactivate = (moduleId: string) => {
+    const dependents = modules.filter(
+      m => m.active && m.requires?.includes(moduleId)
+    );
+    return dependents.length === 0;
+  };
+
+  const canActivate = (moduleId: string) => {
+    const module = modules.find(m => m.id === moduleId);
+    if (!module?.requires) return true;
+
+    return module.requires.every(req => 
+      modules.find(m => m.id === req)?.active
+    );
+  };
+
+  const toggleModule = (moduleId: string) => {
+    const module = modules.find(m => m.id === moduleId);
+    if (!module) return;
+
+    if (module.active) {
+      if (!canDeactivate(moduleId)) {
+        const dependents = modules.filter(
+          m => m.active && m.requires?.includes(moduleId)
+        ).map(m => m.name);
+
+        toast.error(
+          `Não é possível desativar ${module.name}`,
+          {
+            description: `Desative primeiro: ${dependents.join(', ')}`,
+          }
+        );
+        setLastAction(`❌ Falha ao desativar ${module.name} (dependências ativas)`);
+        return;
+      }
+
+      setModules(modules.map(m => 
+        m.id === moduleId ? { ...m, active: false } : m
+      ));
+      toast.success(`${module.name} desativado`);
+      setLastAction(`✅ ${module.name} desativado com sucesso`);
+    } else {
+      if (!canActivate(moduleId)) {
+        const missing = module.requires?.filter(req =>
+          !modules.find(m => m.id === req)?.active
+        ).map(req => 
+          modules.find(m => m.id === req)?.name
+        ) || [];
+
+        toast.error(
+          `Não é possível ativar ${module.name}`,
+          {
+            description: `Ative primeiro: ${missing.join(', ')}`,
+          }
+        );
+        setLastAction(`❌ Falha ao ativar ${module.name} (dependências inativas)`);
+        return;
+      }
+
+      setModules(modules.map(m =>
+        m.id === moduleId ? { ...m, active: true } : m
+      ));
+      toast.success(`${module.name} ativado`);
+      setLastAction(`✅ ${module.name} ativado com sucesso`);
+    }
+  };
+
+  const resetSimulation = () => {
+    setModules(SIMULATION_MODULES);
+    setLastAction(null);
+    toast.info('Simulação reiniciada');
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-xl font-bold text-foreground mb-2">
-          Simulação What-If
-        </h3>
-        <p className="text-muted-foreground">
-          Visualize o impacto de ativar ou desativar módulos antes de fazer alterações reais.
-        </p>
+      <Alert>
+        <PlayCircle className="h-4 w-4" />
+        <AlertDescription>
+          Esta é uma simulação interativa. Tente ativar e desativar módulos para ver 
+          como o sistema valida as dependências em tempo real.
+        </AlertDescription>
+      </Alert>
+
+      {lastAction && (
+        <Card className="p-4 bg-muted/50 border-dashed">
+          <p className="text-sm font-mono">{lastAction}</p>
+        </Card>
+      )}
+
+      <div className="space-y-3">
+        {modules.map((module) => {
+          const canToggle = module.active 
+            ? canDeactivate(module.id) 
+            : canActivate(module.id);
+
+          const dependents = module.active
+            ? modules.filter(m => m.active && m.requires?.includes(module.id))
+            : [];
+
+          const missingDeps = !module.active && module.requires
+            ? module.requires.filter(req => !modules.find(m => m.id === req)?.active)
+            : [];
+
+          return (
+            <Card key={module.id} className={`p-4 ${module.active ? 'bg-card' : 'bg-muted/30'}`}>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {module.active ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <XCircle className="h-5 w-5 text-gray-400" />
+                    )}
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">{module.name}</span>
+                        {module.requires && (
+                          <Badge variant="outline" className="text-xs">
+                            Depende de {module.requires.length}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {module.active ? 'Módulo ativo' : 'Módulo inativo'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant={module.active ? 'destructive' : 'default'}
+                    size="sm"
+                    onClick={() => toggleModule(module.id)}
+                  >
+                    {module.active ? 'Desativar' : 'Ativar'}
+                  </Button>
+                </div>
+
+                {!canToggle && module.active && dependents.length > 0 && (
+                  <div className="flex items-start gap-2 p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+                    <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-red-600 dark:text-red-400">
+                      Não pode desativar: <strong>{dependents.map(d => d.name).join(', ')}</strong> depende(m) deste módulo
+                    </p>
+                  </div>
+                )}
+
+                {!canToggle && !module.active && missingDeps.length > 0 && (
+                  <div className="flex items-start gap-2 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                    <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-amber-600 dark:text-amber-400">
+                      Requer: <strong>{missingDeps.map(id => modules.find(m => m.id === id)?.name).join(', ')}</strong> ativo(s)
+                    </p>
+                  </div>
+                )}
+              </div>
+            </Card>
+          );
+        })}
       </div>
+
+      <Button
+        variant="outline"
+        className="w-full gap-2"
+        onClick={resetSimulation}
+      >
+        <RefreshCw className="h-4 w-4" />
+        Reiniciar Simulação
+      </Button>
 
       <Card className="p-6 bg-primary/5 border-primary/20">
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-            <Zap className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h4 className="font-semibold text-foreground mb-2">
-              O Que é a Simulação What-If?
-            </h4>
-            <p className="text-sm text-muted-foreground">
-              É uma ferramenta poderosa que permite visualizar todas as consequências de ativar
-              ou desativar um módulo antes de realmente fazer a mudança. Você pode ver em tempo
-              real quais outros módulos serão afetados.
-            </p>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-6">
-        <h4 className="font-semibold text-foreground mb-4">
-          Como Usar
-        </h4>
-
-        <div className="space-y-4">
-          <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium shrink-0">
-              1
-            </div>
-            <div>
-              <p className="font-medium text-foreground mb-1">
-                Acesse o Grafo de Dependências
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Na página de Gestão de Módulos, clique no botão "Ver Grafo de Dependências"
-                para abrir a visualização interativa.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium shrink-0">
-              2
-            </div>
-            <div>
-              <p className="font-medium text-foreground mb-1">
-                Clique em um Módulo
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Selecione qualquer módulo no grafo para simular sua ativação ou desativação.
-                O sistema calculará automaticamente todos os impactos.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium shrink-0">
-              3
-            </div>
-            <div>
-              <p className="font-medium text-foreground mb-1">
-                Analise os Resultados
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Veja quais módulos serão habilitados, desabilitados ou bloqueados pela sua ação.
-                O grafo destaca visualmente todos os módulos afetados.
-              </p>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="p-4 border-success/20 bg-success/5">
-          <div className="flex items-center gap-2 mb-2">
-            <Eye className="h-5 w-5 text-success" />
-            <h5 className="font-semibold text-foreground">Módulos Habilitados</h5>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Destacados em verde, mostram quais módulos poderão ser ativados após a mudança.
-          </p>
-        </Card>
-
-        <Card className="p-4 border-destructive/20 bg-destructive/5">
-          <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="h-5 w-5 text-destructive" />
-            <h5 className="font-semibold text-foreground">Módulos Bloqueados</h5>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Destacados em vermelho, indicam módulos que serão desabilitados ou bloqueados.
-          </p>
-        </Card>
-      </div>
-
-      <Card className="p-6 bg-blue-500/5 border-blue-500/20">
-        <h4 className="font-semibold text-foreground mb-3">
-          💡 Dica Pro
-        </h4>
-        <p className="text-sm text-muted-foreground mb-3">
-          Use a simulação sempre que planejar mudanças complexas na configuração de módulos.
-          Isso evita surpresas e garante que sua clínica mantenha todas as funcionalidades
-          necessárias ativas.
-        </p>
-        <Button variant="outline" size="sm" className="mt-2">
-          <Eye className="h-4 w-4 mr-2" />
-          Ir para Grafo Agora
-        </Button>
+        <h3 className="font-semibold mb-3">🎯 Experimente</h3>
+        <ol className="space-y-2 text-sm text-muted-foreground list-decimal list-inside">
+          <li>Tente desativar "Financeiro" (não funcionará enquanto Split estiver ativo)</li>
+          <li>Desative "Split de Pagamento" primeiro</li>
+          <li>Agora desative "Financeiro" (funcionará)</li>
+          <li>Tente ativar "Inadimplência" (não funcionará sem Financeiro ativo)</li>
+          <li>Ative "Financeiro" novamente e depois "Inadimplência"</li>
+        </ol>
       </Card>
     </div>
   );
