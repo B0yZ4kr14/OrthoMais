@@ -47,16 +47,16 @@ export function DashboardHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       {/* Top row with search and user menu */}
-      <div className="h-16 px-6 flex items-center justify-between">
-        <div className="w-80" data-tour="search-bar">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar paciente, procedimento..."
-            className="pl-10 bg-muted/50"
-          />
+      <div className="h-16 px-6 flex items-center justify-between gap-4">
+        <div className="w-64" data-tour="search-bar">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar..."
+              className="pl-10 bg-muted/50 text-sm"
+            />
+          </div>
         </div>
-      </div>
 
       <div className="flex items-center gap-3">
         {/* Theme Preview Dialog */}
@@ -143,7 +143,7 @@ export function DashboardHeader() {
       </div>
 
       {/* Breadcrumbs row */}
-      <div className="h-10 px-6 flex items-center border-t border-border/50 bg-muted/30">
+      <div className="h-9 px-6 flex items-center border-t border-border/50 bg-muted/20">
         <Breadcrumbs />
       </div>
     </header>
