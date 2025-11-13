@@ -118,46 +118,54 @@ export default function EstoqueDashboard() {
       />
 
       {/* Cards de Métricas Principais */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card variant="elevated" className="p-6 hover-scale">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Total de Produtos</p>
-              <p className="text-3xl font-bold mt-2">{metrics.totalProdutos}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card variant="metric" className="p-5 border-l-primary">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Total de Produtos
+              </p>
+              <p className="text-2xl font-bold truncate">{metrics.totalProdutos}</p>
             </div>
-            <Package className="h-12 w-12 text-primary opacity-20" />
+            <Package className="h-10 w-10 text-primary opacity-20 shrink-0" />
           </div>
         </Card>
 
-        <Card variant="elevated" className="p-6 hover-scale">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Estoque Baixo</p>
-              <p className="text-3xl font-bold mt-2 text-orange-500">{metrics.produtosEstoqueBaixo}</p>
+        <Card variant="metric" className="p-5 border-l-orange-500">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Estoque Baixo
+              </p>
+              <p className="text-2xl font-bold text-orange-500 truncate">{metrics.produtosEstoqueBaixo}</p>
             </div>
-            <AlertTriangle className="h-12 w-12 text-orange-500 opacity-20" />
+            <AlertTriangle className="h-10 w-10 text-orange-500 opacity-20 shrink-0" />
           </div>
         </Card>
 
-        <Card variant="elevated" className="p-6 hover-scale">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Requisições Pendentes</p>
-              <p className="text-3xl font-bold mt-2 text-yellow-500">{metrics.requisiçõesPendentes}</p>
+        <Card variant="metric" className="p-5 border-l-yellow-500">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Requisições Pendentes
+              </p>
+              <p className="text-2xl font-bold text-yellow-500 truncate">{metrics.requisiçõesPendentes}</p>
             </div>
-            <Clock className="h-12 w-12 text-yellow-500 opacity-20" />
+            <Clock className="h-10 w-10 text-yellow-500 opacity-20 shrink-0" />
           </div>
         </Card>
 
-        <Card variant="elevated" className="p-6 hover-scale">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Valor Total</p>
-              <p className="text-3xl font-bold mt-2 text-green-500">
+        <Card variant="metric" className="p-5 border-l-green-500">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Valor Total
+              </p>
+              <p className="text-2xl font-bold text-green-500 truncate">
                 R$ {metrics.valorTotalInventario.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
             </div>
-            <DollarSign className="h-12 w-12 text-green-500 opacity-20" />
+            <DollarSign className="h-10 w-10 text-green-500 opacity-20 shrink-0" />
           </div>
         </Card>
       </div>

@@ -109,7 +109,7 @@ export default function Dashboard() {
       />
 
       {/* Cards de Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" data-tour="dashboard-stats">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" data-tour="dashboard-stats">
         <StatCard
           label="Pacientes Ativos"
           value={stats.totalPatients.toString()}

@@ -24,24 +24,35 @@ export function StatCard({
   alert
 }: StatCardProps) {
   return (
-    <Card variant="elevated" className={cn("p-6 border-l-4", borderColor)}>
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm text-muted-foreground mb-1">{label}</p>
-          <h3 className="text-3xl font-bold text-foreground mb-2">{value}</h3>
+    <Card variant="metric" className={cn("p-5", borderColor)}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+            {label}
+          </p>
+          <h3 className="text-2xl font-bold text-foreground mb-1.5 truncate">
+            {value}
+          </h3>
           {trend && (
-            <p className={cn("text-sm font-medium", trendPositive ? "text-green-600" : "text-red-600")}>
+            <p className={cn(
+              "text-xs font-medium flex items-center gap-1",
+              trendPositive ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"
+            )}>
+              <span>{trendPositive ? '↑' : '↓'}</span>
               {trend}
             </p>
           )}
           {alert && (
-            <p className="text-sm text-orange-600 font-medium flex items-center gap-1 mt-2">
+            <p className="text-xs text-orange-600 dark:text-orange-500 font-medium flex items-center gap-1 mt-2">
               <span>⚠️</span> {alert}
             </p>
           )}
         </div>
-        <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shadow-md", iconColor)}>
-          <Icon className="h-6 w-6 text-white" />
+        <div className={cn(
+          "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
+          iconColor
+        )}>
+          <Icon className="h-5 w-5 text-white" />
         </div>
       </div>
     </Card>

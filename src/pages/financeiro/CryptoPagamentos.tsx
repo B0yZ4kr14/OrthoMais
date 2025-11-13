@@ -109,55 +109,55 @@ export default function CryptoPagamentos() {
       />
 
       {/* KPIs Dashboard */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total em BTC
-            </CardTitle>
-            <Bitcoin className="h-4 w-4 text-orange-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{dashboardData.totalBTC.toFixed(8)} BTC</div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total em BRL
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              R$ {dashboardData.totalBRL.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card variant="metric" className="p-5 border-l-orange-500">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Total em BTC
+              </p>
+              <p className="text-2xl font-bold truncate">{dashboardData.totalBTC.toFixed(8)} BTC</p>
             </div>
-          </CardContent>
+            <Bitcoin className="h-10 w-10 text-orange-500 opacity-20 shrink-0" />
+          </div>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Transações Pendentes
-            </CardTitle>
-            <ArrowRightLeft className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{dashboardData.pendingTransactions}</div>
-          </CardContent>
+        <Card variant="metric" className="p-5 border-l-green-500">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Total em BRL
+              </p>
+              <p className="text-2xl font-bold text-green-500 truncate">
+                R$ {dashboardData.totalBRL.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </p>
+            </div>
+            <TrendingUp className="h-10 w-10 text-green-500 opacity-20 shrink-0" />
+          </div>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Confirmadas Hoje
-            </CardTitle>
-            <Wallet className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{dashboardData.confirmedToday}</div>
-          </CardContent>
+        <Card variant="metric" className="p-5 border-l-yellow-500">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Transações Pendentes
+              </p>
+              <p className="text-2xl font-bold text-yellow-500 truncate">{dashboardData.pendingTransactions}</p>
+            </div>
+            <ArrowRightLeft className="h-10 w-10 text-yellow-500 opacity-20 shrink-0" />
+          </div>
+        </Card>
+
+        <Card variant="metric" className="p-5 border-l-blue-500">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Confirmadas Hoje
+              </p>
+              <p className="text-2xl font-bold truncate">{dashboardData.confirmedToday}</p>
+            </div>
+            <Wallet className="h-10 w-10 text-blue-500 opacity-20 shrink-0" />
+          </div>
         </Card>
       </div>
 
