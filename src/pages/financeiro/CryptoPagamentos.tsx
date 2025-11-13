@@ -90,6 +90,7 @@ export default function CryptoPagamentos() {
     return (
       <div className="container mx-auto py-6">
         <PageHeader
+          icon={Bitcoin}
           title="Pagamentos em Criptomoedas"
           description="Receba pagamentos em Bitcoin e outras criptomoedas"
         />
@@ -112,6 +113,7 @@ export default function CryptoPagamentos() {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <PageHeader
+        icon={Bitcoin}
         title="Pagamentos em Criptomoedas"
         description="Receba pagamentos em Bitcoin e outras criptomoedas de forma profissional e segura"
       />
