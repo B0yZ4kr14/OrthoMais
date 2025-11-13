@@ -42,6 +42,7 @@ import EstoqueAnaliseConsumo from '@/pages/estoque/EstoqueAnaliseConsumo';
 import EstoquePedidos from '@/pages/estoque/EstoquePedidos';
 import EstoqueIntegracoes from '@/pages/estoque/EstoqueIntegracoes';
 import EstoqueAnalisePedidos from '@/pages/estoque/EstoqueAnalisePedidos';
+import EstoqueScannerMobile from '@/pages/estoque/EstoqueScannerMobile';
 import ContasReceber from '@/pages/financeiro/ContasReceber';
 import ContasPagar from '@/pages/financeiro/ContasPagar';
 import NotasFiscais from '@/pages/financeiro/NotasFiscais';
@@ -111,6 +112,7 @@ const App = () => (
                 <Route path="/estoque/integracoes" element={<ProtectedRoute><AppLayout><EstoqueIntegracoes /></AppLayout></ProtectedRoute>} />
                 <Route path="/estoque/analise-pedidos" element={<ProtectedRoute><AppLayout><EstoqueAnalisePedidos /></AppLayout></ProtectedRoute>} />
                 <Route path="/estoque/analise-consumo" element={<ProtectedRoute><AppLayout><EstoqueAnaliseConsumo /></AppLayout></ProtectedRoute>} />
+                <Route path="/estoque/scanner-mobile" element={<ProtectedRoute><AppLayout><EstoqueScannerMobile /></AppLayout></ProtectedRoute>} />
                 <Route path="/orcamentos" element={<ProtectedRoute><AppLayout><Orcamentos /></AppLayout></ProtectedRoute>} />
                 <Route path="/contratos" element={<ProtectedRoute><AppLayout><Contratos /></AppLayout></ProtectedRoute>} />
                 <Route path="/portal-paciente" element={<ProtectedRoute><AppLayout><PortalPaciente /></AppLayout></ProtectedRoute>} />

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, UserPlus, Calendar, Stethoscope, FileText, DollarSign, Settings, TrendingUp, ClipboardList, Shield, Activity, Package, CreditCard, BarChart3, FileBarChart, Bitcoin, FolderOpen, ShoppingCart, Webhook, LineChart, FileSignature, User, Video, Scan, UserCog, Award } from 'lucide-react';
+import { LayoutDashboard, Users, UserPlus, Calendar, Stethoscope, FileText, DollarSign, Settings, TrendingUp, ClipboardList, Shield, Activity, Package, CreditCard, BarChart3, FileBarChart, Bitcoin, FolderOpen, ShoppingCart, Webhook, LineChart, FileSignature, User, Video, Scan, UserCog, Award, Smartphone } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -109,6 +109,11 @@ const menuGroups = [{
     title: 'Análise de Consumo',
     url: '/estoque/analise-consumo',
     icon: BarChart3
+  }, {
+    title: 'Scanner Mobile',
+    url: '/estoque/scanner-mobile',
+    icon: Smartphone,
+    badge: 'Novo'
   }]
 }, {
   label: 'Financeiro',
