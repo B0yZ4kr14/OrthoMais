@@ -9,6 +9,7 @@ import { BackupStatsDashboard } from "./BackupStatsDashboard";
 import { BackupAdvancedStatsDashboard } from "./BackupAdvancedStatsDashboard";
 import { BackupRetentionConfig } from "./BackupRetentionConfig";
 import { BackupVersionTimeline } from "./BackupVersionTimeline";
+import BackupExecutiveDashboard from "./BackupExecutiveDashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScheduledBackupWizard } from "./ScheduledBackupWizard";
 import { BackupRestoreDialog } from "./BackupRestoreDialog";
@@ -148,8 +149,9 @@ export default function DatabaseBackupTab() {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="backup" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="backup">Backup</TabsTrigger>
+          <TabsTrigger value="executive">Executivo</TabsTrigger>
           <TabsTrigger value="stats">Estatísticas</TabsTrigger>
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
           <TabsTrigger value="retention">Retenção</TabsTrigger>
@@ -426,6 +428,10 @@ export default function DatabaseBackupTab() {
           </div>
         </AlertDescription>
       </Alert>
+        </TabsContent>
+
+        <TabsContent value="executive" className="mt-6">
+          <BackupExecutiveDashboard />
         </TabsContent>
 
         <TabsContent value="stats" className="mt-6">

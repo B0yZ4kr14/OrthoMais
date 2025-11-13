@@ -5,7 +5,7 @@ import { StatCard } from '@/components/StatCard';
 import { ActionCard } from '@/components/dashboard/ActionCard';
 import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { LayoutDashboard, Users, Calendar, DollarSign, TrendingUp, Activity, CheckCircle2, BarChart3, FileText } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, DollarSign, TrendingUp, Activity, CheckCircle2, BarChart3, FileText, Database, ShoppingCart } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { MarketRatesWidget } from '@/components/dashboard/MarketRatesWidget';
@@ -212,6 +212,24 @@ export default function Dashboard() {
                 icon={BarChart3}
                 bgColor="bg-[hsl(var(--module-cyan))]"
                 route="/business-intelligence"
+              />
+            </div>
+            <div className="animate-fade-in" style={{ animationDelay: '600ms' }}>
+              <ActionCard
+                title="Backups"
+                subtitle="Gerenciar Backups"
+                icon={Database}
+                bgColor="bg-[hsl(var(--module-purple))]"
+                route="/configuracoes?tab=database"
+              />
+            </div>
+            <div className="animate-fade-in" style={{ animationDelay: '700ms' }}>
+              <ActionCard
+                title="PDV"
+                subtitle="Ponto de Venda"
+                icon={ShoppingCart}
+                bgColor="bg-[hsl(var(--module-green))]"
+                route="/pdv"
               />
             </div>
           </div>

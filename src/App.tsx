@@ -68,6 +68,7 @@ import NotFound from './pages/NotFound';
 import TestNotifications from '@/pages/TestNotifications';
 import { ProductTour } from './components/tour/ProductTour';
 import ScheduledBackupsManagement from './pages/settings/ScheduledBackupsManagement';
+import BackupExecutivePage from './pages/settings/BackupExecutivePage';
 
 const queryClient = new QueryClient();
 
@@ -140,6 +141,7 @@ const App = () => (
                 <Route path="/configuracoes" element={<ProtectedRoute requireAdmin><AppLayout><Configuracoes /></AppLayout></ProtectedRoute>} />
                 <Route path="/configuracoes/analytics" element={<ProtectedRoute requireAdmin><AppLayout><Suspense fallback={<LoadingState />}><OnboardingAnalytics /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/configuracoes/backups-agendados" element={<ProtectedRoute requireAdmin><AppLayout><ScheduledBackupsManagement /></AppLayout></ProtectedRoute>} />
+                <Route path="/configuracoes/backup-executivo" element={<ProtectedRoute requireAdmin><AppLayout><BackupExecutivePage /></AppLayout></ProtectedRoute>} />
                 <Route path="/pdv" element={<ProtectedRoute><AppLayout><PDV /></AppLayout></ProtectedRoute>} />
                 <Route path="/relatorio-caixa" element={<ProtectedRoute><AppLayout><RelatorioCaixa /></AppLayout></ProtectedRoute>} />
                 <Route path="/settings/modules" element={<ProtectedRoute requireAdmin><AppLayout><ModulesAdmin /></AppLayout></ProtectedRoute>} />
