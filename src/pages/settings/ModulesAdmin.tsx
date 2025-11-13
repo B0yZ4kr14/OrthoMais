@@ -446,6 +446,8 @@ export default function ModulesAdmin() {
 
       {onboardingOpen && (
         <OnboardingWizard
+          open={onboardingOpen}
+          onClose={() => setOnboardingOpen(false)}
           onComplete={() => {
             setOnboardingOpen(false);
             localStorage.setItem('ortho-onboarding-completed', 'true');

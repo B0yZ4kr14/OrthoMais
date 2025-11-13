@@ -321,9 +321,11 @@ export default function ModulesSimple() {
 
       {/* Onboarding Wizard */}
       {showWizard && (
-        <div className="fixed inset-0 z-50 bg-background">
-          <OnboardingWizard onComplete={() => setShowWizard(false)} />
-        </div>
+        <OnboardingWizard 
+          open={showWizard}
+          onClose={() => setShowWizard(false)}
+          onComplete={() => setShowWizard(false)} 
+        />
       )}
     </div>
   );
