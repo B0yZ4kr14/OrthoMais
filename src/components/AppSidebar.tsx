@@ -48,17 +48,14 @@ const menuGroups = [{
   }, {
     title: 'Orçamentos',
     url: '/orcamentos',
-    icon: FileText,
-    badge: 'Novo'
+    icon: FileText
   }, {
     title: 'Contratos',
     url: '/contratos',
-    icon: FileSignature,
-    badge: 'Novo'
+    icon: FileSignature
   }, {
     title: 'Teleodontologia',
     icon: Video,
-    badge: 'Beta',
     collapsed: true,
     subItems: [{
       title: 'Consultas',
@@ -72,8 +69,7 @@ const menuGroups = [{
   }, {
     title: 'IA Raio-X',
     url: '/ia-radiografia',
-    icon: Scan,
-    badge: 'IA'
+    icon: Scan
   }]
 }, {
   label: 'Estoque',
@@ -101,8 +97,7 @@ const menuGroups = [{
   }, {
     title: 'Integrações API',
     url: '/estoque/integracoes',
-    icon: Webhook,
-    badge: 'Beta'
+    icon: Webhook
   }, {
     title: 'Análise de Pedidos',
     url: '/estoque/analise-pedidos',
@@ -114,8 +109,7 @@ const menuGroups = [{
   }, {
     title: 'Scanner Mobile',
     url: '/estoque/scanner-mobile',
-    icon: Smartphone,
-    badge: 'Novo'
+    icon: Smartphone
   }]
 }, {
   label: 'Financeiro',
@@ -127,8 +121,7 @@ const menuGroups = [{
   }, {
     title: 'Transações',
     url: '/financeiro/transacoes',
-    icon: Activity,
-    badge: 'Novo'
+    icon: Activity
   }, {
     title: 'Contas a Receber',
     url: '/financeiro/contas-receber',
@@ -148,13 +141,11 @@ const menuGroups = [{
   }, {
     title: 'Split de Pagamento',
     url: '/split-pagamento',
-    icon: DollarSign,
-    badge: 'Novo'
+    icon: DollarSign
   }, {
     title: 'Crypto Pagamentos',
     url: '/financeiro/crypto',
-    icon: Bitcoin,
-    badge: 'Beta'
+    icon: Bitcoin
   }]
 }, {
   label: 'Relatórios & BI',
@@ -165,13 +156,11 @@ const menuGroups = [{
   }, {
     title: 'Business Intelligence',
     url: '/business-intelligence',
-    icon: TrendingUp,
-    badge: 'IA'
+    icon: TrendingUp
   }, {
     title: 'Análise Comportamental',
     url: '/analise-comportamental',
-    icon: Activity,
-    badge: 'Novo'
+    icon: Activity
   }, {
     title: 'Templates',
     url: '/report-templates',
@@ -182,18 +171,15 @@ const menuGroups = [{
   items: [{
     title: 'Portal do Paciente',
     url: '/portal-paciente',
-    icon: User,
-    badge: 'Novo'
+    icon: User
   }, {
     title: 'CRM + Funil',
     url: '/crm-funil',
-    icon: UserCog,
-    badge: 'Beta'
+    icon: UserCog
   }, {
     title: 'Programa Fidelidade',
     url: '/programa-fidelidade',
-    icon: Award,
-    badge: 'Novo'
+    icon: Award
   }]
 }, {
   label: 'Compliance',
@@ -291,7 +277,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
         isActive={isActive(item.url)} 
         className={`group/button my-1 rounded-xl hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md transition-all duration-200 min-h-[44px] relative overflow-hidden ${
           isActive(item.url) 
-            ? 'bg-primary/20 text-primary border-l-4 border-l-primary shadow-lg animate-pulse-border' 
+            ? 'bg-primary/20 text-primary border-l-4 border-l-primary shadow-lg' 
             : ''
         }`}
         onClick={createRipple}
@@ -302,20 +288,6 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
             <span className={`${isSubItem ? 'text-sm' : 'text-sm flex-1'} font-medium transition-opacity duration-300 ${collapsed ? 'opacity-0' : 'opacity-100'}`}>
               {item.title}
             </span>
-          )}
-          {!collapsed && item.badge && (
-            <Badge 
-              variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} 
-              className={`text-[10px] px-2 py-0.5 shadow-sm transition-opacity duration-300 ${
-                collapsed ? 'opacity-0' : 'opacity-100'
-              } ${
-                item.badge === 'Novo' ? 'animate-pulse' : 
-                item.badge === 'Beta' ? 'animate-pulse animation-delay-200' : 
-                item.badge === 'IA' ? 'animate-pulse animation-delay-400' : ''
-              } group-data-[active=true]/button:bg-primary group-data-[active=true]/button:text-primary-foreground group-data-[active=true]/button:border-transparent`}
-            > 
-              {item.badge}
-            </Badge>
           )}
           {ripples.map((ripple) => (
             <span
@@ -339,7 +311,6 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
           </TooltipTrigger>
           <TooltipContent side="right" className="font-medium">
             {item.title}
-            {item.badge && <Badge variant="outline" className="ml-2 text-[10px]">{item.badge}</Badge>}
           </TooltipContent>
         </Tooltip>
       );
@@ -416,21 +387,9 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
                               <SidebarMenuButton className="group/button my-1 rounded-xl hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md transition-all duration-200">
                               <div className="flex items-center gap-3 px-3 py-2 w-full">
                                 <item.icon className="h-5 w-5 shrink-0" />
-                                {!collapsed && (
+                                 {!collapsed && (
                                   <>
                                     <span className="text-sm flex-1 font-medium transition-opacity duration-300">{item.title}</span>
-                                    {item.badge && (
-                                      <Badge 
-                                        variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} 
-                                        className={`text-[10px] px-2 py-0.5 shadow-sm transition-opacity duration-300 ${
-                                          item.badge === 'Novo' ? 'animate-pulse' : 
-                                          item.badge === 'Beta' ? 'animate-pulse animation-delay-200' : 
-                                          item.badge === 'IA' ? 'animate-pulse animation-delay-400' : ''
-                                        } group-data-[active=true]/button:bg-primary group-data-[active=true]/button:text-primary-foreground group-data-[active=true]/button:border-transparent`}
-                                      >
-                                        {item.badge}
-                                      </Badge>
-                                    )}
                                     <ChevronDown className="h-4 w-4 transition-all duration-300 group-data-[state=open]/submenu:rotate-180" />
                                   </>
                                 )}
