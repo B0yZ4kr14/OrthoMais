@@ -77,3 +77,6 @@ verify_jwt = true
 
 [functions.check-backup-integrity-alerts]
 verify_jwt = false
+
+[functions.test-backup-restore]
+verify_jwt = true

@@ -14,6 +14,7 @@ import { ScheduledBackupWizard } from "./ScheduledBackupWizard";
 import { BackupRestoreDialog } from "./BackupRestoreDialog";
 import { BackupIntegrityChecker } from "./BackupIntegrityChecker";
 import { BackupDiffViewer } from "./BackupDiffViewer";
+import { BackupTestDialog } from "./BackupTestDialog";
 import { Link } from "react-router-dom";
 import { 
   Download,
@@ -27,7 +28,8 @@ import {
   Database,
   Upload,
   ShieldCheck,
-  Settings
+  Settings,
+  TestTube
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -51,7 +53,9 @@ export default function DatabaseBackupTab() {
   const [showRestoreDialog, setShowRestoreDialog] = useState(false);
   const [showIntegrityChecker, setShowIntegrityChecker] = useState(false);
   const [showDiffViewer, setShowDiffViewer] = useState(false);
+  const [showTestDialog, setShowTestDialog] = useState(false);
   const [selectedBackupFile, setSelectedBackupFile] = useState<File>();
+  const [selectedBackupForTest, setSelectedBackupForTest] = useState<{id: string, name: string} | null>(null);
 
   const formats = [
     { value: 'json', label: 'JSON', icon: FileJson, description: 'Formato estruturado' },
@@ -174,6 +178,16 @@ export default function DatabaseBackupTab() {
         open={showDiffViewer}
         onOpenChange={setShowDiffViewer}
       />
+
+      {selectedBackupForTest && (
+        <BackupTestDialog
+          open={showTestDialog}
+          onOpenChange={setShowTestDialog}
+          backupId={selectedBackupForTest.id}
+          backupName={selectedBackupForTest.name}
+        />
+      )}
+
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
@@ -287,6 +301,29 @@ export default function DatabaseBackupTab() {
               <FileText className="mr-2 h-5 w-5" />
               Comparar
             </Button>
+            
+            <Button 
+              onClick={() => {
+                if (backupHistory.length > 0) {
+                  setSelectedBackupForTest({
+                    id: backupHistory[0].id,
+                    name: `Backup ${backupHistory[0].format.toUpperCase()} - ${new Date(backupHistory[0].created_at).toLocaleDateString('pt-BR')}`
+                  });
+                  setShowTestDialog(true);
+                } else {
+                  toast({
+                    title: 'Nenhum backup disponível',
+                    description: 'Crie um backup primeiro para testá-lo',
+                    variant: 'destructive',
+                  });
+                }
+              }}
+              variant="outline"
+              size="lg"
+            >
+              <TestTube className="mr-2 h-5 w-5" />
+              Testar Restauração
+            </Button>
           </div>
         </div>
       </Card>
@@ -350,6 +387,20 @@ export default function DatabaseBackupTab() {
                     }}
                   >
                     Validar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setSelectedBackupForTest({
+                        id: backup.id,
+                        name: `Backup ${backup.format.toUpperCase()} - ${new Date(backup.created_at).toLocaleDateString('pt-BR')}`
+                      });
+                      setShowTestDialog(true);
+                    }}
+                  >
+                    <TestTube className="h-4 w-4 mr-1" />
+                    Testar
                   </Button>
                 </div>
               </div>
