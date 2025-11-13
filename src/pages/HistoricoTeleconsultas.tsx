@@ -40,6 +40,7 @@ export default function HistoricoTeleconsultas() {
     return (
       <div className="container mx-auto py-6">
         <PageHeader
+          icon={Video}
           title="Histórico de Teleconsultas"
           description="Revise vídeos gravados, prescrições e triagens"
         />
@@ -51,6 +52,7 @@ export default function HistoricoTeleconsultas() {
   return (
     <div className="container mx-auto py-6">
       <PageHeader
+        icon={Video}
         title="Histórico de Teleconsultas"
         description="Revise vídeos gravados, prescrições e triagens"
       />
