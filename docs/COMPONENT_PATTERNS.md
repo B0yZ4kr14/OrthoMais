@@ -168,6 +168,26 @@ const [confirmOpen, setConfirmOpen] = useState(false);
 />
 ```
 
+---
+
+## Reusable Components (FASE 3)
+
+The following reusable components provide consistent, production-ready patterns across the application. For detailed documentation and examples, see `docs/REUSABLE_COMPONENTS.md`.
+
+### DataTable
+Generic table with sorting, filtering, pagination, and empty states built-in.
+
+### EmptyState
+Consistent empty state displays with multiple variants (default, search, error, no-data).
+
+### FormField
+Enhanced form fields with visual validation (error/success icons), helper text, and Zod integration.
+
+### LoadingState (Expanded)
+Now supports 6 variants: spinner, pulse, skeleton, table, grid, and list for context-appropriate loading states.
+
+---
+
 ## Animações
 
 ### Fade In (Entrada de Elementos)
