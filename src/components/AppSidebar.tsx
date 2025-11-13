@@ -298,11 +298,21 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
       >
         <NavLink to={item.url} end={!isSubItem} className="flex items-center gap-3 px-3 py-2 relative z-10" onClick={onNavigate}>
           <item.icon className={isSubItem ? "h-4 w-4" : "h-5 w-5 shrink-0"} />
-          {!collapsed && <span className={`${isSubItem ? 'text-sm' : 'text-sm flex-1'} font-medium`}>{item.title}</span>}
+          {!collapsed && (
+            <span className={`${isSubItem ? 'text-sm' : 'text-sm flex-1'} font-medium transition-opacity duration-300 ${collapsed ? 'opacity-0' : 'opacity-100'}`}>
+              {item.title}
+            </span>
+          )}
           {!collapsed && item.badge && (
             <Badge 
               variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} 
-              className="text-[10px] px-2 py-0.5 shadow-sm group-data-[active=true]/button:bg-primary group-data-[active=true]/button:text-primary-foreground group-data-[active=true]/button:border-transparent"
+              className={`text-[10px] px-2 py-0.5 shadow-sm transition-opacity duration-300 ${
+                collapsed ? 'opacity-0' : 'opacity-100'
+              } ${
+                item.badge === 'Novo' ? 'animate-pulse' : 
+                item.badge === 'Beta' ? 'animate-pulse animation-delay-200' : 
+                item.badge === 'IA' ? 'animate-pulse animation-delay-400' : ''
+              } group-data-[active=true]/button:bg-primary group-data-[active=true]/button:text-primary-foreground group-data-[active=true]/button:border-transparent`}
             > 
               {item.badge}
             </Badge>
@@ -339,15 +349,18 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
   };
   
   return <TooltipProvider delayDuration={300}>
-    <Sidebar className={collapsed ? 'w-16' : 'w-64'} collapsible="icon">
-      <SidebarHeader className="p-4 mb-2 mx-2 rounded-2xl bg-gradient-to-br from-sidebar-accent/50 to-sidebar-accent/30 shadow-xl backdrop-blur-sm border-0">
+    <Sidebar 
+      className={`transition-all duration-300 ease-in-out ${collapsed ? 'w-16' : 'w-64'}`} 
+      collapsible="icon"
+    >
+      <SidebarHeader className="p-4 mb-2 mx-2 rounded-2xl bg-gradient-to-br from-sidebar-accent/50 to-sidebar-accent/30 shadow-xl backdrop-blur-sm border-0 transition-all duration-300">
         {!collapsed ? (
-          <div className="flex items-center justify-center py-3">
-            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-24 w-auto object-contain transition-all duration-200 drop-shadow-2xl" />
+          <div className="flex items-center justify-center py-3 transition-all duration-300">
+            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-24 w-auto object-contain transition-all duration-300 drop-shadow-2xl opacity-100" />
           </div>
         ) : (
-          <div className="flex justify-center">
-            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-20 w-auto object-contain transition-all duration-200 drop-shadow-2xl" />
+          <div className="flex justify-center transition-all duration-300">
+            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-20 w-auto object-contain transition-all duration-300 drop-shadow-2xl" />
           </div>
         )}
       </SidebarHeader>
@@ -368,8 +381,8 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
                       <CollapsibleTrigger className="flex w-full items-center justify-between hover:text-primary transition-all duration-200">
                         {!collapsed && (
                           <>
-                            <span className="tracking-wide">{group.label}</span>
-                            <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]/collapsible:rotate-180" />
+                            <span className="tracking-wide transition-opacity duration-300">{group.label}</span>
+                            <ChevronDown className="h-4 w-4 transition-all duration-300 group-data-[state=open]/collapsible:rotate-180" />
                           </>
                         )}
                       </CollapsibleTrigger>
@@ -392,7 +405,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
               <div className="rounded-2xl bg-gradient-to-br from-sidebar-accent/50 to-sidebar-accent/30 shadow-lg backdrop-blur-sm border border-sidebar-border/50 p-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
                 <SidebarGroup>
                   <SidebarGroupLabel className="text-sm font-bold text-sidebar-foreground px-3 py-2 drop-shadow-md">
-                    {!collapsed && <span className="tracking-wide">{group.label}</span>}
+                    {!collapsed && <span className="tracking-wide transition-opacity duration-300">{group.label}</span>}
                   </SidebarGroupLabel>
                   <SidebarGroupContent className="mt-1">
                     <SidebarMenu>
@@ -401,20 +414,27 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
                           <SidebarMenuItem>
                             <CollapsibleTrigger asChild>
                               <SidebarMenuButton className="group/button my-1 rounded-xl hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md transition-all duration-200">
-                                <div className="flex items-center gap-3 px-3 py-2 w-full">
-                                  <item.icon className="h-5 w-5 shrink-0" />
-                                  {!collapsed && (
-                                    <>
-                                      <span className="text-sm flex-1 font-medium">{item.title}</span>
-                                      {item.badge && (
-                                        <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-2 py-0.5 shadow-sm group-data-[active=true]/button:bg-primary group-data-[active=true]/button:text-primary-foreground group-data-[active=true]/button:border-transparent">
-                                          {item.badge}
-                                        </Badge>
-                                      )}
-                                      <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]/submenu:rotate-180" />
-                                    </>
-                                  )}
-                                </div>
+                              <div className="flex items-center gap-3 px-3 py-2 w-full">
+                                <item.icon className="h-5 w-5 shrink-0" />
+                                {!collapsed && (
+                                  <>
+                                    <span className="text-sm flex-1 font-medium transition-opacity duration-300">{item.title}</span>
+                                    {item.badge && (
+                                      <Badge 
+                                        variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} 
+                                        className={`text-[10px] px-2 py-0.5 shadow-sm transition-opacity duration-300 ${
+                                          item.badge === 'Novo' ? 'animate-pulse' : 
+                                          item.badge === 'Beta' ? 'animate-pulse animation-delay-200' : 
+                                          item.badge === 'IA' ? 'animate-pulse animation-delay-400' : ''
+                                        } group-data-[active=true]/button:bg-primary group-data-[active=true]/button:text-primary-foreground group-data-[active=true]/button:border-transparent`}
+                                      >
+                                        {item.badge}
+                                      </Badge>
+                                    )}
+                                    <ChevronDown className="h-4 w-4 transition-all duration-300 group-data-[state=open]/submenu:rotate-180" />
+                                  </>
+                                )}
+                              </div>
                               </SidebarMenuButton>
                             </CollapsibleTrigger>
                             <CollapsibleContent>
@@ -449,7 +469,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
             >
               <SidebarGroup>
                 <SidebarGroupLabel className="text-sm font-bold text-sidebar-foreground px-3 py-2 drop-shadow-md">
-                  {!collapsed && <span className="tracking-wide">Administração</span>}
+                  {!collapsed && <span className="tracking-wide transition-opacity duration-300">Administração</span>}
                 </SidebarGroupLabel>
                 <SidebarGroupContent className="mt-1">
                   <SidebarMenu>
@@ -464,9 +484,9 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="p-3 mt-2 mx-2 rounded-2xl bg-gradient-to-br from-sidebar-accent/50 to-sidebar-accent/30 shadow-xl backdrop-blur-sm border-0">
+      <SidebarFooter className="p-3 mt-2 mx-2 rounded-2xl bg-gradient-to-br from-sidebar-accent/50 to-sidebar-accent/30 shadow-xl backdrop-blur-sm border-0 transition-all duration-300">
         {!collapsed && (
-          <div className="text-center space-y-0.5">
+          <div className="text-center space-y-0.5 transition-opacity duration-300">
             <p className="text-xs text-sidebar-foreground/80 font-semibold drop-shadow">Ortho + v1.0</p>
             <p className="text-[10px] text-sidebar-foreground/60 font-medium">© 2025 TSI Telecom</p>
           </div>
