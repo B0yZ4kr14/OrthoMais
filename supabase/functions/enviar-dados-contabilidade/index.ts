@@ -65,6 +65,7 @@ Deno.serve(async (req) => {
       try {
         // Buscar dados para envio
         let dadosEnvio: any = {}
+        let xmlContent = ''
 
         if (tipoDocumento === 'SPED_FISCAL') {
           // Gerar SPED Fiscal
@@ -74,6 +75,7 @@ Deno.serve(async (req) => {
 
           if (spedResult.error) throw spedResult.error
           dadosEnvio = spedResult.data
+          xmlContent = spedResult.data.sped_content || ''
         } else if (tipoDocumento === 'NFCE_DADOS') {
           // Buscar NFCe do período
           const { data: nfces, error: nfceError } = await supabase
@@ -85,7 +87,29 @@ Deno.serve(async (req) => {
 
           if (nfceError) throw nfceError
           dadosEnvio = { nfces, periodo: periodoReferencia }
+          xmlContent = nfces.map((nfce: any) => nfce.xml_nfce).join('\n')
         }
+
+        // VALIDAR XML FISCAL ANTES DE ENVIAR
+        console.log(`Validando XML ${tipoDocumento} antes do envio...`)
+        const validacaoResult = await supabase.functions.invoke('validate-fiscal-xml', {
+          body: {
+            clinicId,
+            tipoDocumento,
+            xmlContent,
+            documentoId: envio.id,
+          }
+        })
+
+        if (validacaoResult.error) {
+          throw new Error(`Falha na validação do XML: ${validacaoResult.error.message}`)
+        }
+
+        if (!validacaoResult.data.pode_enviar) {
+          throw new Error(`XML inválido: ${validacaoResult.data.erros?.join(', ')}`)
+        }
+
+        console.log(`✅ XML validado com sucesso: ${validacaoResult.data.mensagem}`)
 
         // SIMULAÇÃO DE ENVIO - Em produção, fazer request real para API do software contábil
         const resultadoEnvio = await enviarParaSoftwareContabil(

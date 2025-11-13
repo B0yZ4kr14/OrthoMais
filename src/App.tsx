@@ -54,6 +54,7 @@ import ContasPagar from '@/pages/financeiro/ContasPagar';
 import NotasFiscais from '@/pages/financeiro/NotasFiscais';
 import Transacoes from '@/pages/financeiro/Transacoes';
 import CryptoPagamentos from '@/pages/financeiro/CryptoPagamentos';
+import ConciliacaoBancaria from '@/pages/financeiro/ConciliacaoBancaria';
 import Orcamentos from '@/pages/Orcamentos';
 import Contratos from '@/pages/Contratos';
 import PortalPaciente from '@/pages/PortalPaciente';
@@ -109,6 +110,7 @@ const App = () => (
                 <Route path="/financeiro/contas-pagar" element={<ProtectedRoute><AppLayout><ContasPagar /></AppLayout></ProtectedRoute>} />
                 <Route path="/financeiro/notas-fiscais" element={<ProtectedRoute><AppLayout><NotasFiscais /></AppLayout></ProtectedRoute>} />
                 <Route path="/financeiro/crypto" element={<ProtectedRoute><AppLayout><CryptoPagamentos /></AppLayout></ProtectedRoute>} />
+                <Route path="/financeiro/conciliacao-bancaria" element={<ProtectedRoute><AppLayout><ConciliacaoBancaria /></AppLayout></ProtectedRoute>} />
                 <Route path="/financeiro/dashboard-vendas" element={<ProtectedRoute><AppLayout><DashboardVendasPDV /></AppLayout></ProtectedRoute>} />
                 <Route path="/pdv/metas" element={<ProtectedRoute><AppLayout><MetasGamificacao /></AppLayout></ProtectedRoute>} />
                 <Route path="/agenda" element={<ProtectedRoute><AppLayout><AgendaClinica /></AppLayout></ProtectedRoute>} />

@@ -105,6 +105,12 @@ verify_jwt = true
 [functions.imprimir-cupom-sat]
 verify_jwt = false
 
+[functions.validate-fiscal-xml]
+verify_jwt = false
+
+[functions.sincronizar-extrato-bancario]
+verify_jwt = false
+
 [functions.processar-metas-gamificacao]
 verify_jwt = false
 
