@@ -303,12 +303,12 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
                       <SidebarMenu>
                         {group.items.map(item => (
                           <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton asChild isActive={isActive(item.url)} className="my-0.5 mx-2 rounded-md hover:bg-accent data-[active=true]:bg-accent data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors min-h-[44px]">
+                            <SidebarMenuButton asChild isActive={isActive(item.url)} className="group/button my-0.5 mx-2 rounded-md hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors min-h-[44px]">
                               <NavLink to={item.url} end className="flex items-center gap-3 px-3 py-2" onClick={onNavigate}>
                                 <item.icon className="h-4 w-4 shrink-0" />
                                 {!collapsed && <span className="text-sm flex-1">{item.title}</span>}
                                 {!collapsed && item.badge && (
-                                  <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5">
+                                  <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5 group-data-[active=true]/button:bg-accent-foreground group-data-[active=true]/button:text-accent group-data-[active=true]/button:border-transparent"> 
                                     {item.badge}
                                   </Badge>
                                 )}
@@ -332,14 +332,14 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
                       <Collapsible key={item.title} defaultOpen={false} className="group/submenu">
                         <SidebarMenuItem>
                           <CollapsibleTrigger asChild>
-                            <SidebarMenuButton className="my-0.5 mx-2 rounded-md hover:bg-accent transition-colors">
+                            <SidebarMenuButton className="group/button my-0.5 mx-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors">
                               <div className="flex items-center gap-3 px-3 py-2 w-full">
                                 <item.icon className="h-4 w-4 shrink-0" />
                                 {!collapsed && (
                                   <>
                                     <span className="text-sm flex-1">{item.title}</span>
                                     {item.badge && (
-                                      <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5">
+                                      <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5 group-data-[active=true]/button:bg-accent-foreground group-data-[active=true]/button:text-accent group-data-[active=true]/button:border-transparent">
                                         {item.badge}
                                       </Badge>
                                     )}
@@ -353,7 +353,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
                             <SidebarMenuSub>
                               {item.subItems.map(subItem => (
                                 <SidebarMenuSubItem key={subItem.title}>
-                                  <SidebarMenuSubButton asChild isActive={isActive(subItem.url)} className="hover:bg-accent/50 data-[active=true]:bg-accent min-h-[44px]">
+                                  <SidebarMenuSubButton asChild isActive={isActive(subItem.url)} className="hover:bg-accent/50 hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground min-h-[44px]">
                                     <NavLink to={subItem.url} className="flex items-center gap-2" onClick={onNavigate}>
                                       <subItem.icon className="h-4 w-4" />
                                       {!collapsed && <span className="text-sm">{subItem.title}</span>}
@@ -367,12 +367,12 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
                       </Collapsible>
                     ) : (
                       <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild isActive={isActive(item.url)} className="my-0.5 mx-2 rounded-md hover:bg-accent data-[active=true]:bg-accent data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors min-h-[44px]">
+                        <SidebarMenuButton asChild isActive={isActive(item.url)} className="group/button my-0.5 mx-2 rounded-md hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors min-h-[44px]">
                           <NavLink to={item.url} end className="flex items-center gap-3 px-3 py-2" onClick={onNavigate}>
                             <item.icon className="h-4 w-4 shrink-0" />
                             {!collapsed && <span className="text-sm flex-1">{item.title}</span>}
                             {!collapsed && item.badge && (
-                              <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5">
+                              <Badge variant={item.badge === 'IA' ? 'default' : item.badge === 'Beta' ? 'secondary' : 'outline'} className="text-[10px] px-1.5 py-0.5 group-data-[active=true]/button:bg-accent-foreground group-data-[active=true]/button:text-accent group-data-[active=true]/button:border-transparent">
                                 {item.badge}
                               </Badge>
                             )}
@@ -397,7 +397,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/configuracoes')} className="my-0.5 mx-2 rounded-md hover:bg-accent data-[active=true]:bg-accent data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors min-h-[44px]">
+                    <SidebarMenuButton asChild isActive={isActive('/configuracoes')} className="group/button my-0.5 mx-2 rounded-md hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground data-[active=true]:border-l-2 data-[active=true]:border-l-primary transition-colors min-h-[44px]">
                       <NavLink to="/configuracoes" className="flex items-center gap-3 px-3 py-2" onClick={onNavigate}>
                         <Settings className="h-4 w-4 shrink-0" />
                         {!collapsed && <span className="text-sm">Configurações</span>}
