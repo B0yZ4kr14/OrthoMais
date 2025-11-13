@@ -5,38 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { toast as sonnerToast } from 'sonner';
 import type { ExchangeConfig, CryptoWallet, CryptoTransactionComplete } from '../types/crypto.types';
 
-// Helper function to fetch exchange rates
-const fetchExchangeRate = async (coinType: string): Promise<number> => {
-  try {
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${getCoinGeckoId(coinType)}&vs_currencies=brl`
-    );
-    const data = await response.json();
-    const coinId = getCoinGeckoId(coinType);
-    return data[coinId]?.brl || 0;
-  } catch (error) {
-    console.error('Error fetching exchange rate:', error);
-    const rates: Record<string, number> = {
-      BTC: 350000,
-      ETH: 18000,
-      USDT: 5.2,
-      BNB: 2200,
-      USDC: 5.2,
-    };
-    return rates[coinType] || 0;
-  }
-};
-
-const getCoinGeckoId = (coinType: string): string => {
-  const mapping: Record<string, string> = {
-    BTC: 'bitcoin',
-    ETH: 'ethereum',
-    USDT: 'tether',
-    BNB: 'binancecoin',
-    USDC: 'usd-coin',
-  };
-  return mapping[coinType] || coinType.toLowerCase();
-};
+import { fetchExchangeRateWithCache } from '@/lib/utils/crypto-cache.utils';
 
 export const useCryptoSupabase = (clinicId: string) => {
   const [exchanges, setExchanges] = useState<ExchangeConfig[]>([]);
@@ -67,63 +36,28 @@ export const useCryptoSupabase = (clinicId: string) => {
 
       if (walletsError) throw walletsError;
 
-      // Load transactions without joins (foreign keys not configured)
+      // Load transactions with related data using native joins (foreign keys configured)
       const { data: transactionsData, error: transactionsError } = await supabase
         .from('crypto_transactions')
-        .select('*')
+        .select(`
+          *,
+          patient:patients(nome),
+          wallet:crypto_wallets(wallet_name, coin_type),
+          exchange:crypto_exchange_config(exchange_name, processing_fee_percentage)
+        `)
         .eq('clinic_id', clinicId)
         .order('created_at', { ascending: false });
 
       if (transactionsError) throw transactionsError;
 
-      // Enrich transactions with related data manually
-      const mappedTransactions = await Promise.all(
-        (transactionsData || []).map(async (tx: any) => {
-          let patientName = null;
-          let walletName = null;
-          let exchangeName = null;
-          let processingFeePercentage = 0;
-
-          // Fetch patient name if patient_id exists
-          if (tx.patient_id) {
-            const { data: patientData } = await supabase
-              .from('patients')
-              .select('nome')
-              .eq('id', tx.patient_id)
-              .single();
-            patientName = patientData?.nome;
-          }
-
-          // Fetch wallet name if wallet_id exists
-          if (tx.wallet_id) {
-            const { data: walletData } = await supabase
-              .from('crypto_wallets')
-              .select('wallet_name')
-              .eq('id', tx.wallet_id)
-              .single();
-            walletName = walletData?.wallet_name;
-          }
-
-          // Fetch exchange data if exchange_config_id exists
-          if (tx.exchange_config_id) {
-            const { data: exchangeData } = await supabase
-              .from('crypto_exchange_config')
-              .select('exchange_name, processing_fee_percentage')
-              .eq('id', tx.exchange_config_id)
-              .single();
-            exchangeName = exchangeData?.exchange_name;
-            processingFeePercentage = exchangeData?.processing_fee_percentage || 0;
-          }
-
-          return {
-            ...tx,
-            patient_name: patientName,
-            wallet_name: walletName,
-            exchange_name: exchangeName,
-            processing_fee_percentage: processingFeePercentage,
-          };
-        })
-      );
+      // Map transactions with processing_fee_percentage from exchange
+      const mappedTransactions = (transactionsData || []).map((tx: any) => ({
+        ...tx,
+        patient_name: tx.patient?.nome,
+        wallet_name: tx.wallet?.wallet_name,
+        exchange_name: tx.exchange?.exchange_name,
+        processing_fee_percentage: tx.exchange?.processing_fee_percentage || 0,
+      }));
 
       setExchanges(exchangesData || []);
       setWallets(walletsData || []);
@@ -299,7 +233,7 @@ export const useCryptoSupabase = (clinicId: string) => {
     const exchange = exchanges.find(e => e.id === wallet.exchange_config_id);
     const processingFeePercentage = exchange?.processing_fee_percentage || 0;
 
-    const exchangeRate = await fetchExchangeRate(wallet.coin_type);
+    const exchangeRate = await fetchExchangeRateWithCache(wallet.coin_type);
     const amountBrl = data.amount_crypto * exchangeRate;
     const processingFeeBrl = (amountBrl * processingFeePercentage) / 100;
     const netAmountBrl = amountBrl - processingFeeBrl;

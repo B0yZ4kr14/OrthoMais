@@ -39,9 +39,10 @@ import { BitcoinInfo } from './BitcoinInfo';
 import { CryptoAnalysisDashboard } from '@/modules/crypto/components/CryptoAnalysisDashboard';
 import { CryptoPriceAlertForm } from '@/modules/crypto/components/CryptoPriceAlertForm';
 import { CascadeAlertWizard } from '@/modules/crypto/components/CascadeAlertWizard';
+import { CryptoComparativeDashboard } from '@/modules/crypto/components/CryptoComparativeDashboard';
 import { useCryptoPriceAlerts } from '@/modules/crypto/hooks/useCryptoPriceAlerts';
 import { Switch } from '@/components/ui/switch';
-import { Trash2, TrendingDown } from 'lucide-react';
+import { Trash2, TrendingDown, BarChart3 } from 'lucide-react';
 
 export default function CryptoPagamentos() {
   const { user } = useAuth();
@@ -201,7 +202,7 @@ export default function CryptoPagamentos() {
       </div>
 
       <Tabs defaultValue="transactions" className="mt-8">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="transactions">
             <ArrowRightLeft className="h-4 w-4 mr-2" />
             Transações
@@ -217,6 +218,10 @@ export default function CryptoPagamentos() {
           <TabsTrigger value="analysis">
             <TrendingUp className="h-4 w-4 mr-2" />
             Análise
+          </TabsTrigger>
+          <TabsTrigger value="comparative">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Comparativo
           </TabsTrigger>
           <TabsTrigger value="alerts">
             <Bell className="h-4 w-4 mr-2" />
@@ -579,6 +584,20 @@ export default function CryptoPagamentos() {
         {/* Analysis Tab */}
         <TabsContent value="analysis">
           <CryptoAnalysisDashboard clinicId={clinicId} />
+        </TabsContent>
+
+        {/* Comparative Dashboard Tab */}
+        <TabsContent value="comparative" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-semibold">Dashboard Comparativo de Rentabilidade</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Compare taxas e economia entre criptomoedas e métodos tradicionais
+              </p>
+            </div>
+          </div>
+
+          <CryptoComparativeDashboard transactions={transactions} />
         </TabsContent>
 
         {/* Alerts Tab */}

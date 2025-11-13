@@ -6,6 +6,79 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper: Buscar taxa de câmbio com cache (5min)
+const getCoinGeckoId = (coinType: string): string => {
+  const mapping: Record<string, string> = {
+    BTC: 'bitcoin',
+    ETH: 'ethereum',
+    USDT: 'tether',
+    BNB: 'binancecoin',
+    USDC: 'usd-coin',
+  };
+  return mapping[coinType] || coinType.toLowerCase();
+};
+
+const fetchExchangeRateWithCache = async (
+  supabaseClient: any,
+  coinType: string
+): Promise<number> => {
+  // 1. Tentar buscar do cache (< 5min)
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  const { data: cachedRate } = await supabaseClient
+    .from('crypto_exchange_rates')
+    .select('rate_brl')
+    .eq('coin_type', coinType)
+    .gte('timestamp', fiveMinutesAgo)
+    .order('timestamp', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (cachedRate) {
+    console.log(`Using cached rate for ${coinType}: R$ ${cachedRate.rate_brl}`);
+    return cachedRate.rate_brl;
+  }
+
+  // 2. Cache expirado/inexistente, buscar da API CoinGecko
+  try {
+    const coinId = getCoinGeckoId(coinType);
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=brl`
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      const rate = data[coinId]?.brl;
+
+      if (rate) {
+        // Salvar no cache
+        await supabaseClient
+          .from('crypto_exchange_rates')
+          .insert({
+            coin_type: coinType,
+            rate_brl: rate,
+            source: 'COINGECKO',
+          });
+
+        console.log(`Fetched and cached rate for ${coinType}: R$ ${rate}`);
+        return rate;
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching from CoinGecko:', error);
+  }
+
+  // 3. Fallback para taxa simulada
+  const fallbackRates: Record<string, number> = {
+    BTC: 350000,
+    ETH: 18000,
+    USDT: 5.2,
+    BNB: 2200,
+    USDC: 5.2,
+  };
+  console.warn(`Using fallback rate for ${coinType}`);
+  return fallbackRates[coinType] || 0;
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -42,45 +115,8 @@ serve(async (req) => {
 
     console.log(`Syncing wallet ${wallet.wallet_name} (${wallet.coin_type})`);
 
-    // Buscar taxa de câmbio atual
-    const { data: latestRate } = await supabaseClient
-      .from('crypto_exchange_rates')
-      .select('*')
-      .eq('coin_type', wallet.coin_type)
-      .order('timestamp', { ascending: false })
-      .limit(1)
-      .single();
-
-    let exchangeRate = latestRate?.rate_brl || 0;
-
-    // Se não houver taxa recente, buscar da API (Binance public API como exemplo)
-    if (!latestRate || new Date(latestRate.timestamp) < new Date(Date.now() - 5 * 60 * 1000)) {
-      try {
-        const symbol = `${wallet.coin_type}BRL`;
-        const binanceResponse = await fetch(
-          `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`
-        );
-        
-        if (binanceResponse.ok) {
-          const binanceData = await binanceResponse.json();
-          exchangeRate = parseFloat(binanceData.price);
-
-          // Salvar nova taxa
-          await supabaseClient
-            .from('crypto_exchange_rates')
-            .insert({
-              coin_type: wallet.coin_type,
-              rate_brl: exchangeRate,
-              rate_usd: 0, // Pode ser implementado depois
-              source: 'BINANCE',
-            });
-
-          console.log(`Updated exchange rate for ${wallet.coin_type}: R$ ${exchangeRate}`);
-        }
-      } catch (error) {
-        console.error('Error fetching exchange rate:', error);
-      }
-    }
+    // Buscar taxa de câmbio atual com cache otimizado
+    let exchangeRate = await fetchExchangeRateWithCache(supabaseClient, wallet.coin_type);
 
     // Buscar saldo real da exchange
     let balance = wallet.balance || 0;
