@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/AppSidebar';
+import { AppSidebar } from '@/core/layout/Sidebar';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';

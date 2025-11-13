@@ -2,13 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
     --base-font-size: 16px;
+    
+    /* ==========================================
+       TIPOGRAFIA ODONTOLÓGICA
+       ========================================== */
+    --font-size-h1: 2rem;
+    --font-size-h2: 1.5rem;
+    --font-size-h3: 1.25rem;
+    --font-size-body: 0.9375rem;
+    --font-size-body-sm: 0.875rem;
+    --font-size-data: 0.9375rem;
+    --font-size-data-highlight: 1.125rem;
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
     
     --background: 0 0% 98%;
     --foreground: 215 25% 27%;
@@ -472,6 +486,60 @@ All colors MUST be HSL.
 
   .label-secondary {
     @apply text-xs font-medium text-muted-foreground uppercase tracking-wider;
+  }
+}
+
+/* ==========================================
+   CLASSES UTILITÁRIAS ODONTOLÓGICAS
+   ========================================== */
+
+@layer utilities {
+  .text-page-title {
+    font-size: var(--font-size-h1);
+    font-weight: 700;
+    line-height: var(--line-height-tight);
+    letter-spacing: -0.015em;
+    color: hsl(var(--foreground));
+  }
+
+  .text-section-title {
+    font-size: var(--font-size-h2);
+    font-weight: 600;
+    line-height: var(--line-height-tight);
+    color: hsl(var(--foreground));
+  }
+
+  .text-subsection-title {
+    font-size: var(--font-size-h3);
+    font-weight: 500;
+    line-height: var(--line-height-normal);
+    color: hsl(var(--foreground));
+  }
+
+  .text-clinical {
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-relaxed);
+    color: hsl(var(--foreground));
+  }
+
+  .text-clinical-sm {
+    font-size: var(--font-size-body-sm);
+    line-height: var(--line-height-relaxed);
+    color: hsl(var(--muted-foreground));
+  }
+
+  .text-data {
+    font-size: var(--font-size-data);
+    font-variant-numeric: tabular-nums;
+    line-height: var(--line-height-normal);
+    color: hsl(var(--foreground));
+  }
+
+  .text-data-highlight {
+    font-size: var(--font-size-data-highlight);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: hsl(var(--primary));
   }
 }
 
