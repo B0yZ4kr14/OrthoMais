@@ -16,7 +16,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         </div>
         <div className="flex-1 flex flex-col min-w-0">
           <DashboardHeader />
-          <main className="flex-1 bg-background overflow-x-hidden">
+          <main className="flex-1 bg-background overflow-x-hidden pt-6 px-4 lg:px-6">
             {children}
           </main>
         </div>

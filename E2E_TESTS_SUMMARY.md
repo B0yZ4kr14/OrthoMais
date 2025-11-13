@@ -17,6 +17,8 @@ e2e/
 ├── modules-management.spec.ts      # 10 testes de gestão de módulos
 ├── workflow-integration.spec.ts    # 3 testes de fluxo integrado
 ├── accessibility.spec.ts           # 7 testes de acessibilidade
+├── crypto-payments.spec.ts         # 12 testes de pagamentos cripto 🆕
+├── dashboard-navigation.spec.ts    # 14 testes de dashboard e layout 🆕
 └── README.md                       # Documentação completa
 
 playwright.config.ts                # Configuração principal
@@ -24,7 +26,41 @@ playwright.config.ts                # Configuração principal
 E2E_TESTS_SUMMARY.md               # Este arquivo
 ```
 
-## 🎯 Cobertura de Testes (50+ testes)
+## 🎯 Cobertura de Testes (78+ testes)
+
+### 🆕 **Novos Testes Adicionados - FASE 6**
+
+#### 8. **Pagamentos Cripto** (12 testes - crypto-payments.spec.ts)
+- Navegação para página de crypto pagamentos
+- Configuração de exchange (Binance, Coinbase)
+- Criação de carteira cripto
+- Geração de QR code para pagamento Bitcoin
+- Listagem de transações
+- Filtros de transações por status
+- Conversão de cripto para BRL
+- Sincronização de saldo de carteira
+- Display de métricas do dashboard
+- Estados vazios tratados corretamente
+- Validação de campos obrigatórios
+- Validação de formato de endereço Bitcoin
+
+#### 9. **Dashboard e Layout** (14 testes - dashboard-navigation.spec.ts)
+- Display do dashboard sem sobreposição do header ✨
+- Exibição de todos os action cards
+- Navegação a partir dos action cards
+- Stats cards com loading state
+- Renderização de gráficos (recharts)
+- Grid de 4 colunas em telas grandes
+- Responsividade em mobile
+- Breadcrumbs funcionais
+- Busca global com Cmd+K
+- Dropdown de notificações
+- Toggle de tema
+- Menu do usuário
+- Efeito ripple em action cards
+- Performance: carregamento em <3 segundos
+
+## 🎯 Cobertura de Testes Original (50+ testes)
 
 ### 1. **Autenticação** (5 testes)
 - Login válido/inválido
@@ -185,10 +221,11 @@ browsers: [chromium, firefox, webkit]
 - 🛡️ Isolamento: **Cada teste é independente**
 
 ### Cobertura
-- ✅ **7 módulos principais** cobertos
-- ✅ **50+ testes** implementados
+- ✅ **9 módulos principais** cobertos (incluindo Crypto Payments e Dashboard)
+- ✅ **78+ testes** implementados
 - ✅ **5 browsers/devices** testados
 - ✅ **100% dos fluxos críticos** validados
+- ✅ **Layout e sobreposição** validados
 
 ## 🎓 Boas Práticas Implementadas
 
@@ -310,13 +347,15 @@ DEBUG=pw:api npx playwright test
 
 ```
 ✅ Framework configurado e funcional
-✅ 50+ testes implementados
+✅ 78+ testes implementados (incluindo novos módulos)
 ✅ CI/CD configurado
 ✅ Documentação completa
 ✅ Boas práticas aplicadas
 ✅ Multi-browser support
 ✅ Acessibilidade validada
 ✅ Fluxos críticos cobertos
+✅ Módulo Crypto Payments validado completamente
+✅ Layout e sobreposição do header corrigidos e testados
 
 🚀 PRONTO PARA PRODUÇÃO! 🚀
 ```
