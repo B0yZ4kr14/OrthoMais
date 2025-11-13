@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useState, useRef } from 'react';
+import orthoLogo from '@/assets/ortho-logo-main.png';
 const menuGroups = [{
   label: 'Visão Geral',
   items: [{
@@ -327,11 +328,11 @@ export function AppSidebar({ onNavigate }: AppSidebarProps = {}) {
       <SidebarHeader className="p-4 mb-2 mx-2 rounded-2xl bg-gradient-to-br from-sidebar-accent/50 to-sidebar-accent/30 shadow-2xl backdrop-blur-sm border-0 transition-all duration-300">
         {!collapsed ? (
           <div className="flex items-center justify-center py-3 transition-all duration-300">
-            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-24 w-auto object-contain transition-all duration-300 drop-shadow-2xl opacity-100" />
+            <img src={orthoLogo} alt="Ortho +" className="h-24 w-auto object-contain transition-all duration-300 drop-shadow-2xl opacity-100" />
           </div>
         ) : (
           <div className="flex justify-center transition-all duration-300">
-            <img src="/src/assets/ortho-logo-full.png" alt="Ortho +" className="h-20 w-auto object-contain transition-all duration-300 drop-shadow-2xl" />
+            <img src={orthoLogo} alt="Ortho +" className="h-20 w-auto object-contain transition-all duration-300 drop-shadow-2xl" />
           </div>
         )}
       </SidebarHeader>

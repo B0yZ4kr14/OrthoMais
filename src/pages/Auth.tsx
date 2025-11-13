@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import orthoLogo from '@/assets/ortho-logo.png';
+import orthoLogo from '@/assets/ortho-logo-main.png';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
