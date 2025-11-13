@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { HotkeysHelp } from "@/components/HotkeysHelp";
+import { NotificationDropdown } from "@/components/NotificationDropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,8 +56,11 @@ export function DashboardHeader() {
             <GlobalSearch />
           </div>
 
-          {/* Right side: Theme, Clinic Selector and User Menu */}
-          <div className="flex items-center gap-3">
+          {/* Right side: Notifications, Theme, Clinic Selector and User Menu */}
+          <div className="flex items-center gap-2">
+            {/* Notifications */}
+            <NotificationDropdown />
+
             {/* Theme Preview Dialog */}
             <div data-tour="theme-toggle">
               <Dialog>

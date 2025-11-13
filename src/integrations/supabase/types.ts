@@ -1062,6 +1062,53 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          id: string
+          lida: boolean
+          lida_em: string | null
+          link_acao: string | null
+          mensagem: string
+          tipo: string
+          titulo: string
+          user_id: string | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          id?: string
+          lida?: boolean
+          lida_em?: string | null
+          link_acao?: string | null
+          mensagem: string
+          tipo: string
+          titulo: string
+          user_id?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          lida?: boolean
+          lida_em?: string | null
+          link_acao?: string | null
+          mensagem?: string
+          tipo?: string
+          titulo?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orcamento_itens: {
         Row: {
           created_at: string
