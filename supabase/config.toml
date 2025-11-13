@@ -101,3 +101,9 @@ verify_jwt = true
 
 [functions.gerar-sped-fiscal]
 verify_jwt = true
+
+[functions.processar-metas-gamificacao]
+verify_jwt = false
+
+[functions.processar-pagamento-tef]
+verify_jwt = false
