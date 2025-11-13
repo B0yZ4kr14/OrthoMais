@@ -47,11 +47,11 @@ All colors MUST be HSL.
     --radius: 1rem;
 
     /* Shadow variables - enhanced depth */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
-    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
-    --shadow-xl: 0 20px 30px rgba(0, 0, 0, 0.2);
-    --shadow-2xl: 0 30px 40px rgba(0, 0, 0, 0.25);
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.12);
+    --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.16);
+    --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.20);
+    --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.26);
+    --shadow-2xl: 0 32px 64px rgba(0, 0, 0, 0.32);
 
     --sidebar-background: 215 25% 15%;
     --sidebar-foreground: 210 40% 98%;
@@ -63,10 +63,10 @@ All colors MUST be HSL.
     --sidebar-ring: 173 58% 39%;
     
     /* Sidebar specific shadows */
-    --sidebar-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --sidebar-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-    --sidebar-shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.5);
-    --sidebar-shadow-xl: 0 12px 28px rgba(0, 0, 0, 0.6);
+    --sidebar-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --sidebar-shadow-md: 0 8px 20px rgba(0, 0, 0, 0.5);
+    --sidebar-shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.6);
+    --sidebar-shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.7);
 
     /* Module colors */
     --module-blue: 217 91% 60%;

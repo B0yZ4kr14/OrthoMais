@@ -92,21 +92,13 @@ export function OnboardingWizard({ open = true, onClose, onComplete }: Onboardin
       <AnimatePresence>
         {open && (
           <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl [&>button]:hidden">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
               >
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-4 top-4 rounded-full"
-                  onClick={handleClose}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
                 
                 <div className="text-center space-y-4 pt-4">
                   <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
@@ -156,7 +148,7 @@ export function OnboardingWizard({ open = true, onClose, onComplete }: Onboardin
     <AnimatePresence>
       {open && (
         <Dialog open={open} onOpenChange={handleClose}>
-          <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto p-0">
+          <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto p-0 [&>button]:hidden">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
@@ -164,15 +156,6 @@ export function OnboardingWizard({ open = true, onClose, onComplete }: Onboardin
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
         <div className="relative p-6 space-y-6">
-          {/* Close Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-4 rounded-full z-10"
-            onClick={handleClose}
-          >
-            <X className="h-4 w-4" />
-          </Button>
 
           {/* Header */}
           <div className="text-center space-y-2 pr-12">
