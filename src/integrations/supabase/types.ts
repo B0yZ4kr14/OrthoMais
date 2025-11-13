@@ -1331,6 +1331,42 @@ export type Database = {
         }
         Relationships: []
       }
+      module_configuration_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          modules: Json
+          name: string
+          specialty: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          modules: Json
+          name: string
+          specialty: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          modules?: Json
+          name?: string
+          specialty?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       module_dependencies: {
         Row: {
           created_at: string
@@ -1407,6 +1443,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "notifications_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_analytics: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          step_name: string | null
+          step_number: number | null
+          time_spent_seconds: number | null
+          user_id: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          step_name?: string | null
+          step_number?: number | null
+          time_spent_seconds?: number | null
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          step_name?: string | null
+          step_number?: number | null
+          time_spent_seconds?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_analytics_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"

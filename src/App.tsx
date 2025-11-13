@@ -28,6 +28,7 @@ const Relatorios = lazy(() => import('./pages/Relatorios'));
 const BusinessIntelligence = lazy(() => import('./pages/BusinessIntelligence'));
 const IARadiografia = lazy(() => import('@/pages/IARadiografia'));
 const UserBehaviorAnalytics = lazy(() => import("@/pages/UserBehaviorAnalytics"));
+const OnboardingAnalytics = lazy(() => import('./pages/settings/OnboardingAnalytics'));
 const ModulesAdmin = lazy(() => import('./pages/settings/ModulesAdmin'));
 const ModulesSimple = lazy(() => import('./pages/settings/ModulesSimple'));
 const ProfileSettings = lazy(() => import('./pages/settings/ProfileSettings'));
@@ -134,6 +135,7 @@ const App = () => (
                 <Route path="/report-templates" element={<ProtectedRoute requireAdmin><AppLayout><ReportTemplates /></AppLayout></ProtectedRoute>} />
                 <Route path="/audit-logs" element={<ProtectedRoute requireAdmin><AppLayout><AuditLogs /></AppLayout></ProtectedRoute>} />
                 <Route path="/configuracoes" element={<ProtectedRoute requireAdmin><AppLayout><Configuracoes /></AppLayout></ProtectedRoute>} />
+                <Route path="/configuracoes/analytics" element={<ProtectedRoute requireAdmin><AppLayout><Suspense fallback={<LoadingState />}><OnboardingAnalytics /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/settings/modules" element={<ProtectedRoute requireAdmin><AppLayout><ModulesAdmin /></AppLayout></ProtectedRoute>} />
                 <Route path="/test-notifications" element={<ProtectedRoute><AppLayout><TestNotifications /></AppLayout></ProtectedRoute>} />
                 <Route path="/settings/modules" element={<ProtectedRoute requireAdmin><AppLayout><Suspense fallback={<LoadingState />}><ModulesAdmin /></Suspense></AppLayout></ProtectedRoute>} />

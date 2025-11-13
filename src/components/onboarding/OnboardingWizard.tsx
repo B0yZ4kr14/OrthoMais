@@ -12,6 +12,7 @@ import { StepSimulation } from './steps/StepSimulation';
 import { StepExport } from './steps/StepExport';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 
 const STEPS = [
   {
@@ -55,22 +56,55 @@ interface OnboardingWizardProps {
 export function OnboardingWizard({ open = true, onClose, onComplete }: OnboardingWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [stepStartTime, setStepStartTime] = useState<number>(Date.now());
   const navigate = useNavigate();
 
   const step = STEPS[currentStep];
   const StepComponent = step.component;
   const progress = ((currentStep + 1) / STEPS.length) * 100;
 
+  // Track analytics event
+  const trackEvent = async (eventType: string, stepNumber?: number, stepName?: string) => {
+    const timeSpent = Math.floor((Date.now() - stepStartTime) / 1000);
+    
+    try {
+      await supabase.functions.invoke('save-onboarding-analytics', {
+        body: {
+          event_type: eventType,
+          step_number: stepNumber,
+          step_name: stepName,
+          time_spent_seconds: timeSpent,
+          metadata: { timestamp: new Date().toISOString() },
+        },
+      });
+    } catch (error) {
+      console.error('Error tracking analytics:', error);
+    }
+  };
+
+  // Track start on mount
+  useState(() => {
+    if (open) {
+      trackEvent('started');
+    }
+  });
+
   const handleClose = () => {
+    trackEvent('abandoned', currentStep + 1, step.title);
     onClose?.();
   };
 
   const handleNext = () => {
+    // Track step completion
+    trackEvent('step_completed', currentStep + 1, step.title);
+    
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
+      setStepStartTime(Date.now());
       toast.success(`Avançando para: ${STEPS[currentStep + 1].title}`);
     } else {
       setCompleted(true);
+      trackEvent('completed');
       toast.success('🎉 Onboarding concluído com sucesso!');
     }
   };

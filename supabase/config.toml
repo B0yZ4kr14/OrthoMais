@@ -48,6 +48,15 @@ verify_jwt = false
 [functions.check-volatility-alerts]
 verify_jwt = false
 
+[functions.suggest-modules]
+verify_jwt = true
+
+[functions.save-onboarding-analytics]
+verify_jwt = true
+
+[functions.apply-module-template]
+verify_jwt = true
+
 [functions.send-crypto-price-alerts]
 verify_jwt = true
 
@@ -55,7 +64,4 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.send-stock-alerts]
-verify_jwt = true
-
-[functions.suggest-modules]
 verify_jwt = true

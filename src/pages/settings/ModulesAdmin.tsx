@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ModuleDependencyGraph } from '@/components/modules/ModuleDependencyGraph';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
+import { ModuleTemplateSelector } from '@/components/modules/ModuleTemplateSelector';
 import confetti from 'canvas-confetti';
 
 interface ModuleData {
@@ -368,6 +369,8 @@ export default function ModulesAdmin() {
             <BookOpen className="h-5 w-5" />
             Guia de Onboarding
           </Button>
+
+          <ModuleTemplateSelector onApply={fetchModules} />
 
           <Button
             variant="outline"
