@@ -9,6 +9,7 @@ import { CreditCard, QrCode, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { ContaReceber } from '@/modules/financeiro/types/financeiro-completo.types';
+import { useConfetti } from '@/hooks/useConfetti';
 
 interface PaymentDialogProps {
   open: boolean;
@@ -18,6 +19,7 @@ interface PaymentDialogProps {
 }
 
 export function PaymentDialog({ open, onClose, conta, onSuccess }: PaymentDialogProps) {
+  const { triggerSuccessConfetti } = useConfetti();
   const [loading, setLoading] = useState(false);
   const [metodo, setMetodo] = useState<'PIX' | 'CARTAO_CREDITO' | 'CARTAO_DEBITO'>('PIX');
   const [valor, setValor] = useState((conta.valor - (conta.valor_pago || 0)).toString());
@@ -59,6 +61,9 @@ export function PaymentDialog({ open, onClose, conta, onSuccess }: PaymentDialog
       });
 
       if (error) throw error;
+
+      // Trigger confetti celebration for successful payment
+      triggerSuccessConfetti();
 
       toast.success('Pagamento processado com sucesso!', {
         description: `Transação: ${data.transacao_id}`,

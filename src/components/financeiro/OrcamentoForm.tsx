@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
 import { z } from 'zod';
 import { useState } from 'react';
+import { useConfetti } from '@/hooks/useConfetti';
 
 const orcamentoItemSchema = z.object({
   descricao: z.string().min(1, 'Descrição é obrigatória'),
@@ -40,6 +41,7 @@ interface OrcamentoFormProps {
 }
 
 export function OrcamentoForm({ onSubmit, onCancel, initialData }: OrcamentoFormProps) {
+  const { triggerCelebrationConfetti } = useConfetti();
   const [itens, setItens] = useState(initialData?.itens || [{ descricao: '', quantidade: 1, valor_unitario: 0 }]);
 
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<OrcamentoFormData>({
@@ -78,8 +80,14 @@ export function OrcamentoForm({ onSubmit, onCancel, initialData }: OrcamentoForm
   const descontoVal = watch('desconto_valor') || 0;
   const valorFinal = valorTotal - (valorTotal * descontoPerc / 100) - descontoVal;
 
+  const handleFormSubmit = (data: OrcamentoFormData) => {
+    onSubmit(data);
+    // Trigger celebration confetti for budget approval
+    triggerCelebrationConfetti();
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="patient_id">Paciente *</Label>

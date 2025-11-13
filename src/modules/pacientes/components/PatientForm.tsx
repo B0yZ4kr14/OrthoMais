@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Patient, patientSchema } from '../types/patient.types';
 import { Button } from '@/components/ui/button';
+import { useConfetti } from '@/hooks/useConfetti';
 import {
   Form,
   FormControl,
@@ -29,6 +30,8 @@ interface PatientFormProps {
 }
 
 export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
+  const { triggerSuccessConfetti } = useConfetti();
+  
   const form = useForm<Patient>({
     resolver: zodResolver(patientSchema),
     defaultValues: patient || {
@@ -62,9 +65,17 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
 
   const temConvenio = form.watch('convenio.temConvenio');
 
+  const handleFormSubmit = (data: Patient) => {
+    onSubmit(data);
+    // Trigger confetti celebration for new patient registration
+    if (!patient) {
+      triggerSuccessConfetti();
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
         {/* Dados Pessoais */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Dados Pessoais</h3>

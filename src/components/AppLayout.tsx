@@ -4,6 +4,7 @@ import { AppSidebar } from '@/components/AppSidebar';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useFocusMode } from '@/hooks/useFocusMode';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -12,13 +13,14 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isFocusMode } = useFocusMode({ enabled: true, timeout: 3000 });
 
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        {/* Desktop Sidebar */}
-        {!isMobile && (
-          <div data-tour="sidebar">
+        {/* Desktop Sidebar - Hidden in Focus Mode */}
+        {!isMobile && !isFocusMode && (
+          <div data-tour="sidebar" className="transition-all duration-300">
             <AppSidebar />
           </div>
         )}
@@ -32,9 +34,23 @@ export function AppLayout({ children }: AppLayoutProps) {
           </Sheet>
         )}
 
-        <div className="flex-1 flex flex-col min-w-0">
-          <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
-          <main className="flex-1 bg-background overflow-x-hidden p-4 md:p-6">
+        <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${isFocusMode ? 'ml-0' : ''}`}>
+          {/* Header - Hidden in Focus Mode on Desktop */}
+          {(!isFocusMode || isMobile) && (
+            <div className="transition-all duration-300">
+              <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
+            </div>
+          )}
+          
+          <main className={`flex-1 bg-background overflow-x-hidden transition-all duration-300 ${
+            isFocusMode ? 'p-2 md:p-4' : 'p-4 md:p-6'
+          }`}>
+            {isFocusMode && !isMobile && (
+              <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-lg backdrop-blur-sm">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                <span>Modo Foco Ativo - Digitando...</span>
+              </div>
+            )}
             {children}
           </main>
         </div>
