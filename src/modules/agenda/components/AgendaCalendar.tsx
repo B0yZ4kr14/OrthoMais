@@ -70,7 +70,7 @@ export function AgendaCalendar({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="calendar-view">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -153,6 +153,7 @@ export function AgendaCalendar({
                           dayAppointments.map((apt) => (
                             <div
                               key={apt.id}
+                              data-testid="appointment-item"
                               onClick={() => onAppointmentClick(apt)}
                               className={cn(
                                 "text-xs p-2 rounded border cursor-pointer hover:opacity-80 transition-opacity",
