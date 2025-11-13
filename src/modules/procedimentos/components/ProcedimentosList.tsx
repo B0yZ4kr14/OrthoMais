@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -22,7 +22,7 @@ interface ProcedimentosListProps {
   onExcluir: (id: string) => void;
 }
 
-export function ProcedimentosList({
+export const ProcedimentosList = memo(function ProcedimentosList({
   onNovo,
   onEditar,
   onVisualizar,
@@ -32,6 +32,17 @@ export function ProcedimentosList({
   const [busca, setBusca] = useState('');
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>('todos');
   const [statusFiltro, setStatusFiltro] = useState<string>('todos');
+
+  const formatarValor = useCallback((valor: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(valor);
+  }, []);
+
+  const formatarDuracao = useCallback((duracao: number, unidade: string) => {
+    return `${duracao} ${unidade}`;
+  }, []);
 
   const procedimentosFiltrados = useMemo(() => {
     return procedimentos.filter((proc) => {
@@ -48,17 +59,6 @@ export function ProcedimentosList({
       return matchBusca && matchCategoria && matchStatus;
     });
   }, [procedimentos, busca, categoriaFiltro, statusFiltro]);
-
-  const formatarValor = (valor: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(valor);
-  };
-
-  const formatarDuracao = (duracao: number, unidade: string) => {
-    return `${duracao} ${unidade}`;
-  };
 
   return (
     <div className="space-y-4">
@@ -171,4 +171,4 @@ export function ProcedimentosList({
       </div>
     </div>
   );
-}
+});

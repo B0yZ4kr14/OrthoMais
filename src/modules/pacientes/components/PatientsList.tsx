@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { Search, Plus, Edit, Trash2, Eye, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,9 +38,31 @@ interface PatientsListProps {
   onAdd: () => void;
 }
 
-export function PatientsList({ patients, onEdit, onDelete, onView, onAdd }: PatientsListProps) {
+export const PatientsList = memo(function PatientsList({ patients, onEdit, onDelete, onView, onAdd }: PatientsListProps) {
   const [filters, setFilters] = useState<PatientFilters>({});
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setFilters(prev => ({ ...prev, search: value }));
+  }, []);
+
+  const handleStatusChange = useCallback((value: string) => {
+    setFilters(prev => ({ ...prev, status: value === 'all' ? undefined : value }));
+  }, []);
+
+  const handleConvenioChange = useCallback((value: string) => {
+    setFilters(prev => ({ 
+      ...prev, 
+      convenio: value === 'all' ? undefined : value === 'true' 
+    }));
+  }, []);
+
+  const handleDeleteConfirm = useCallback(() => {
+    if (deleteId) {
+      onDelete(deleteId);
+      setDeleteId(null);
+    }
+  }, [deleteId, onDelete]);
 
   const filteredPatients = patients.filter(patient => {
     if (filters.search) {
@@ -236,12 +258,7 @@ export function PatientsList({ patients, onEdit, onDelete, onView, onAdd }: Pati
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                if (deleteId) {
-                  onDelete(deleteId);
-                  setDeleteId(null);
-                }
-              }}
+              onClick={handleDeleteConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Excluir
@@ -251,4 +268,4 @@ export function PatientsList({ patients, onEdit, onDelete, onView, onAdd }: Pati
       </AlertDialog>
     </div>
   );
-}
+});

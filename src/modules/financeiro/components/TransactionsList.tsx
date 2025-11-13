@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { Eye, Printer, Filter } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,22 +22,22 @@ interface TransactionsListProps {
   onDelete: (id: string) => void;
 }
 
-export function TransactionsList({ transactions, onEdit, onDelete }: TransactionsListProps) {
+export const TransactionsList = memo(function TransactionsList({ transactions, onEdit, onDelete }: TransactionsListProps) {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const formatCurrency = (value: number) => {
+  const formatCurrency = useCallback((value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
     }).format(value);
-  };
+  }, []);
 
-  const formatDate = (date: string) => {
+  const formatDate = useCallback((date: string) => {
     return new Date(date).toLocaleDateString('pt-BR');
-  };
+  }, []);
 
-  const getStatusVariant = (status: string) => {
+  const getStatusVariant = useCallback((status: string) => {
     switch (status) {
       case 'CONCLUIDO':
         return 'default' as const;
@@ -48,9 +48,9 @@ export function TransactionsList({ transactions, onEdit, onDelete }: Transaction
       default:
         return 'outline' as const;
     }
-  };
+  }, []);
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = useCallback((status: string) => {
     switch (status) {
       case 'CONCLUIDO':
         return 'Concluído';
@@ -61,12 +61,12 @@ export function TransactionsList({ transactions, onEdit, onDelete }: Transaction
       default:
         return status;
     }
-  };
+  }, []);
 
-  const handleViewDetails = (transaction: Transaction) => {
+  const handleViewDetails = useCallback((transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setDetailsOpen(true);
-  };
+  }, []);
 
   return (
     <>
@@ -168,4 +168,4 @@ export function TransactionsList({ transactions, onEdit, onDelete }: Transaction
       </Dialog>
     </>
   );
-}
+});

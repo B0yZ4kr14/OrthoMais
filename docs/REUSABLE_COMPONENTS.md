@@ -361,6 +361,151 @@ Ao refatorar componentes existentes para usar estes novos componentes:
 
 ---
 
+## ToastEnhanced
+
+Componente de notificação toast com animações aprimoradas e feedback visual rico. Implementado na FASE 5 com cores WCAG AA compliant e ícones contextuais.
+
+### Variantes Disponíveis
+- `success`: Notificação de sucesso (verde, ícone CheckCircle2)
+- `error`: Notificação de erro (vermelho, ícone XCircle)
+- `warning`: Notificação de alerta (laranja, ícone AlertCircle)
+- `info`: Notificação informativa (azul, ícone Info)
+
+### Características
+- ✅ Animação slide-in-right com backdrop-blur
+- ✅ Border lateral colorido (4px) conforme variante
+- ✅ Ícones contextuais automáticos
+- ✅ Suporte para ação secundária
+- ✅ Botão de fechamento integrado
+- ✅ Efeito glassmorphism
+- ✅ Cores WCAG AA compliant
+
+### Exemplos de Uso
+
+```tsx
+import { ToastEnhanced } from '@/components/ui/toast-enhanced';
+import { useState } from 'react';
+
+// Sucesso simples
+<ToastEnhanced
+  variant="success"
+  title="Operação concluída"
+  description="Paciente cadastrado com sucesso!"
+  onClose={() => setToastOpen(false)}
+/>
+
+// Erro com detalhes
+<ToastEnhanced
+  variant="error"
+  title="Erro ao salvar"
+  description="Verifique os campos obrigatórios e tente novamente"
+  onClose={handleClose}
+/>
+
+// Warning com ação
+<ToastEnhanced
+  variant="warning"
+  title="Atenção"
+  description="Seu plano expira em 7 dias"
+  onClose={handleClose}
+  action={{
+    label: "Renovar Agora",
+    onClick: () => navigate('/billing')
+  }}
+/>
+
+// Info com navegação
+<ToastEnhanced
+  variant="info"
+  title="Nova mensagem"
+  description="Você recebeu uma mensagem do Dr. Silva"
+  onClose={handleClose}
+  action={{
+    label: "Visualizar",
+    onClick: () => navigate('/messages/123')
+  }}
+/>
+```
+
+### Integração com Formulários
+
+```tsx
+import { useToast } from '@/hooks/use-toast';
+import { ToastEnhanced } from '@/components/ui/toast-enhanced';
+
+function PatientForm() {
+  const [toastConfig, setToastConfig] = useState(null);
+
+  const handleSubmit = async (data) => {
+    try {
+      await savePatient(data);
+      setToastConfig({
+        variant: 'success',
+        title: 'Paciente salvo',
+        description: `${data.nome} foi cadastrado com sucesso`,
+        action: {
+          label: 'Ver Paciente',
+          onClick: () => navigate(`/pacientes/${newId}`)
+        }
+      });
+    } catch (error) {
+      setToastConfig({
+        variant: 'error',
+        title: 'Erro ao salvar',
+        description: error.message || 'Ocorreu um erro inesperado',
+        action: {
+          label: 'Tentar Novamente',
+          onClick: () => handleSubmit(data)
+        }
+      });
+    }
+  };
+
+  return (
+    <>
+      <form onSubmit={handleSubmit}>
+        {/* campos */}
+      </form>
+
+      {toastConfig && (
+        <ToastEnhanced
+          {...toastConfig}
+          onClose={() => setToastConfig(null)}
+        />
+      )}
+    </>
+  );
+}
+```
+
+### Padrões de Uso
+
+**Sucesso (success):**
+- Cadastros concluídos
+- Atualizações salvas
+- Exclusões confirmadas
+- Uploads finalizados
+
+**Erro (error):**
+- Falhas de validação
+- Erros de rede
+- Operações não autorizadas
+- Timeouts
+
+**Warning (warning):**
+- Avisos importantes
+- Confirmações necessárias
+- Limites próximos
+- Ações reversíveis
+
+**Info (info):**
+- Notificações gerais
+- Atualizações do sistema
+- Dicas contextuais
+- Novas funcionalidades
+
+---
+
 ## Performance e Boas Práticas
 
 ### DataTable
@@ -379,6 +524,12 @@ Ao refatorar componentes existentes para usar estes novos componentes:
 - Use skeleton variants para melhor percepção de performance
 - Ajuste `rows` para simular conteúdo real esperado
 - Evite spinners genéricos, prefira skeletons estruturados
+
+### ToastEnhanced
+- Use debounce para evitar múltiplos toasts simultâneos
+- Configure timeout automático (3-5s para sucesso, 7-10s para erro)
+- Limite toasts ativos na tela (máximo 3-4)
+- Use ações para operações reversíveis (undo)
 
 ---
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { Search, Plus, Edit, Trash2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,9 +38,28 @@ interface DentistasListProps {
   onAdd: () => void;
 }
 
-export function DentistasList({ dentistas, onEdit, onDelete, onView, onAdd }: DentistasListProps) {
+export const DentistasList = memo(function DentistasList({ dentistas, onEdit, onDelete, onView, onAdd }: DentistasListProps) {
   const [filters, setFilters] = useState<DentistaFilters>({});
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setFilters(prev => ({ ...prev, search: value }));
+  }, []);
+
+  const handleStatusChange = useCallback((value: string) => {
+    setFilters(prev => ({ ...prev, status: value === 'all' ? undefined : value }));
+  }, []);
+
+  const handleEspecialidadeChange = useCallback((value: string) => {
+    setFilters(prev => ({ ...prev, especialidade: value === 'all' ? undefined : value }));
+  }, []);
+
+  const handleDeleteConfirm = useCallback(() => {
+    if (deleteId) {
+      onDelete(deleteId);
+      setDeleteId(null);
+    }
+  }, [deleteId, onDelete]);
 
   const filteredDentistas = dentistas.filter(dentista => {
     if (filters.search) {
@@ -244,12 +263,7 @@ export function DentistasList({ dentistas, onEdit, onDelete, onView, onAdd }: De
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                if (deleteId) {
-                  onDelete(deleteId);
-                  setDeleteId(null);
-                }
-              }}
+              onClick={handleDeleteConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Excluir
@@ -259,4 +273,4 @@ export function DentistasList({ dentistas, onEdit, onDelete, onView, onAdd }: De
       </AlertDialog>
     </div>
   );
-}
+});
