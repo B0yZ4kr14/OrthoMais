@@ -272,6 +272,85 @@ export type Database = {
           },
         ]
       }
+      backup_replications: {
+        Row: {
+          backup_id: string
+          checksum_md5: string | null
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          file_size_bytes: number | null
+          id: string
+          metadata: Json | null
+          region: string
+          replication_status: string
+          source_clinic_id: string
+          started_at: string | null
+          storage_path: string | null
+          storage_provider: string
+          target_clinic_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          backup_id: string
+          checksum_md5?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          file_size_bytes?: number | null
+          id?: string
+          metadata?: Json | null
+          region: string
+          replication_status?: string
+          source_clinic_id: string
+          started_at?: string | null
+          storage_path?: string | null
+          storage_provider: string
+          target_clinic_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          backup_id?: string
+          checksum_md5?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          file_size_bytes?: number | null
+          id?: string
+          metadata?: Json | null
+          region?: string
+          replication_status?: string
+          source_clinic_id?: string
+          started_at?: string | null
+          storage_path?: string | null
+          storage_provider?: string
+          target_clinic_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_replications_backup_id_fkey"
+            columns: ["backup_id"]
+            isOneToOne: false
+            referencedRelation: "backup_history"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "backup_replications_source_clinic_id_fkey"
+            columns: ["source_clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "backup_replications_target_clinic_id_fkey"
+            columns: ["target_clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campanha_envios: {
         Row: {
           aberto_em: string | null
@@ -960,6 +1039,92 @@ export type Database = {
           },
         ]
       }
+      fiscal_config: {
+        Row: {
+          ambiente: string
+          certificado_digital: string | null
+          clinic_id: string
+          cnpj: string
+          codigo_regime_tributario: number | null
+          contingencia_enabled: boolean | null
+          contingencia_motivo: string | null
+          created_at: string | null
+          csc_id: string | null
+          csc_token: string | null
+          email_contabilidade: string | null
+          endereco: Json | null
+          id: string
+          inscricao_estadual: string | null
+          is_active: boolean | null
+          nome_fantasia: string | null
+          numero_ultimo_nfce: number | null
+          razao_social: string
+          regime_tributario: string
+          senha_certificado: string | null
+          serie_nfce: number | null
+          tipo_emissao: string
+          updated_at: string | null
+        }
+        Insert: {
+          ambiente?: string
+          certificado_digital?: string | null
+          clinic_id: string
+          cnpj: string
+          codigo_regime_tributario?: number | null
+          contingencia_enabled?: boolean | null
+          contingencia_motivo?: string | null
+          created_at?: string | null
+          csc_id?: string | null
+          csc_token?: string | null
+          email_contabilidade?: string | null
+          endereco?: Json | null
+          id?: string
+          inscricao_estadual?: string | null
+          is_active?: boolean | null
+          nome_fantasia?: string | null
+          numero_ultimo_nfce?: number | null
+          razao_social: string
+          regime_tributario?: string
+          senha_certificado?: string | null
+          serie_nfce?: number | null
+          tipo_emissao?: string
+          updated_at?: string | null
+        }
+        Update: {
+          ambiente?: string
+          certificado_digital?: string | null
+          clinic_id?: string
+          cnpj?: string
+          codigo_regime_tributario?: number | null
+          contingencia_enabled?: boolean | null
+          contingencia_motivo?: string | null
+          created_at?: string | null
+          csc_id?: string | null
+          csc_token?: string | null
+          email_contabilidade?: string | null
+          endereco?: Json | null
+          id?: string
+          inscricao_estadual?: string | null
+          is_active?: boolean | null
+          nome_fantasia?: string | null
+          numero_ultimo_nfce?: number | null
+          razao_social?: string
+          regime_tributario?: string
+          senha_certificado?: string | null
+          serie_nfce?: number | null
+          tipo_emissao?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fiscal_config_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: true
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       historico_clinico: {
         Row: {
           created_at: string
@@ -1460,6 +1625,92 @@ export type Database = {
           },
         ]
       }
+      nfce_emitidas: {
+        Row: {
+          ambiente: string
+          chave_acesso: string
+          clinic_id: string
+          contingencia: boolean | null
+          created_at: string | null
+          data_cancelamento: string | null
+          data_emissao: string | null
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          motivo_cancelamento: string | null
+          numero_nfce: number
+          pdf_url: string | null
+          protocolo_autorizacao: string | null
+          qrcode_url: string | null
+          serie: number
+          status: string
+          tipo_emissao: string
+          updated_at: string | null
+          valor_total: number
+          venda_id: string
+          xml_cancelamento: string | null
+          xml_nfce: string | null
+        }
+        Insert: {
+          ambiente: string
+          chave_acesso: string
+          clinic_id: string
+          contingencia?: boolean | null
+          created_at?: string | null
+          data_cancelamento?: string | null
+          data_emissao?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          motivo_cancelamento?: string | null
+          numero_nfce: number
+          pdf_url?: string | null
+          protocolo_autorizacao?: string | null
+          qrcode_url?: string | null
+          serie: number
+          status?: string
+          tipo_emissao: string
+          updated_at?: string | null
+          valor_total: number
+          venda_id: string
+          xml_cancelamento?: string | null
+          xml_nfce?: string | null
+        }
+        Update: {
+          ambiente?: string
+          chave_acesso?: string
+          clinic_id?: string
+          contingencia?: boolean | null
+          created_at?: string | null
+          data_cancelamento?: string | null
+          data_emissao?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          motivo_cancelamento?: string | null
+          numero_nfce?: number
+          pdf_url?: string | null
+          protocolo_autorizacao?: string | null
+          qrcode_url?: string | null
+          serie?: number
+          status?: string
+          tipo_emissao?: string
+          updated_at?: string | null
+          valor_total?: number
+          venda_id?: string
+          xml_cancelamento?: string | null
+          xml_nfce?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nfce_emitidas_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           clinic_id: string
@@ -1936,6 +2187,92 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      pdv_produtos: {
+        Row: {
+          cest: string | null
+          cfop: string | null
+          clinic_id: string
+          codigo: string
+          cofins_aliquota: number | null
+          controla_estoque: boolean | null
+          created_at: string | null
+          cst_cofins: string | null
+          cst_icms: string | null
+          cst_pis: string | null
+          descricao: string
+          estoque_atual: number | null
+          estoque_minimo: number | null
+          icms_aliquota: number | null
+          id: string
+          is_active: boolean | null
+          ncm: string | null
+          origem_mercadoria: number | null
+          pis_aliquota: number | null
+          tipo: string
+          unidade_medida: string | null
+          updated_at: string | null
+          valor_unitario: number
+        }
+        Insert: {
+          cest?: string | null
+          cfop?: string | null
+          clinic_id: string
+          codigo: string
+          cofins_aliquota?: number | null
+          controla_estoque?: boolean | null
+          created_at?: string | null
+          cst_cofins?: string | null
+          cst_icms?: string | null
+          cst_pis?: string | null
+          descricao: string
+          estoque_atual?: number | null
+          estoque_minimo?: number | null
+          icms_aliquota?: number | null
+          id?: string
+          is_active?: boolean | null
+          ncm?: string | null
+          origem_mercadoria?: number | null
+          pis_aliquota?: number | null
+          tipo?: string
+          unidade_medida?: string | null
+          updated_at?: string | null
+          valor_unitario: number
+        }
+        Update: {
+          cest?: string | null
+          cfop?: string | null
+          clinic_id?: string
+          codigo?: string
+          cofins_aliquota?: number | null
+          controla_estoque?: boolean | null
+          created_at?: string | null
+          cst_cofins?: string | null
+          cst_icms?: string | null
+          cst_pis?: string | null
+          descricao?: string
+          estoque_atual?: number | null
+          estoque_minimo?: number | null
+          icms_aliquota?: number | null
+          id?: string
+          is_active?: boolean | null
+          ncm?: string | null
+          origem_mercadoria?: number | null
+          pis_aliquota?: number | null
+          tipo?: string
+          unidade_medida?: string | null
+          updated_at?: string | null
+          valor_unitario?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pdv_produtos_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pep_anexos: {
         Row: {

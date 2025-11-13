@@ -80,3 +80,9 @@ verify_jwt = false
 
 [functions.test-backup-restore]
 verify_jwt = true
+
+[functions.replicate-backup]
+verify_jwt = false
+
+[functions.emitir-nfce]
+verify_jwt = true
