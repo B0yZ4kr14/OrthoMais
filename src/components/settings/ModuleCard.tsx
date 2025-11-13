@@ -45,31 +45,41 @@ export function ModuleCard({ module, onToggle, onRequest }: ModuleCardProps) {
   const tooltipContent = getTooltipContent();
 
   return (
-    <Card className={module.is_active ? 'border-primary' : ''}>
+    <Card className={`transition-all ${module.is_active ? 'border-primary shadow-md' : 'hover:shadow-sm'}`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${module.is_active ? 'bg-primary/10' : 'bg-muted'}`}>
-              <IconComponent className={`h-5 w-5 ${module.is_active ? 'text-primary' : 'text-muted-foreground'}`} />
+            <div className={`p-2 rounded-lg transition-colors ${module.is_active ? 'bg-primary/10' : 'bg-muted'}`}>
+              <IconComponent className={`h-5 w-5 transition-colors ${module.is_active ? 'text-primary' : 'text-muted-foreground'}`} />
             </div>
-            <div>
-              <CardTitle className="text-base">{module.name}</CardTitle>
-              {module.is_active && (
-                <Badge variant="default" className="mt-1">
-                  <Check className="h-3 w-3 mr-1" />
-                  Ativo
-                </Badge>
-              )}
+            <div className="flex-1">
+              <CardTitle className="text-base leading-tight">
+                {module.name.replace('Módulo de ', '')}
+              </CardTitle>
+              <div className="flex items-center gap-2 mt-1">
+                {module.is_active && (
+                  <Badge variant="default" className="text-xs">
+                    <Check className="h-3 w-3 mr-1" />
+                    Ativo
+                  </Badge>
+                )}
+                {!module.subscribed && (
+                  <Badge variant="secondary" className="text-xs">
+                    <Lock className="h-3 w-3 mr-1" />
+                    Não contratado
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
-        <CardDescription className="text-sm">{module.description}</CardDescription>
+        <CardDescription className="text-sm line-clamp-2">{module.description}</CardDescription>
 
         {module.subscribed ? (
-          <div className="flex items-center justify-between pt-2">
-            <span className="text-sm font-medium">Status</span>
+          <div className="flex items-center justify-between pt-2 border-t">
+            <span className="text-sm font-medium">Status do módulo</span>
             <div className="flex items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
@@ -81,13 +91,19 @@ export function ModuleCard({ module, onToggle, onRequest }: ModuleCardProps) {
                         disabled={isDisabled}
                       />
                       {isDisabled && tooltipContent && (
-                        <AlertCircle className="h-4 w-4 text-amber-500" />
+                        <AlertCircle className="h-4 w-4 text-amber-500 animate-pulse" />
                       )}
                     </div>
                   </TooltipTrigger>
-                  {isDisabled && tooltipContent && (
+                  {tooltipContent && (
                     <TooltipContent className="max-w-sm">
-                      <p className="text-xs">{tooltipContent}</p>
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium">
+                          {!module.is_active && !module.can_activate && 'Não pode ativar'}
+                          {module.is_active && !module.can_deactivate && 'Não pode desativar'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{tooltipContent}</p>
+                      </div>
                     </TooltipContent>
                   )}
                 </Tooltip>
@@ -95,11 +111,11 @@ export function ModuleCard({ module, onToggle, onRequest }: ModuleCardProps) {
             </div>
           </div>
         ) : (
-          <div className="pt-2">
+          <div className="pt-2 border-t">
             <Button
               variant="outline"
               size="sm"
-              className="w-full"
+              className="w-full hover:bg-primary/5 hover:text-primary hover:border-primary"
               onClick={() => onRequest(module.module_key)}
             >
               <Lock className="h-4 w-4 mr-2" />

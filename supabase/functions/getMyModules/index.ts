@@ -1,6 +1,21 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
 import { corsHeaders } from '../_shared/cors.ts';
 
+interface ModuleResponse {
+  id: number;
+  module_key: string;
+  name: string;
+  description: string;
+  category: string;
+  icon: string;
+  subscribed: boolean;
+  is_active: boolean;
+  can_activate: boolean;
+  can_deactivate: boolean;
+  unmet_dependencies: string[];
+  active_dependents: string[];
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -33,8 +48,8 @@ Deno.serve(async (req) => {
       .eq('id', user.id)
       .single();
 
-    if (profileError || !profile) {
-      return new Response(JSON.stringify({ error: 'Profile not found' }), {
+    if (profileError || !profile || !profile.clinic_id) {
+      return new Response(JSON.stringify({ error: 'Profile or clinic not found' }), {
         status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -49,7 +64,15 @@ Deno.serve(async (req) => {
       .order('category', { ascending: true })
       .order('name', { ascending: true });
 
-    if (modulesError) throw modulesError;
+    if (modulesError) {
+      throw new Error(`Failed to fetch modules: ${modulesError.message}`);
+    }
+
+    if (!allModules || allModules.length === 0) {
+      return new Response(JSON.stringify({ modules: [] }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Fetch clinic's subscribed modules
     const { data: clinicModules, error: clinicModulesError } = await supabaseClient
@@ -57,14 +80,18 @@ Deno.serve(async (req) => {
       .select('module_catalog_id, is_active')
       .eq('clinic_id', clinicId);
 
-    if (clinicModulesError) throw clinicModulesError;
+    if (clinicModulesError) {
+      throw new Error(`Failed to fetch clinic modules: ${clinicModulesError.message}`);
+    }
 
     // Fetch all dependencies
     const { data: dependencies, error: depsError } = await supabaseClient
       .from('module_dependencies')
       .select('module_id, depends_on_module_id');
 
-    if (depsError) throw depsError;
+    if (depsError) {
+      throw new Error(`Failed to fetch dependencies: ${depsError.message}`);
+    }
 
     // Get list of active module IDs
     const activeModuleIds = clinicModules
@@ -93,7 +120,7 @@ Deno.serve(async (req) => {
     });
 
     // Build response with can_activate and can_deactivate flags
-    const modulesWithStatus = allModules?.map((module) => {
+    const modulesWithStatus: ModuleResponse[] = allModules.map((module) => {
       const isSubscribed = subscribedMap.has(module.id);
       const isActive = subscribedMap.get(module.id) || false;
       const requiredModuleIds = dependsOnMap.get(module.id) || [];
@@ -106,22 +133,27 @@ Deno.serve(async (req) => {
       const canActivate = isSubscribed && !isActive && unmetDependencies.length === 0;
 
       // Can deactivate if no active module depends on it
-      const activeDependendents = dependentModuleIds.filter((depId) =>
+      const activeDependents = dependentModuleIds.filter((depId) =>
         activeModuleIds.includes(depId)
       );
-      const canDeactivate = isActive && activeDependendents.length === 0;
+      const canDeactivate = isSubscribed && isActive && activeDependents.length === 0;
 
       // Get names of unmet dependencies
       const unmetDependencyNames = unmetDependencies
-        .map((id) => allModules?.find((m) => m.id === id)?.name)
-        .filter(Boolean);
+        .map((id) => allModules.find((m) => m.id === id)?.name)
+        .filter(Boolean) as string[];
 
-      const activeDependentNames = activeDependendents
-        .map((id) => allModules?.find((m) => m.id === id)?.name)
-        .filter(Boolean);
+      const activeDependentNames = activeDependents
+        .map((id) => allModules.find((m) => m.id === id)?.name)
+        .filter(Boolean) as string[];
 
       return {
-        ...module,
+        id: module.id,
+        module_key: module.module_key,
+        name: module.name,
+        description: module.description || '',
+        category: module.category || 'Outros',
+        icon: module.icon || 'Package',
         subscribed: isSubscribed,
         is_active: isActive,
         can_activate: canActivate,
@@ -129,12 +161,13 @@ Deno.serve(async (req) => {
         unmet_dependencies: unmetDependencyNames,
         active_dependents: activeDependentNames,
       };
-    }) || [];
+    });
 
     return new Response(JSON.stringify({ modules: modulesWithStatus }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    console.error('Error in getMyModules:', error);
     const message = error instanceof Error ? error.message : 'Unknown error';
     return new Response(JSON.stringify({ error: message }), {
       status: 500,

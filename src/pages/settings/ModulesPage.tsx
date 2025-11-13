@@ -1,116 +1,70 @@
-import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 import { ModuleCard } from '@/components/settings/ModuleCard';
 import { SidebarPreview } from '@/components/modules/SidebarPreview';
-import { Loader2 } from 'lucide-react';
-
-interface Module {
-  id: number;
-  module_key: string;
-  name: string;
-  description: string;
-  category: string;
-  icon: string;
-  subscribed: boolean;
-  is_active: boolean;
-  can_activate: boolean;
-  can_deactivate: boolean;
-  unmet_dependencies: string[];
-  active_dependents: string[];
-}
+import { useModules } from '@/hooks/useModules';
+import { groupModulesByCategory, getModuleStats } from '@/lib/modules';
+import { Loader2, Package, CheckCircle2, Circle, Lock } from 'lucide-react';
 
 export default function ModulesPage() {
-  const [modules, setModules] = useState<Module[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-
-  const loadModules = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase.functions.invoke('getMyModules');
-
-      if (error) throw error;
-
-      setModules(data.modules || []);
-    } catch (error) {
-      console.error('Error loading modules:', error);
-      toast({
-        title: 'Erro ao carregar módulos',
-        description: 'Não foi possível carregar a lista de módulos.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadModules();
-  }, []);
-
-  const handleToggle = async (moduleKey: string) => {
-    try {
-      const { data, error } = await supabase.functions.invoke('toggleModuleState', {
-        body: { module_key: moduleKey },
-      });
-
-      if (error) throw error;
-
-      if (data.success) {
-        toast({
-          title: 'Módulo atualizado',
-          description: 'O status do módulo foi alterado com sucesso.',
-        });
-        // Reload modules to update UI
-        await loadModules();
-      }
-    } catch (error: any) {
-      console.error('Error toggling module:', error);
-      toast({
-        title: 'Erro',
-        description: error.message || 'Não foi possível alterar o status do módulo.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleRequest = async (moduleKey: string) => {
-    try {
-      const { data, error } = await supabase.functions.invoke('requestNewModule', {
-        body: { module_key: moduleKey },
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: 'Solicitação enviada!',
-        description: data.message || 'Nossa equipe entrará em contato em breve.',
-      });
-    } catch (error: any) {
-      console.error('Error requesting module:', error);
-      toast({
-        title: 'Erro',
-        description: error.message || 'Não foi possível enviar a solicitação.',
-        variant: 'destructive',
-      });
-    }
-  };
+  const { modules, loading, toggleModule, requestModule } = useModules();
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex flex-col items-center justify-center h-96 space-y-4">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-muted-foreground">Carregando módulos...</p>
       </div>
     );
   }
 
-  const categories = Array.from(new Set(modules.map((m) => m.category)));
+  const categoryGroups = groupModulesByCategory(modules);
+  const stats = getModuleStats(modules);
 
   return (
     <div className="container mx-auto p-6 space-y-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Total de Módulos</CardDescription>
+            <CardTitle className="text-3xl flex items-center gap-2">
+              <Package className="h-6 w-6 text-muted-foreground" />
+              {stats.total}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Contratados</CardDescription>
+            <CardTitle className="text-3xl flex items-center gap-2">
+              <CheckCircle2 className="h-6 w-6 text-blue-500" />
+              {stats.subscribed}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Ativos</CardDescription>
+            <CardTitle className="text-3xl flex items-center gap-2">
+              <Circle className="h-6 w-6 text-green-500 fill-green-500" />
+              {stats.active}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Disponíveis</CardDescription>
+            <CardTitle className="text-3xl flex items-center gap-2">
+              <Lock className="h-6 w-6 text-amber-500" />
+              {stats.available}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
+
+      {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Card>
@@ -121,40 +75,58 @@ export default function ModulesPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-          <Tabs defaultValue={categories[0]} className="w-full">
-            <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}>
-              {categories.map((category) => (
-                <TabsTrigger key={category} value={category}>
-                  {category}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+              <Tabs defaultValue={categoryGroups[0]?.name} className="w-full">
+                <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${categoryGroups.length}, 1fr)` }}>
+                  {categoryGroups.map((category) => (
+                    <TabsTrigger key={category.name} value={category.name}>
+                      {category.label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
 
-            {categories.map((category) => (
-              <TabsContent key={category} value={category} className="space-y-4 mt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {modules
-                    .filter((m) => m.category === category)
-                    .map((module) => (
-                      <ModuleCard
-                        key={module.id}
-                        module={module}
-                        onToggle={handleToggle}
-                        onRequest={handleRequest}
-                      />
-                    ))}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
+                {categoryGroups.map((category) => (
+                  <TabsContent key={category.name} value={category.name} className="space-y-4 mt-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="space-y-1">
+                        <h3 className="font-semibold">{category.label}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {category.modules.filter(m => m.subscribed).length} de {category.modules.length} módulos contratados
+                        </p>
+                      </div>
+                      <Badge variant="secondary">
+                        {category.modules.filter(m => m.is_active).length} ativos
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {category.modules.map((module) => (
+                        <ModuleCard
+                          key={module.id}
+                          module={module}
+                          onToggle={toggleModule}
+                          onRequest={requestModule}
+                        />
+                      ))}
+                    </div>
+                  </TabsContent>
+                ))}
+              </Tabs>
             </CardContent>
           </Card>
         </div>
 
         <div className="lg:col-span-1">
-          <div className="sticky top-6">
-            <h3 className="text-lg font-semibold mb-4">Prévia da Sidebar</h3>
-            <SidebarPreview modules={modules} />
+          <div className="sticky top-6 space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Prévia da Sidebar</CardTitle>
+                <CardDescription>
+                  Visualize como os módulos ativos aparecerão na navegação
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SidebarPreview modules={modules} />
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

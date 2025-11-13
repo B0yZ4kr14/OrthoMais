@@ -209,10 +209,19 @@ Deno.serve(async (req) => {
       },
     });
 
-    return new Response(JSON.stringify({ success: true, clinic_module: updated }), {
+    const message = newState 
+      ? `Módulo "${module.name}" ativado com sucesso!`
+      : `Módulo "${module.name}" desativado com sucesso!`;
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message,
+      clinic_module: updated 
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    console.error('Error in toggleModuleState:', error);
     const message = error instanceof Error ? error.message : 'Unknown error';
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
