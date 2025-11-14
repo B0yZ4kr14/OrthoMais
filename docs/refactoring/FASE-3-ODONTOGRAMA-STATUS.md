@@ -3,7 +3,7 @@
 ## 📊 Progresso Geral
 
 ```
-[▓▓▓░░░░░░░] 25% - Camada de Domínio (Em Progresso)
+[▓▓▓▓▓░░░░░] 50% - Camada de Aplicação (Completa)
 ```
 
 ---
@@ -21,24 +21,51 @@ Refatorar o módulo **ODONTOGRAMA** seguindo o "Golden Pattern" estabelecido nos
 
 ## 📋 Camadas
 
-### 1. Domain Layer (Em Progresso - 25%)
+### 1. Domain Layer ✅ (100%)
 
 #### Entidades
-- [ ] `Odontograma` - Entidade principal que representa o odontograma completo do paciente
-- [ ] `HistoricoOdontograma` - Entidade para representar entradas de histórico
+- ✅ `Odontograma` - Entidade principal que representa o odontograma completo do paciente
+  - Factory methods: `create()`, `restore()`
+  - Propriedades: id, prontuarioId, teeth, lastUpdated, history, timestamps
+  - Métodos de domínio:
+    - `atualizarStatusDente()` - Atualiza status geral de um dente
+    - `atualizarSuperficie()` - Atualiza superfície específica
+    - `atualizarNotas()` - Atualiza notas do dente
+    - `buscarDente()` - Busca dente por número
+    - `buscarDentesPorStatus()` - Filtra dentes por status
+    - `contarDentesPorStatus()` - Estatísticas por status
+  - Validações: número de dente válido (FDI), status válido
+  - Histórico automático de alterações
 
 #### Repository Interfaces
-- [ ] `IOdontogramaRepository` - Interface do repositório
+- ✅ `IOdontogramaRepository` - Interface do repositório
+  - `findById()` - Buscar por ID
+  - `findByProntuarioId()` - Buscar por prontuário
+  - `findByClinicId()` - Buscar por clínica
+  - `save()` - Salvar novo
+  - `update()` - Atualizar existente
+  - `delete()` - Remover
 
 ---
 
-### 2. Application Layer (0%)
+### 2. Application Layer ✅ (100%)
 
 #### Use Cases
-- [ ] `GetOdontogramaUseCase` - Buscar odontograma por prontuário
-- [ ] `UpdateToothStatusUseCase` - Atualizar status de um dente
-- [ ] `UpdateToothSurfaceUseCase` - Atualizar superfície de um dente
-- [ ] `AddHistoryEntryUseCase` - Adicionar entrada no histórico
+- ✅ `GetOdontogramaUseCase` - Buscar odontograma por prontuário
+  - Busca odontograma existente
+  - Cria novo se não existir (auto-inicialização)
+  - Validações de input
+- ✅ `UpdateToothStatusUseCase` - Atualizar status de um dente
+  - Atualiza status geral do dente
+  - Adiciona entrada no histórico automaticamente
+  - Validações de input e domínio
+- ✅ `UpdateToothSurfaceUseCase` - Atualizar superfície de um dente
+  - Atualiza superfície específica (mesial, distal, etc.)
+  - Adiciona entrada no histórico automaticamente
+  - Validações de input e domínio
+- ✅ `UpdateToothNotesUseCase` - Atualizar notas de um dente
+  - Atualiza observações do dente
+  - Validações de input
 
 ---
 

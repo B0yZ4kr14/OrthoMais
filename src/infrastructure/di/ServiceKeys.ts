@@ -57,6 +57,15 @@ export const SERVICE_KEYS = {
   APROVAR_ORCAMENTO_USE_CASE: 'AprovarOrcamentoUseCase',
   REJEITAR_ORCAMENTO_USE_CASE: 'RejeitarOrcamentoUseCase',
   ADD_ITEM_ORCAMENTO_USE_CASE: 'AddItemOrcamentoUseCase',
+
+  // Repositories - Odontograma
+  ODONTOGRAMA_REPOSITORY: 'IOdontogramaRepository',
+
+  // Use Cases - Odontograma
+  GET_ODONTOGRAMA_USE_CASE: 'GetOdontogramaUseCase',
+  UPDATE_TOOTH_STATUS_USE_CASE: 'UpdateToothStatusUseCase',
+  UPDATE_TOOTH_SURFACE_USE_CASE: 'UpdateToothSurfaceUseCase',
+  UPDATE_TOOTH_NOTES_USE_CASE: 'UpdateToothNotesUseCase',
 } as const;
 
 export type ServiceKey = typeof SERVICE_KEYS[keyof typeof SERVICE_KEYS];
