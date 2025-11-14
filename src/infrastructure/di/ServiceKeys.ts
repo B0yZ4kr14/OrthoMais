@@ -46,6 +46,17 @@ export const SERVICE_KEYS = {
   CANCEL_AGENDAMENTO_USE_CASE: 'CancelAgendamentoUseCase',
   SEND_CONFIRMACAO_WHATSAPP_USE_CASE: 'SendConfirmacaoWhatsAppUseCase',
   GET_AGENDAMENTOS_BY_DATE_RANGE_USE_CASE: 'GetAgendamentosByDateRangeUseCase',
+
+  // Repositories - Orçamentos
+  ORCAMENTO_REPOSITORY: 'IOrcamentoRepository',
+  ITEM_ORCAMENTO_REPOSITORY: 'IItemOrcamentoRepository',
+
+  // Use Cases - Orçamentos
+  CREATE_ORCAMENTO_USE_CASE: 'CreateOrcamentoUseCase',
+  UPDATE_ORCAMENTO_USE_CASE: 'UpdateOrcamentoUseCase',
+  APROVAR_ORCAMENTO_USE_CASE: 'AprovarOrcamentoUseCase',
+  REJEITAR_ORCAMENTO_USE_CASE: 'RejeitarOrcamentoUseCase',
+  ADD_ITEM_ORCAMENTO_USE_CASE: 'AddItemOrcamentoUseCase',
 } as const;
 
 export type ServiceKey = typeof SERVICE_KEYS[keyof typeof SERVICE_KEYS];
