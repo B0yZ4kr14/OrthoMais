@@ -11,11 +11,11 @@
 
 ```
 Domain Layer:        ██████████ 100% (2/2) ✅
-Application Layer:   ░░░░░░░░░░  0% (0/5)
+Application Layer:   ██████████ 100% (5/5) ✅
 Infrastructure Layer: ░░░░░░░░░░  0% (0/4)
 Presentation Layer:  ░░░░░░░░░░  0% (0/2)
 
-Total: █████░░░░░░░░░░░░░░ 25%
+Total: ██████████░░░░░░░░░░ 50%
 ```
 
 ---
@@ -53,14 +53,38 @@ Total: █████░░░░░░░░░░░░░░ 25%
 
 ---
 
-## 🔄 Application Layer (0%)
+## ✅ Application Layer (100% - 5/5)
 
-### Use Cases a Implementar
-- [ ] CreateOrcamentoUseCase
-- [ ] UpdateOrcamentoUseCase
-- [ ] AprovarOrcamentoUseCase
-- [ ] RejeitarOrcamentoUseCase
-- [ ] AddItemOrcamentoUseCase
+### Use Cases Implementados
+- ✅ **CreateOrcamentoUseCase**
+  - Cria novo orçamento em estado RASCUNHO
+  - Aplica validações de domínio via entidade
+  - Gera número único automaticamente
+  - Calcula data de expiração
+
+- ✅ **UpdateOrcamentoUseCase**
+  - Atualiza valores de orçamento em RASCUNHO
+  - Valida estado editável
+  - Recalcula valores totais
+  - Atualiza tipo de pagamento
+
+- ✅ **AprovarOrcamentoUseCase**
+  - Aprova orçamento PENDENTE
+  - Verifica se não está expirado
+  - Registra usuário aprovador
+  - Atualiza timestamp de aprovação
+
+- ✅ **RejeitarOrcamentoUseCase**
+  - Rejeita orçamento PENDENTE
+  - Requer motivo obrigatório
+  - Registra usuário rejeitador
+  - Atualiza timestamp de rejeição
+
+- ✅ **AddItemOrcamentoUseCase**
+  - Adiciona item a orçamento em RASCUNHO
+  - Valida estado editável do orçamento
+  - Recalcula totais automaticamente
+  - Mantém ordem dos itens
 
 ---
 
@@ -92,13 +116,13 @@ Total: █████░░░░░░░░░░░░░░ 25%
 ## 📝 Próximos Passos
 
 1. ✅ Criar entidades Orcamento e ItemOrcamento + interfaces
-2. 🔄 Implementar Use Cases (PRÓXIMO)
-3. Implementar Repositories Supabase
+2. ✅ Implementar Use Cases
+3. 🔄 Implementar Repositories Supabase (PRÓXIMO)
 4. Implementar Mappers
 5. Criar Hooks customizados
 6. Refatorar componentes (opcional)
 
 ---
 
-**Última Atualização:** 2025-11-14 22:45  
-**Status:** 🟢 25% COMPLETO - Domain Layer ✅
+**Última Atualização:** 2025-11-14 23:15  
+**Status:** 🟡 50% COMPLETO - Domain + Application Layers ✅
