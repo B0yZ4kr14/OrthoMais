@@ -19,13 +19,17 @@ import { PrescricaoForm } from '@/modules/pep/components/PrescricaoForm';
 import { ReceitaForm } from '@/modules/pep/components/ReceitaForm';
 import { ProntuarioPDF } from '@/modules/pep/components/ProntuarioPDF';
 import { useOdontogramaSupabase } from '@/modules/pep/hooks/useOdontogramaSupabase';
-import { supabase } from '@/integrations/supabase/client';
+import { useTratamentos } from '@/modules/pep/hooks/useTratamentos';
 import { PatientSelector } from '@/components/shared/PatientSelector';
 import { Patient } from '@/modules/pacientes/types/patient.types';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 export default function PEP() {
+  const { user, clinicId } = useAuth();
+  const { toast } = useToast();
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [activeTab, setActiveTab] = useState('historico');
   const [isHistoricoDialogOpen, setIsHistoricoDialogOpen] = useState(false);
@@ -34,6 +38,9 @@ export default function PEP() {
   const [isReceitaDialogOpen, setIsReceitaDialogOpen] = useState(false);
   
   const prontuarioId = selectedPatient?.prontuarioId || null;
+
+  // Custom Hooks com Clean Architecture
+  const { createTratamento } = useTratamentos(prontuarioId, clinicId || '');
 
   // Estados para comparação de odontogramas
   const [selectedForComparison, setSelectedForComparison] = useState<[string | null, string | null]>([null, null]);
@@ -56,32 +63,38 @@ export default function PEP() {
   };
 
   const handleCreateTreatmentsFromAI = async (suggestions: any[]) => {
+    if (!user) {
+      toast({
+        title: 'Erro',
+        description: 'Usuário não autenticado',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Usuário não autenticado');
+      // Criar tratamentos usando o Use Case via hook customizado
+      for (const suggestion of suggestions) {
+        await createTratamento({
+          titulo: suggestion.procedure,
+          descricao: suggestion.clinical_notes || `Tratamento para o dente ${suggestion.tooth_number}`,
+          denteCodigo: suggestion.tooth_number.toString(),
+          valorEstimado: suggestion.estimated_cost,
+          dataInicio: new Date(),
+          createdBy: user.id,
+        });
+      }
 
-      // Criar tratamentos na tabela pep_tratamentos
-      const treatmentsToInsert = suggestions.map(suggestion => ({
-        prontuario_id: prontuarioId,
-        titulo: suggestion.procedure,
-        descricao: suggestion.clinical_notes || `Tratamento para o dente ${suggestion.tooth_number}`,
-        dente_codigo: suggestion.tooth_number.toString(),
-        valor_estimado: suggestion.estimated_cost,
-        status: 'EM_ANDAMENTO',
-        data_inicio: new Date().toISOString().split('T')[0],
-        created_by: user.id,
-        observacoes: `Prioridade: ${suggestion.priority}${suggestion.estimated_duration ? ` | Duração estimada: ${suggestion.estimated_duration}` : ''}`
-      }));
+      toast({
+        title: 'Sucesso',
+        description: `${suggestions.length} tratamento(s) criado(s) a partir da análise de IA`,
+      });
 
-      const { error } = await supabase
-        .from('pep_tratamentos')
-        .insert(treatmentsToInsert);
-
-      if (error) throw error;
-
+      // Mudar para aba de tratamentos
+      setActiveTab('tratamentos');
     } catch (error) {
       console.error('Erro ao criar tratamentos:', error);
-      throw error;
+      // Toast de erro já é exibido pelo hook
     }
   };
 
