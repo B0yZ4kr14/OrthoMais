@@ -75,10 +75,11 @@
 
 ## 🎯 Próximos Passos (FASE 3)
 
-1. **Refatorar Componentes React** (2-3h)
-   - Adaptar PEP.tsx para usar hooks customizados
-   - Remover chamadas diretas ao Supabase
-   - Simplificar componentes
+1. **Refatorar Componentes React** (2-3h) 🔄 EM ANDAMENTO
+   - ✅ PEP.tsx refatorado para usar hooks customizados
+   - 🔄 TratamentoForm.tsx (próximo)
+   - 🔄 EvolucoesTimeline.tsx
+   - 🔄 AnexosUpload.tsx
 
 2. **Testes E2E** (2h)
    - Testar fluxo completo de tratamentos
@@ -109,7 +110,11 @@
 - **Use Cases:** 5/5 (100%) ✅
 - **DI Container:** 9/9 registros (100%) ✅
 - **Hooks Customizados:** 3/3 (100%) ✅
-- **Componentes Refatorados:** 0/12 (0%) 🔄 (FASE 3)
+- **Componentes Refatorados:** 1/12 (8%) 🔄
+  - ✅ PEP.tsx (página principal)
+  - 🔄 TratamentoForm.tsx (próximo)
+  - 🔄 EvolucoesTimeline.tsx
+  - 🔄 AnexosUpload.tsx
 
 ---
 
