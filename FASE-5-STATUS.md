@@ -98,9 +98,9 @@ Replicar o **Golden Pattern** validado na FASE 4 para implementar os módulos pr
 
 ---
 
-### T5.3: Módulo ORCAMENTOS ⏳
+### T5.3: Módulo ORCAMENTOS ✅
 **Responsável:** Sistema  
-**Status:** ⏳ Pendente
+**Status:** ✅ **Concluído**
 
 **Escopo:**
 - Criação de orçamentos
@@ -233,7 +233,7 @@ Replicar o **Golden Pattern** validado na FASE 4 para implementar os módulos pr
 |--------|--------|-----------|--------------|-----------|
 | PEP | ✅ Concluído | 1 | - | 100% |
 | AGENDA | ✅ Concluído | 1 | - | 100% |
-| ORCAMENTOS | ⏳ Pendente | 1 | ODONTOGRAMA | 0% |
+| ORCAMENTOS | ✅ Concluído | 1 | ODONTOGRAMA | 100% |
 | ODONTOGRAMA | 🔧 Refatorar | 1 | - | 60% |
 | ESTOQUE | 🔧 Refatorar | 1 | - | 70% |
 | FINANCEIRO | ✅ Concluído | 2 | - | 100% |
@@ -291,7 +291,16 @@ Replicar o **Golden Pattern** validado na FASE 4 para implementar os módulos pr
 
 ## 🚀 Próximos Passos
 
-**Ação Imediata:** Implementar **T5.3 - Módulo ORÇAMENTOS**
+**Ação Imediata:** Implementar **T5.4 - Refatorar Módulo ODONTOGRAMA**
+
+**Checklist T5.3 (ORÇAMENTOS) - ✅ Concluído:**
+- [x] Criar tabelas de orçamentos com RLS
+- [x] Criar página `/orcamentos` seguindo Golden Pattern
+- [x] Adicionar link na sidebar (`moduleKey: 'ORCAMENTOS'`)
+- [x] Implementar gestão de orçamentos
+- [x] Implementar aprovação de orçamentos
+- [x] Implementar controle de versões
+- [x] Validar integração com sistema de módulos
 
 **Checklist T5.1 (FINANCEIRO) - ✅ Concluído:**
 - [x] Criar tabelas financeiras com RLS
@@ -313,4 +322,4 @@ Replicar o **Golden Pattern** validado na FASE 4 para implementar os módulos pr
 
 ---
 
-**Status Atual:** 🚧 **FASE 5 EM ANDAMENTO - Próximo: T5.3 (ORÇAMENTOS)**
+**Status Atual:** 🚧 **FASE 5 EM ANDAMENTO - Próximo: T5.4 (Refatorar ODONTOGRAMA)**
