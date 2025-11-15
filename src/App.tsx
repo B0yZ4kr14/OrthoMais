@@ -47,7 +47,7 @@ const OnboardingAnalytics = lazy(() => import('./pages/settings/OnboardingAnalyt
 const ModulesAdmin = lazy(() => import('./pages/settings/ModulesAdmin'));
 const ModulesSimple = lazy(() => import('./pages/settings/ModulesSimple'));
 const ProfileSettings = lazy(() => import('./pages/settings/ProfileSettings'));
-const CRM = lazy(() => import('./pages/CRM'));
+const CRM = lazy(() => import('./pages/crm'));
 import Auth from './pages/Auth';
 import ReportTemplates from '@/pages/ReportTemplates';
 import AuditLogs from '@/pages/AuditLogs';
@@ -74,7 +74,7 @@ import ConciliacaoBancaria from '@/pages/financeiro/ConciliacaoBancaria';
 import Orcamentos from '@/pages/Orcamentos';
 import Contratos from '@/pages/Contratos';
 import PortalPaciente from '@/pages/PortalPaciente';
-import Teleodontologia from './pages/Teleodontologia';
+const Teleodontologia = lazy(() => import('./pages/teleodonto'));
 import HistoricoTeleconsultas from './pages/HistoricoTeleconsultas';
 import CRMFunil from '@/pages/CRMFunil';
 import CRMPage from '@/pages/crm';
