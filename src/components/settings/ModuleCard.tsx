@@ -21,10 +21,9 @@ interface ModuleCardProps {
     active_dependents: string[];
   };
   onToggle: (moduleKey: string) => void;
-  onRequest: (moduleKey: string) => void;
 }
 
-export function ModuleCard({ module, onToggle, onRequest }: ModuleCardProps) {
+export function ModuleCard({ module, onToggle }: ModuleCardProps) {
   // Get icon component dynamically
   const IconComponent = (LucideIcons as any)[module.icon] || LucideIcons.Package;
 
@@ -77,52 +76,38 @@ export function ModuleCard({ module, onToggle, onRequest }: ModuleCardProps) {
       <CardContent className="space-y-3">
         <CardDescription className="text-sm line-clamp-2">{module.description}</CardDescription>
 
-        {module.subscribed ? (
-          <div className="flex items-center justify-between pt-2 border-t">
-            <span className="text-sm font-medium">Status do módulo</span>
-            <div className="flex items-center gap-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        checked={module.is_active}
-                        onCheckedChange={() => onToggle(module.module_key)}
-                        disabled={isDisabled}
-                      />
-                      {isDisabled && tooltipContent && (
-                        <AlertCircle className="h-4 w-4 text-amber-500 animate-pulse" />
-                      )}
+        <div className="flex items-center justify-between pt-2 border-t">
+          <span className="text-sm font-medium">Status do módulo</span>
+          <div className="flex items-center gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={module.is_active}
+                      onCheckedChange={() => onToggle(module.module_key)}
+                      disabled={isDisabled}
+                    />
+                    {isDisabled && tooltipContent && (
+                      <AlertCircle className="h-4 w-4 text-amber-500 animate-pulse" />
+                    )}
+                  </div>
+                </TooltipTrigger>
+                {tooltipContent && (
+                  <TooltipContent className="max-w-sm">
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium">
+                        {!module.is_active && !module.can_activate && 'Não pode ativar'}
+                        {module.is_active && !module.can_deactivate && 'Não pode desativar'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{tooltipContent}</p>
                     </div>
-                  </TooltipTrigger>
-                  {tooltipContent && (
-                    <TooltipContent className="max-w-sm">
-                      <div className="space-y-1">
-                        <p className="text-xs font-medium">
-                          {!module.is_active && !module.can_activate && 'Não pode ativar'}
-                          {module.is_active && !module.can_deactivate && 'Não pode desativar'}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{tooltipContent}</p>
-                      </div>
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           </div>
-        ) : (
-          <div className="pt-2 border-t">
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full hover:bg-primary/5 hover:text-primary hover:border-primary"
-              onClick={() => onRequest(module.module_key)}
-            >
-              <Lock className="h-4 w-4 mr-2" />
-              Solicitar Contratação
-            </Button>
-          </div>
-        )}
+        </div>
       </CardContent>
     </Card>
   );

@@ -61,10 +61,15 @@ export type Database = {
       }
       analises_radiograficas: {
         Row: {
+          ai_model_version: string | null
+          ai_processing_time_ms: number | null
+          auto_approved: boolean | null
           clinic_id: string
           confidence_score: number | null
           created_at: string
           created_by: string
+          feedback_comments: string | null
+          feedback_rating: number | null
           id: string
           imagem_storage_path: string
           imagem_url: string
@@ -81,10 +86,15 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ai_model_version?: string | null
+          ai_processing_time_ms?: number | null
+          auto_approved?: boolean | null
           clinic_id: string
           confidence_score?: number | null
           created_at?: string
           created_by: string
+          feedback_comments?: string | null
+          feedback_rating?: number | null
           id?: string
           imagem_storage_path: string
           imagem_url: string
@@ -101,10 +111,15 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ai_model_version?: string | null
+          ai_processing_time_ms?: number | null
+          auto_approved?: boolean | null
           clinic_id?: string
           confidence_score?: number | null
           created_at?: string
           created_by?: string
+          feedback_comments?: string | null
+          feedback_rating?: number | null
           id?: string
           imagem_storage_path?: string
           imagem_url?: string
@@ -133,6 +148,50 @@ export type Database = {
             columns: ["prontuario_id"]
             isOneToOne: false
             referencedRelation: "prontuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analises_radiograficas_history: {
+        Row: {
+          ai_model_version: string | null
+          analise_id: string
+          confidence_score: number | null
+          created_at: string
+          created_by: string
+          id: string
+          problemas_detectados: number | null
+          resultado_ia: Json
+          versao: number
+        }
+        Insert: {
+          ai_model_version?: string | null
+          analise_id: string
+          confidence_score?: number | null
+          created_at?: string
+          created_by: string
+          id?: string
+          problemas_detectados?: number | null
+          resultado_ia: Json
+          versao?: number
+        }
+        Update: {
+          ai_model_version?: string | null
+          analise_id?: string
+          confidence_score?: number | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          problemas_detectados?: number | null
+          resultado_ia?: Json
+          versao?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analises_radiograficas_history_analise_id_fkey"
+            columns: ["analise_id"]
+            isOneToOne: false
+            referencedRelation: "analises_radiograficas"
             referencedColumns: ["id"]
           },
         ]
@@ -6322,6 +6381,110 @@ export type Database = {
           },
         ]
       }
+      radiografia_ai_feedback: {
+        Row: {
+          analise_id: string
+          anotacoes_dentista: Json | null
+          clinic_id: string
+          created_at: string
+          created_by: string
+          diagnostico_correto: string | null
+          falsos_negativos: Json | null
+          falsos_positivos: Json | null
+          ia_estava_correta: boolean
+          id: string
+          imagem_marcada_url: string | null
+          usado_para_treino: boolean | null
+        }
+        Insert: {
+          analise_id: string
+          anotacoes_dentista?: Json | null
+          clinic_id: string
+          created_at?: string
+          created_by: string
+          diagnostico_correto?: string | null
+          falsos_negativos?: Json | null
+          falsos_positivos?: Json | null
+          ia_estava_correta: boolean
+          id?: string
+          imagem_marcada_url?: string | null
+          usado_para_treino?: boolean | null
+        }
+        Update: {
+          analise_id?: string
+          anotacoes_dentista?: Json | null
+          clinic_id?: string
+          created_at?: string
+          created_by?: string
+          diagnostico_correto?: string | null
+          falsos_negativos?: Json | null
+          falsos_positivos?: Json | null
+          ia_estava_correta?: boolean
+          id?: string
+          imagem_marcada_url?: string | null
+          usado_para_treino?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "radiografia_ai_feedback_analise_id_fkey"
+            columns: ["analise_id"]
+            isOneToOne: false
+            referencedRelation: "analises_radiograficas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "radiografia_ai_feedback_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      radiografia_laudo_templates: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          created_by: string
+          id: string
+          is_default: boolean | null
+          nome_template: string
+          template_markdown: string
+          tipo_radiografia: string
+          variaveis_disponiveis: Json | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          is_default?: boolean | null
+          nome_template: string
+          template_markdown: string
+          tipo_radiografia: string
+          variaveis_disponiveis?: Json | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_default?: boolean | null
+          nome_template?: string
+          template_markdown?: string
+          tipo_radiografia?: string
+          variaveis_disponiveis?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "radiografia_laudo_templates_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rate_limit_config: {
         Row: {
           created_at: string
@@ -7117,6 +7280,217 @@ export type Database = {
           },
         ]
       }
+      teleodonto_chat: {
+        Row: {
+          attachment_type: string | null
+          attachment_url: string | null
+          id: string
+          message_text: string
+          message_type: string
+          read_at: string | null
+          sender_id: string
+          sender_role: string
+          sent_at: string
+          session_id: string
+        }
+        Insert: {
+          attachment_type?: string | null
+          attachment_url?: string | null
+          id?: string
+          message_text: string
+          message_type?: string
+          read_at?: string | null
+          sender_id: string
+          sender_role: string
+          sent_at?: string
+          session_id: string
+        }
+        Update: {
+          attachment_type?: string | null
+          attachment_url?: string | null
+          id?: string
+          message_text?: string
+          message_type?: string
+          read_at?: string | null
+          sender_id?: string
+          sender_role?: string
+          sent_at?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teleodonto_chat_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "teleodonto_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teleodonto_files: {
+        Row: {
+          compartilhado_com_paciente: boolean | null
+          descricao: string | null
+          file_name: string
+          file_size_bytes: number
+          file_type: string
+          file_url: string | null
+          id: string
+          session_id: string
+          storage_path: string
+          tipo_arquivo: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          compartilhado_com_paciente?: boolean | null
+          descricao?: string | null
+          file_name: string
+          file_size_bytes: number
+          file_type: string
+          file_url?: string | null
+          id?: string
+          session_id: string
+          storage_path: string
+          tipo_arquivo: string
+          uploaded_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          compartilhado_com_paciente?: boolean | null
+          descricao?: string | null
+          file_name?: string
+          file_size_bytes?: number
+          file_type?: string
+          file_url?: string | null
+          id?: string
+          session_id?: string
+          storage_path?: string
+          tipo_arquivo?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teleodonto_files_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "teleodonto_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teleodonto_sessions: {
+        Row: {
+          appointment_id: string | null
+          clinic_id: string
+          consentimento_assinado_em: string | null
+          consentimento_gravacao: boolean | null
+          created_at: string
+          created_by: string
+          dentist_id: string
+          dentist_joined_at: string | null
+          diagnostico_preliminar: string | null
+          duracao_minutos: number | null
+          ended_at: string | null
+          id: string
+          notas_pos_consulta: string | null
+          notas_pre_consulta: string | null
+          patient_id: string
+          patient_joined_at: string | null
+          platform: string
+          prescricoes: Json | null
+          problemas_tecnicos: string | null
+          qualidade_audio: string | null
+          qualidade_video: string | null
+          recording_url: string | null
+          room_id: string | null
+          room_url: string | null
+          scheduled_end: string
+          scheduled_start: string
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          clinic_id: string
+          consentimento_assinado_em?: string | null
+          consentimento_gravacao?: boolean | null
+          created_at?: string
+          created_by: string
+          dentist_id: string
+          dentist_joined_at?: string | null
+          diagnostico_preliminar?: string | null
+          duracao_minutos?: number | null
+          ended_at?: string | null
+          id?: string
+          notas_pos_consulta?: string | null
+          notas_pre_consulta?: string | null
+          patient_id: string
+          patient_joined_at?: string | null
+          platform?: string
+          prescricoes?: Json | null
+          problemas_tecnicos?: string | null
+          qualidade_audio?: string | null
+          qualidade_video?: string | null
+          recording_url?: string | null
+          room_id?: string | null
+          room_url?: string | null
+          scheduled_end: string
+          scheduled_start: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          clinic_id?: string
+          consentimento_assinado_em?: string | null
+          consentimento_gravacao?: boolean | null
+          created_at?: string
+          created_by?: string
+          dentist_id?: string
+          dentist_joined_at?: string | null
+          diagnostico_preliminar?: string | null
+          duracao_minutos?: number | null
+          ended_at?: string | null
+          id?: string
+          notas_pos_consulta?: string | null
+          notas_pre_consulta?: string | null
+          patient_id?: string
+          patient_joined_at?: string | null
+          platform?: string
+          prescricoes?: Json | null
+          problemas_tecnicos?: string | null
+          qualidade_audio?: string | null
+          qualidade_video?: string | null
+          recording_url?: string | null
+          room_id?: string | null
+          room_url?: string | null
+          scheduled_end?: string
+          scheduled_start?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teleodonto_sessions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleodonto_sessions_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       triagem_teleconsulta: {
         Row: {
           alergias: string | null
@@ -7260,6 +7634,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_ai_accuracy_by_clinic: {
+        Args: { p_clinic_id: string }
+        Returns: {
+          analises_corretas: number
+          media_confidence: number
+          taxa_acerto: number
+          total_analises: number
+        }[]
+      }
       cleanup_bi_cache: { Args: never; Returns: number }
       cleanup_expired_patient_sessions: { Args: never; Returns: number }
       cleanup_old_backups: {

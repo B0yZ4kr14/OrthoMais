@@ -8,7 +8,7 @@ import { groupModulesByCategory, getModuleStats } from '@/lib/modules';
 import { Loader2, Package, CheckCircle2, Circle, Lock } from 'lucide-react';
 
 export default function ModulesPage() {
-  const { modules, loading, toggleModule, requestModule } = useModules();
+  const { modules, loading, toggleModule } = useModules();
 
   if (loading) {
     return (
@@ -103,7 +103,6 @@ export default function ModulesPage() {
                           key={module.id}
                           module={module}
                           onToggle={toggleModule}
-                          onRequest={requestModule}
                         />
                       ))}
                     </div>
