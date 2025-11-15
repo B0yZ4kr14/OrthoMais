@@ -1,31 +1,64 @@
 /**
- * SIDEBAR CONFIGURATION - Enterprise SaaS Dental Clinic v4.0
- * Praxeological Architecture: Business-Domain-Centric Categorization
- * 
- * Benchmark Compliance:
- * - Dentrix: ✅ Clinical workflows prioritization
- * - Yapi: ✅ Financial operations prominence
- * - Open Dental: ✅ Patient-centric navigation
- * 
- * Total Categories: 7 (vs 10 legacy)
- * Total Links: 35 (vs 47 legacy)
- * Reduction: 30% categories, 26% links
+ * SIDEBAR CONFIGURATION V4.0 - Ortho+
+ * Categorização Profissional para Clínicas Odontológicas
  */
 
 import { 
-  LayoutDashboard, Users, Calendar, FileText, TrendingUp, Package, 
-  Settings, Video, UserPlus, UserCog, AlertCircle, Award,
-  Building2, BookOpen, Terminal, Database, HardDrive, Wrench, 
-  GitBranch, Code2, ScrollText, FileCode, BookText, Github,
-  LucideIcon, Sparkles, Zap, BriefcaseBusiness, Coins,
-  Receipt, ShoppingCart, FileSpreadsheet,
-  Clipboard, ClipboardCheck, ClipboardList, BadgeCheck,
-  Bell, BarChart3, TrendingDown,
-  PieChart, LineChart, Target, Megaphone, Mail,
-  Lock, FileCheck, FileSignature, Eye,
-  Cpu, Workflow, ScanLine, Stethoscope, HeartPulse,
-  Pill, Activity, ClipboardPlus, Wallet, ArrowLeftRight,
-  Boxes, PackagePlus
+  LayoutDashboard,
+  Users,
+  Calendar,
+  FileText,
+  Package,
+  Settings,
+  Video,
+  UserCog,
+  AlertCircle,
+  Award,
+  Building2,
+  BookOpen,
+  Database,
+  HardDrive,
+  Wrench,
+  GitBranch,
+  Code2,
+  ScrollText,
+  FileCode,
+  BookText,
+  Github,
+  type LucideIcon,
+  Sparkles,
+  BriefcaseBusiness,
+  Receipt,
+  ShoppingCart,
+  FileSpreadsheet,
+  Clipboard,
+  ClipboardCheck,
+  ClipboardList,
+  Bell,
+  BarChart3,
+  TrendingDown,
+  TrendingUp,
+  PieChart,
+  LineChart,
+  Target,
+  Megaphone,
+  Mail,
+  Lock,
+  FileCheck,
+  FileSignature,
+  Eye,
+  Workflow,
+  Stethoscope,
+  HeartPulse,
+  Pill,
+  Activity,
+  ClipboardPlus,
+  Wallet,
+  ArrowLeftRight,
+  Boxes,
+  PackagePlus,
+  Coins,
+  BadgeCheck
 } from 'lucide-react';
 
 export interface MenuSubItem {
@@ -50,36 +83,96 @@ export interface MenuGroup {
 }
 
 /**
- * MAIN NAVIGATION - Praxeological Hierarchy
- * Based on natural business workflows and user behavior patterns
+ * NAVEGAÇÃO PRINCIPAL
  */
 export const menuGroups: MenuGroup[] = [
-  // ========= 1. INÍCIO (DASHBOARD) =========
+  // ========= 1. INÍCIO =========
   {
-    label: 'Início',
+    label: 'INÍCIO',
     items: [
-      { title: 'Visão Geral', url: '/', icon: LayoutDashboard }
+      { 
+        title: 'Dashboard', 
+        url: '/', 
+        icon: LayoutDashboard 
+      }
     ]
   },
 
-  // ========= 2. ATENDIMENTO CLÍNICO (CORE CLINICAL) =========
+  // ========= 2. GESTÃO E OPERAÇÃO =========
   {
-    label: 'Atendimento Clínico',
+    label: 'GESTÃO E OPERAÇÃO',
     collapsed: false,
     items: [
-      { title: 'Agenda', url: '/agenda', icon: Calendar, moduleKey: 'AGENDA' },
-      { title: 'Pacientes', url: '/pacientes', icon: Users, moduleKey: 'PEP' },
-      { title: 'Prontuário (PEP)', url: '/pep', icon: ClipboardPlus, moduleKey: 'PEP' },
-      { title: 'Odontograma', url: '/odontograma', icon: ScanLine, moduleKey: 'ODONTOGRAMA' },
-      { title: 'Tratamentos', url: '/tratamentos', icon: HeartPulse, moduleKey: 'PEP' },
-      { title: 'Recall', url: '/recall', icon: Bell, moduleKey: 'AGENDA' },
-      { title: 'Teleodontologia', url: '/teleodonto', icon: Video, moduleKey: 'TELEODONTO' }
+      { 
+        title: 'Agenda', 
+        url: '/agenda', 
+        icon: Calendar, 
+        moduleKey: 'AGENDA' 
+      },
+      { 
+        title: 'Pacientes', 
+        url: '/pacientes', 
+        icon: Users, 
+        moduleKey: 'PEP' 
+      },
+      { 
+        title: 'Prontuário (PEP)', 
+        url: '/pep', 
+        icon: ClipboardPlus, 
+        moduleKey: 'PEP' 
+      },
+      { 
+        title: 'Odontograma', 
+        url: '/odontograma', 
+        icon: Activity, 
+        moduleKey: 'ODONTOGRAMA' 
+      },
+      { 
+        title: 'Tratamentos', 
+        url: '/tratamentos', 
+        icon: HeartPulse, 
+        moduleKey: 'PEP' 
+      },
+      { 
+        title: 'Recall', 
+        url: '/recall', 
+        icon: Bell, 
+        moduleKey: 'AGENDA' 
+      },
+      { 
+        title: 'Equipe',
+        icon: Users,
+        moduleKey: 'PEP',
+        collapsed: true,
+        subItems: [
+          { title: 'Dentistas', url: '/dentistas', icon: Stethoscope },
+          { title: 'Funcionários', url: '/funcionarios', icon: UserCog }
+        ]
+      },
+      { 
+        title: 'Procedimentos', 
+        url: '/procedimentos', 
+        icon: Pill, 
+        moduleKey: 'PEP' 
+      },
+      { 
+        title: 'Estoque',
+        icon: Boxes,
+        moduleKey: 'ESTOQUE',
+        collapsed: true,
+        subItems: [
+          { title: 'Visão Geral', url: '/estoque', icon: BarChart3 },
+          { title: 'Produtos', url: '/estoque/cadastros', icon: PackagePlus },
+          { title: 'Requisições', url: '/estoque/requisicoes', icon: Clipboard },
+          { title: 'Inventário', url: '/estoque/inventario', icon: ClipboardCheck }
+        ]
+      }
     ]
   },
 
-  // ========= 3. FINANCEIRO (REVENUE OPERATIONS) =========
+  // ========= 3. FINANCEIRO =========
   {
-    label: 'Financeiro',
+    label: 'FINANCEIRO',
     collapsed: true,
     items: [
       { 
@@ -100,10 +193,36 @@ export const menuGroups: MenuGroup[] = [
           { title: 'Conciliação', url: '/financeiro/conciliacao', icon: BadgeCheck }
         ]
       },
-      { title: 'Fluxo de Caixa', url: '/fluxo-caixa', icon: LineChart, moduleKey: 'FINANCEIRO' },
-      { title: 'Orçamentos', url: '/orcamentos', icon: FileSpreadsheet, moduleKey: 'ORCAMENTOS' },
-      { title: 'PDV', url: '/pdv', icon: ShoppingCart, moduleKey: 'FINANCEIRO' },
-      { title: 'Notas Fiscais', url: '/notas-fiscais', icon: Receipt, moduleKey: 'TISS' },
+      { 
+        title: 'Fluxo de Caixa', 
+        url: '/fluxo-caixa', 
+        icon: LineChart, 
+        moduleKey: 'FINANCEIRO' 
+      },
+      { 
+        title: 'Orçamentos', 
+        url: '/orcamentos', 
+        icon: FileSpreadsheet, 
+        moduleKey: 'ORCAMENTOS' 
+      },
+      { 
+        title: 'Contratos', 
+        url: '/contratos', 
+        icon: FileCheck, 
+        moduleKey: 'ORCAMENTOS' 
+      },
+      { 
+        title: 'PDV', 
+        url: '/pdv', 
+        icon: ShoppingCart, 
+        moduleKey: 'FINANCEIRO' 
+      },
+      { 
+        title: 'Notas Fiscais', 
+        url: '/notas-fiscais', 
+        icon: Receipt, 
+        moduleKey: 'TISS' 
+      },
       { 
         title: 'Pagamentos Avançados',
         icon: Wallet,
@@ -111,94 +230,129 @@ export const menuGroups: MenuGroup[] = [
         collapsed: true,
         subItems: [
           { title: 'Split de Pagamento', url: '/split-pagamento', icon: Coins },
-          { title: 'Crypto Payments', url: '/crypto', icon: Zap },
           { title: 'Inadimplência', url: '/inadimplencia', icon: AlertCircle }
         ]
       }
     ]
   },
 
-  // ========= 4. OPERAÇÕES DA CLÍNICA (CLINIC OPERATIONS) =========
+  // ========= 4. CRESCIMENTO =========
   {
-    label: 'Operações da Clínica',
+    label: 'CRESCIMENTO',
     collapsed: true,
     items: [
       { 
-        title: 'Equipe',
-        icon: Users,
-        moduleKey: 'PEP',
-        collapsed: true,
-        subItems: [
-          { title: 'Dentistas', url: '/dentistas', icon: Stethoscope },
-          { title: 'Funcionários', url: '/funcionarios', icon: UserCog }
-        ]
+        title: 'CRM', 
+        url: '/crm', 
+        icon: BriefcaseBusiness, 
+        moduleKey: 'CRM' 
       },
-      { title: 'Procedimentos', url: '/procedimentos', icon: Pill, moduleKey: 'PEP' },
-      { title: 'Templates', url: '/templates-procedimentos', icon: ClipboardList, moduleKey: 'PEP' },
-      { title: 'Contratos', url: '/contratos', icon: FileCheck, moduleKey: 'ORCAMENTOS' },
       { 
-        title: 'Estoque',
-        icon: Boxes,
-        moduleKey: 'ESTOQUE',
-        collapsed: true,
-        subItems: [
-          { title: 'Visão Geral', url: '/estoque', icon: BarChart3 },
-          { title: 'Produtos', url: '/estoque/cadastros', icon: PackagePlus },
-          { title: 'Requisições', url: '/estoque/requisicoes', icon: Clipboard },
-          { title: 'Inventário', url: '/estoque/inventario', icon: ClipboardCheck }
-        ]
+        title: 'Funil de Vendas', 
+        url: '/crm/funil', 
+        icon: Target, 
+        moduleKey: 'CRM' 
+      },
+      { 
+        title: 'Campanhas', 
+        url: '/marketing-auto', 
+        icon: Megaphone, 
+        moduleKey: 'MARKETING_AUTO' 
+      },
+      { 
+        title: 'E-mail Marketing', 
+        url: '/email-marketing', 
+        icon: Mail, 
+        moduleKey: 'MARKETING_AUTO' 
+      },
+      { 
+        title: 'Programa Fidelidade', 
+        url: '/programa-fidelidade', 
+        icon: Award, 
+        moduleKey: 'CRM' 
+      },
+      { 
+        title: 'Analytics', 
+        url: '/bi', 
+        icon: BarChart3, 
+        moduleKey: 'BI' 
       }
     ]
   },
 
-  // ========= 5. VENDAS & MARKETING (GROWTH & SALES) =========
+  // ========= 5. COMPLIANCE =========
   {
-    label: 'Vendas & Marketing',
+    label: 'COMPLIANCE',
     collapsed: true,
     items: [
-      { title: 'CRM', url: '/crm', icon: BriefcaseBusiness, moduleKey: 'CRM' },
-      { title: 'Funil de Vendas', url: '/crm/funil', icon: Target, moduleKey: 'CRM' },
-      { title: 'Campanhas', url: '/marketing-auto', icon: Megaphone, moduleKey: 'MARKETING_AUTO' },
-      { title: 'E-mail Marketing', url: '/email-marketing', icon: Mail, moduleKey: 'MARKETING_AUTO' },
-      { title: 'Programa Fidelidade', url: '/programa-fidelidade', icon: Award, moduleKey: 'CRM' },
-      { title: 'Analytics', url: '/bi', icon: BarChart3, moduleKey: 'BI' }
+      { 
+        title: 'LGPD', 
+        url: '/lgpd', 
+        icon: Lock, 
+        moduleKey: 'LGPD' 
+      },
+      { 
+        title: 'Assinatura Digital', 
+        url: '/assinatura-digital', 
+        icon: FileSignature, 
+        moduleKey: 'ASSINATURA_ICP' 
+      },
+      { 
+        title: 'TISS', 
+        url: '/tiss', 
+        icon: FileText, 
+        moduleKey: 'TISS' 
+      },
+      { 
+        title: 'Auditoria', 
+        url: '/auditoria', 
+        icon: Eye, 
+        moduleKey: 'LGPD' 
+      },
+      { 
+        title: 'Teleodontologia', 
+        url: '/teleodonto', 
+        icon: Video, 
+        moduleKey: 'TELEODONTO' 
+      }
     ]
   },
 
-  // ========= 6. COMPLIANCE & REGULAMENTAÇÃO (COMPLIANCE & SECURITY) =========
+  // ========= 6. INOVAÇÃO =========
   {
-    label: 'Compliance & Regulamentação',
+    label: 'INOVAÇÃO',
     collapsed: true,
     items: [
-      { title: 'LGPD', url: '/lgpd', icon: Lock, moduleKey: 'LGPD' },
-      { title: 'Assinatura Digital', url: '/assinatura-digital', icon: FileSignature, moduleKey: 'ASSINATURA_ICP' },
-      { title: 'TISS', url: '/tiss', icon: FileText, moduleKey: 'TISS' },
-      { title: 'Auditoria', url: '/auditoria', icon: Eye, moduleKey: 'LGPD' }
+      { 
+        title: 'IA Diagnóstico', 
+        url: '/ia-radiografia', 
+        icon: Sparkles, 
+        moduleKey: 'IA' 
+      },
+      { 
+        title: 'Fluxo Digital', 
+        url: '/fluxo-digital', 
+        icon: Workflow, 
+        moduleKey: 'FLUXO_DIGITAL' 
+      }
     ]
   },
 
-  // ========= 7. TECNOLOGIA AVANÇADA (ADVANCED TECHNOLOGY) =========
+  // ========= 7. SUPORTE =========
   {
-    label: 'Tecnologia Avançada',
-    collapsed: true,
+    label: 'SUPORTE',
     items: [
-      { title: 'IA Diagnóstico', url: '/ia-radiografia', icon: Sparkles, moduleKey: 'IA' },
-      { title: 'Fluxo Digital', url: '/fluxo-digital', icon: Workflow, moduleKey: 'FLUXO_DIGITAL' }
-    ]
-  },
-
-  // ========= 8. SUPORTE =========
-  {
-    label: 'Suporte',
-    items: [
-      { title: 'Central de Ajuda', url: '/ajuda', icon: BookOpen }
+      { 
+        title: 'Central de Ajuda', 
+        url: '/ajuda', 
+        icon: BookOpen 
+      }
     ]
   }
 ];
 
 /**
- * ADMIN MENU - Enterprise Administration Tools
- * DevOps, Database, Documentation and System Management
+ * MENU ADMINISTRAÇÃO (ADMIN ONLY)
  */
 export const adminMenuItems: MenuItem[] = [
   {
@@ -228,23 +382,13 @@ export const adminMenuItems: MenuItem[] = [
     ]
   },
   {
-    title: "DevOps",
-    icon: Terminal,
-    collapsed: false,
-    subItems: [
-      { title: "Terminal Shell", url: "/admin/terminal", icon: Terminal },
-      { title: "Edge Functions", url: "/admin/edge-functions", icon: Cpu },
-      { title: "CI/CD", url: "/admin/cicd", icon: Github }
-    ]
-  },
-  {
     title: "Documentação",
     icon: BookText,
     collapsed: false,
     subItems: [
-      { title: "Docs Wiki", url: "/admin/docs", icon: BookOpen },
-      { title: "ADRs", url: "/admin/adrs", icon: ScrollText },
-      { title: "API Docs", url: "/admin/api-docs", icon: FileCode }
+      { title: "Decisões (ADR)", url: "/admin/adrs", icon: ScrollText },
+      { title: "Código Fonte", url: "/admin/codebase", icon: FileCode },
+      { title: "GitHub", url: "/admin/github", icon: Github }
     ]
   },
   {
