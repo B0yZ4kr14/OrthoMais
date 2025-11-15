@@ -19,7 +19,7 @@ export function SidebarGroup({ group, index, onNavigate }: SidebarGroupProps) {
   const collapsed = state === 'collapsed';
 
   // Filter items based on module access
-  const visibleItems = group.items.filter(item => {
+  const visibleItems = (group.items || []).filter(item => {
     // If no moduleKey, item is always visible
     if (!item.moduleKey) return true;
     // Check if user has access to this module
