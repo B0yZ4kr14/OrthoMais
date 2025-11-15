@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Module } from '@/lib/modules';
+import { Module } from '@/core/config/modules.config';
 
 // Cache simples para módulos (5 minutos)
 let modulesCache: { data: Module[]; timestamp: number } | null = null;

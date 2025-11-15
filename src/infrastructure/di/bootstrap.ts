@@ -64,9 +64,9 @@ import { UpdateToothStatusUseCase } from '@/application/use-cases/odontograma/Up
 import { UpdateToothSurfaceUseCase } from '@/application/use-cases/odontograma/UpdateToothSurfaceUseCase';
 import { UpdateToothNotesUseCase } from '@/application/use-cases/odontograma/UpdateToothNotesUseCase';
 
-// Estoque Module
-import { SupabaseProdutoRepository } from '@/infrastructure/repositories/SupabaseProdutoRepository';
-import { SupabaseMovimentacaoEstoqueRepository } from '@/infrastructure/repositories/SupabaseMovimentacaoEstoqueRepository';
+// Estoque Module (usando repositórios do módulo)
+import { SupabaseProdutoRepository } from '@/modules/estoque/infrastructure/repositories/SupabaseProdutoRepository';
+import { SupabaseMovimentacaoEstoqueRepository } from '@/modules/estoque/infrastructure/repositories/SupabaseMovimentacaoEstoqueRepository';
 import { CreateProdutoUseCase } from '@/application/use-cases/estoque/CreateProdutoUseCase';
 import { UpdateProdutoUseCase } from '@/application/use-cases/estoque/UpdateProdutoUseCase';
 import { GetProdutoByIdUseCase } from '@/application/use-cases/estoque/GetProdutoByIdUseCase';
