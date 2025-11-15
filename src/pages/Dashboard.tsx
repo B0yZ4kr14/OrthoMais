@@ -9,6 +9,7 @@ import { LayoutDashboard, Users, Calendar, DollarSign, TrendingUp, Activity, Che
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { MarketRatesWidget } from '@/components/dashboard/MarketRatesWidget';
+import { CryptoRatesWidget } from '@/components/CryptoRatesWidget';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -335,32 +336,37 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Próximas Consultas */}
-      <Card variant="elevated" depth="normal">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Próximas Consultas Hoje
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {stats.todayAppointments > 0 ? (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Você tem {stats.todayAppointments} consulta(s) agendada(s) para hoje
-              </p>
-              <Button variant="outline" className="w-full">
-                Ver Agenda Completa
-              </Button>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              <Calendar className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>Nenhuma consulta agendada para hoje</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Crypto Rates Widget */}
+        <CryptoRatesWidget />
+
+        {/* Próximas Consultas */}
+        <Card variant="elevated" depth="normal">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Próximas Consultas Hoje
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {stats.todayAppointments > 0 ? (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Você tem {stats.todayAppointments} consulta(s) agendada(s) para hoje
+                </p>
+                <Button variant="outline" className="w-full">
+                  Ver Agenda Completa
+                </Button>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <Calendar className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p>Nenhuma consulta agendada para hoje</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

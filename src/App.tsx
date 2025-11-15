@@ -95,6 +95,14 @@ import DashboardVendasPDV from './pages/financeiro/DashboardVendasPDV';
 import MetasGamificacao from './pages/pdv/MetasGamificacao';
 import DashboardExecutivoPDV from './pages/pdv/DashboardExecutivoPDV';
 import ResetPassword from './pages/ResetPassword';
+import TerminalPage from './pages/admin/TerminalPage';
+import GitHubManagerPage from './pages/admin/GitHubManagerPage';
+import DatabaseMaintenancePage from './pages/admin/DatabaseMaintenancePage';
+import WikiPage from './pages/admin/WikiPage';
+import ADRsPage from './pages/admin/ADRsPage';
+import MonitoringPage from './pages/admin/MonitoringPage';
+import SystemLogsPage from './pages/admin/SystemLogsPage';
+import ApiDocsPage from './pages/admin/ApiDocsPage';
 
 const queryClient = new QueryClient();
 
@@ -205,6 +213,19 @@ const App = () => (
                 <Route path="/settings/modules" element={<ProtectedRoute requireAdmin><AppLayout><Suspense fallback={<LoadingState />}><ModulesAdmin /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/settings/modules-simple" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState />}><ModulesSimple /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/settings/profile" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState />}><ProfileSettings /></Suspense></AppLayout></ProtectedRoute>} />
+                
+                {/* Admin Routes - Enterprise Tools */}
+                <Route path="/admin/terminal" element={<ProtectedRoute requireAdmin><AppLayout><TerminalPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/github" element={<ProtectedRoute requireAdmin><AppLayout><GitHubManagerPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/database-maintenance" element={<ProtectedRoute requireAdmin><AppLayout><DatabaseMaintenancePage /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/wiki" element={<ProtectedRoute requireAdmin><AppLayout><WikiPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/adrs" element={<ProtectedRoute requireAdmin><AppLayout><ADRsPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/monitoring" element={<ProtectedRoute requireAdmin><AppLayout><MonitoringPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/logs" element={<ProtectedRoute requireAdmin><AppLayout><SystemLogsPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/api-docs" element={<ProtectedRoute requireAdmin><AppLayout><ApiDocsPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/backups" element={<ProtectedRoute requireAdmin><AppLayout><BackupExecutivePage /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/sql-query" element={<ProtectedRoute requireAdmin><AppLayout><BackupExecutivePage /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/migrations" element={<ProtectedRoute requireAdmin><AppLayout><BackupExecutivePage /></AppLayout></ProtectedRoute>} />
                 
                 {/* 404 Route */}
                 <Route path="*" element={<NotFound />} />
