@@ -1,6 +1,6 @@
 # 📋 FASE 3: IMPLEMENTAÇÃO DE MÓDULOS - STATUS GERAL
 
-## 📊 Status Geral: ✅ 24% COMPLETO (4/17 módulos core)
+## 📊 Status Geral: ✅ 29% COMPLETO (5/17 módulos core)
 
 **Iniciado em:** 2025-11-14  
 **Metodologia:** Clean Architecture + DDD + SOLID  
@@ -8,7 +8,21 @@
 
 ---
 
-## ✅ MÓDULOS IMPLEMENTADOS (4/17 completos)
+## ✅ MÓDULOS IMPLEMENTADOS (5/17 completos)
+
+### 5. ✅ MARKETING_AUTO (Automação de Marketing) - 100%
+- **Status:** Implementado com Clean Architecture ✅
+- **Entidades:** Campaign, CampaignSend
+- **Value Objects:** MessageTemplate
+- **Use Cases:** 6 (Create/UpdateStatus/List Campaign, GetMetrics, SendMessage, ListSends)
+- **Hooks:** useCampaigns, useCampaignSends, useCampaignMetrics
+- **Componentes:** CampaignCard, CampaignList, CampaignForm, MarketingAutoPage
+- **Rota:** `/marketing-auto`
+- **Module Key:** `MARKETING_AUTO`
+- **Tabelas DB:** `marketing_campaigns`, `campaign_sends` (existentes)
+- **Documentação:** `FASE-3-MARKETING-AUTO-STATUS.md`
+
+## ✅ MÓDULOS ANTERIORES (4/17 completos)
 
 ### 1. ✅ PEP (Prontuário Eletrônico do Paciente) - 100%
 - **Status:** Golden Pattern definido ✅
