@@ -64,7 +64,7 @@ export function SidebarMenuItem({ item, isSubItem = false, onNavigate }: Sidebar
           <SidebarMenuSub>
             {item.subItems.map((subItem) => (
               <SidebarMenuSubItem key={subItem.title}>
-                <SidebarMenuItem item={subItem} isSubItem onNavigate={onNavigate} />
+                <SidebarMenuItem item={{ ...subItem, isSubItem: true }} isSubItem onNavigate={onNavigate} />
               </SidebarMenuSubItem>
             ))}
           </SidebarMenuSub>
@@ -82,10 +82,10 @@ export function SidebarMenuItem({ item, isSubItem = false, onNavigate }: Sidebar
       <NavLink
         to={item.url || '#'}
         onClick={handleClick}
-        className={`my-1 rounded-xl transition-all duration-200 ${
+        className={`my-1 rounded-xl transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
           isItemActive
-            ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-lg scale-[1.02]'
-            : 'hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground hover:shadow-md'
+            ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-lg scale-[1.02] font-semibold animate-pulse-subtle'
+            : 'hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground hover:shadow-md hover:scale-[1.01]'
         }`}
       >
         <div className={`flex items-center gap-3 ${isSubItem ? 'px-4 py-1.5' : 'px-3 py-2'} w-full`}>
@@ -95,6 +95,11 @@ export function SidebarMenuItem({ item, isSubItem = false, onNavigate }: Sidebar
               <span className={`${isSubItem ? 'text-xs' : 'text-sm'} font-medium transition-opacity duration-300 flex-1`}>
                 {item.title}
               </span>
+              {item.badge && (
+                <Badge variant={item.badge.variant || 'default'} className="ml-auto text-[10px] h-5 px-1.5">
+                  {item.badge.count}
+                </Badge>
+              )}
             </>
           )}
         </div>
