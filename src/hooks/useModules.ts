@@ -76,37 +76,11 @@ export function useModules() {
     }
   }, [toast, loadModules]);
 
-  const requestModule = useCallback(async (moduleKey: string) => {
-    try {
-      const { data, error: invokeError } = await supabase.functions.invoke('request-new-module', {
-        body: { module_key: moduleKey },
-      });
-
-      if (invokeError) {
-        throw new Error(invokeError.message || 'Erro ao solicitar módulo');
-      }
-
-      toast({
-        title: 'Solicitação enviada!',
-        description: data?.message || 'Nossa equipe entrará em contato em breve.',
-      });
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao solicitar módulo';
-      console.error('Error requesting module:', err);
-      toast({
-        title: 'Erro',
-        description: errorMessage,
-        variant: 'destructive',
-      });
-    }
-  }, [toast]);
-
   return {
     modules,
     loading,
     error,
     loadModules,
     toggleModule,
-    requestModule,
   };
 }
