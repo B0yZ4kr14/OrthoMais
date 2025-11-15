@@ -1,6 +1,8 @@
 /**
  * Módulos Configuration - Central Source of Truth
  * Consolidates all module-related logic and constants
+ * 
+ * FASE 1.1: Arquivo consolidado (migrado de src/lib/modules.ts)
  */
 
 export interface ModuleConfig {
@@ -10,6 +12,23 @@ export interface ModuleConfig {
   category: string;
   icon: string;
   dependencies?: string[];
+}
+
+// ============= TIPOS PARA RUNTIME =============
+
+export interface Module {
+  id: number;
+  module_key: string;
+  name: string;
+  description: string;
+  category: string;
+  icon: string;
+  subscribed: boolean;
+  is_active: boolean;
+  can_activate: boolean;
+  can_deactivate: boolean;
+  unmet_dependencies: string[];
+  active_dependents: string[];
 }
 
 export const MODULES_CONFIG: Record<string, ModuleConfig> = {
@@ -171,17 +190,23 @@ export const MODULES_CONFIG: Record<string, ModuleConfig> = {
   },
 };
 
-export const MODULE_CATEGORIES = [
-  'Atendimento Clínico',
-  'Gestão Financeira',
-  'Relacionamento & Vendas',
-  'Conformidade & Legal',
-  'Tecnologias Avançadas',
-] as const;
+export const MODULE_CATEGORIES = {
+  'Atendimento Clínico': 'Clínico',
+  'Gestão Financeira': 'Financeiro',
+  'Relacionamento & Vendas': 'Vendas',
+  'Conformidade & Legal': 'Legal',
+  'Tecnologias Avançadas': 'Tech',
+} as const;
 
-export type ModuleCategory = typeof MODULE_CATEGORIES[number];
+export type ModuleCategory = keyof typeof MODULE_CATEGORIES;
 
-export function getModulesByCategory(category: ModuleCategory): ModuleConfig[] {
+export interface ModuleCategoryGroup {
+  name: string;
+  label: string;
+  modules: Module[];
+}
+
+export function getModulesByCategory(category: string): ModuleConfig[] {
   return Object.values(MODULES_CONFIG).filter(m => m.category === category);
 }
 
@@ -195,4 +220,39 @@ export function hasAllDependencies(
 ): boolean {
   const dependencies = getModuleDependencies(moduleKey);
   return dependencies.every(dep => activeModules.includes(dep));
+}
+
+// ============= FUNÇÕES MIGRADAS DE src/lib/modules.ts =============
+
+/**
+ * Agrupa módulos por categoria (migrado de lib/modules.ts)
+ */
+export function groupModulesByCategory(modules: Module[]): ModuleCategoryGroup[] {
+  const categoryMap = new Map<string, Module[]>();
+
+  modules.forEach((module) => {
+    const category = module.category || 'Outros';
+    if (!categoryMap.has(category)) {
+      categoryMap.set(category, []);
+    }
+    categoryMap.get(category)!.push(module);
+  });
+
+  return Array.from(categoryMap.entries()).map(([name, modules]) => ({
+    name,
+    label: MODULE_CATEGORIES[name as keyof typeof MODULE_CATEGORIES] || name,
+    modules,
+  }));
+}
+
+/**
+ * Calcula estatísticas dos módulos (migrado de lib/modules.ts)
+ */
+export function getModuleStats(modules: Module[]) {
+  return {
+    total: modules.length,
+    subscribed: modules.filter((m) => m.subscribed).length,
+    active: modules.filter((m) => m.is_active).length,
+    available: modules.filter((m) => !m.subscribed).length,
+  };
 }

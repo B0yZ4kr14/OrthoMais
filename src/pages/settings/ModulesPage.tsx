@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { ModuleCard } from '@/components/settings/ModuleCard';
 import { SidebarPreview } from '@/components/modules/SidebarPreview';
 import { useModules } from '@/hooks/useModules';
-import { groupModulesByCategory, getModuleStats } from '@/lib/modules';
+import { groupModulesByCategory, getModuleStats } from '@/core/config/modules.config';
 import { Loader2, Package, CheckCircle2, Circle, Lock } from 'lucide-react';
 
 export default function ModulesPage() {
