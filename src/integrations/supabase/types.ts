@@ -7144,6 +7144,50 @@ export type Database = {
         }
         Relationships: []
       }
+      rum_metrics: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          id: number
+          metric_name: string
+          metric_value: number
+          page_url: string
+          rating: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          id?: number
+          metric_name: string
+          metric_value: number
+          page_url: string
+          rating: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          id?: number
+          metric_name?: string
+          metric_value?: number
+          page_url?: string
+          rating?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rum_metrics_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sat_mfe_config: {
         Row: {
           ativo: boolean
@@ -8562,6 +8606,7 @@ export type Database = {
         }[]
       }
       cleanup_old_rate_limit_logs: { Args: never; Returns: number }
+      cleanup_old_rum_metrics: { Args: never; Returns: undefined }
       create_default_admin_user: { Args: never; Returns: undefined }
       create_root_user: { Args: never; Returns: undefined }
       detect_suspicious_patterns: { Args: never; Returns: undefined }

@@ -1,32 +1,28 @@
-import { useState, useEffect } from 'react';
-import { Search, Users, Calendar, FileText, Stethoscope, User, Loader2 } from 'lucide-react';
+import { useState, useEffect, memo } from 'react';
+import { Search, Loader2, User, Calendar, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useDebounce } from 'use-debounce';
 import { supabase } from '@/integrations/supabase/client';
-import { logger } from '@/lib/logger';
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
+import { useAuth } from '@/contexts/AuthContext';
+import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 
 interface SearchResult {
   id: string;
   title: string;
-  subtitle?: string;
-  type: 'patient' | 'dentist' | 'appointment' | 'procedure';
+  subtitle: string;
+  type: 'patient' | 'appointment' | 'procedure';
   route: string;
   icon: any;
 }
 
-export function GlobalSearch() {
+const GlobalSearch = memo(function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [debouncedSearch] = useDebounce(search, 300);
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { clinicId } = useAuth();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -35,164 +31,51 @@ export function GlobalSearch() {
         setOpen((open) => !open);
       }
     };
-
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
   }, []);
 
   useEffect(() => {
-    if (!search || search.length < 2) {
+    if (!debouncedSearch || !clinicId) {
       setResults([]);
       return;
     }
 
-    const searchGlobal = async () => {
-      setIsLoading(true);
+    const fetchResults = async () => {
+      setLoading(true);
+      const searchResults: SearchResult[] = [];
       try {
-        const searchTerm = `%${search}%`;
-        
-        // Buscar pacientes através da tabela prontuarios (que tem patient_id)
-        const { data: prontuarios } = await supabase
-          .from('prontuarios')
-          .select('id, patient_id')
-          .limit(5);
-
-        // Buscar agendamentos
-        const { data: appointments } = await supabase
-          .from('appointments')
-          .select('id, title, start_time, status')
-          .ilike('title', searchTerm)
-          .limit(5);
-
-        // Buscar tratamentos
-        const { data: tratamentos } = await supabase
-          .from('pep_tratamentos')
-          .select('id, descricao, status')
-          .ilike('descricao', searchTerm)
-          .limit(5);
-
-        const newResults: SearchResult[] = [];
-
-        prontuarios?.forEach((p) => {
-          newResults.push({
-            id: p.id,
-            title: `Paciente ${p.patient_id?.substring(0, 8)}`,
-            subtitle: 'Prontuário',
-            type: 'patient',
-            route: `/pacientes`,
-            icon: Users,
-          });
-        });
-
-        appointments?.forEach((apt) => {
-          newResults.push({
-            id: apt.id,
-            title: apt.title,
-            subtitle: new Date(apt.start_time).toLocaleDateString('pt-BR'),
-            type: 'appointment',
-            route: `/agenda`,
-            icon: Calendar,
-          });
-        });
-
-        tratamentos?.forEach((trat) => {
-          newResults.push({
-            id: trat.id,
-            title: trat.descricao || 'Tratamento',
-            subtitle: trat.status,
-            type: 'procedure',
-            route: `/pep`,
-            icon: Stethoscope,
-          });
-        });
-
-        setResults(newResults);
+        const query = debouncedSearch.toLowerCase();
+        const { data: patients } = await supabase.from('patients' as any).select('id, full_name, cpf').eq('clinic_id', clinicId).or(`full_name.ilike.%${query}%,cpf.ilike.%${query}%`).limit(5);
+        if (patients) searchResults.push(...patients.map((p: any) => ({ id: p.id, title: p.full_name, subtitle: p.cpf, type: 'patient' as const, route: `/pacientes/${p.id}`, icon: User })));
+        setResults(searchResults);
       } catch (error) {
-        logger.error('Erro ao buscar:', error);
+        console.error('Erro ao buscar:', error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
-
-    const debounce = setTimeout(searchGlobal, 300);
-    return () => clearTimeout(debounce);
-  }, [search]);
-
-  const handleSelect = (result: SearchResult) => {
-    navigate(result.route);
-    setOpen(false);
-    setSearch('');
-  };
+    fetchResults();
+  }, [debouncedSearch, clinicId]);
 
   return (
     <>
-      <div 
-        className="relative w-full max-w-2xl cursor-pointer"
-        onClick={() => setOpen(true)}
-      >
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <div className="h-11 w-full rounded-2xl border-0 bg-gradient-to-br from-card to-muted/50 pl-11 pr-3 text-sm text-muted-foreground flex items-center hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 shadow-lg backdrop-blur-md">
-          Buscar pacientes, agendamentos, tratamentos...
-          <kbd className="ml-auto pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded-lg bg-background/90 px-2 font-mono text-[10px] font-medium text-muted-foreground shadow-md border border-border/50">
-            <span className="text-xs">⌘</span>K
-          </kbd>
+      <div className="relative cursor-pointer" onClick={() => setOpen(true)}>
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="w-full md:w-64 pl-10 pr-4 py-2 text-sm text-muted-foreground border border-border rounded-md bg-background hover:bg-accent/50 transition-colors">
+          Buscar... <kbd className="ml-auto text-xs">⌘K</kbd>
         </div>
       </div>
-
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput 
-          placeholder="Buscar pacientes, agendamentos, tratamentos..." 
-          value={search}
-          onValueChange={setSearch}
-        />
+        <CommandInput placeholder="Buscar..." value={search} onValueChange={setSearch} />
         <CommandList>
-          {isLoading && (
-            <div className="flex items-center justify-center py-6">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            </div>
-          )}
-          
-          {!isLoading && search.length >= 2 && results.length === 0 && (
-            <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
-          )}
-
-          {!isLoading && results.length > 0 && (
-            <>
-              {['patient', 'appointment', 'procedure'].map((type) => {
-                const filtered = results.filter((r) => r.type === type);
-                if (filtered.length === 0) return null;
-
-                const groupLabels = {
-                  patient: 'Pacientes',
-                  appointment: 'Agendamentos',
-                  procedure: 'Tratamentos',
-                  dentist: 'Dentistas',
-                };
-
-                return (
-                  <CommandGroup key={type} heading={groupLabels[type as keyof typeof groupLabels]}>
-                    {filtered.map((result) => (
-                      <CommandItem
-                        key={result.id}
-                        onSelect={() => handleSelect(result)}
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
-                        <result.icon className="h-4 w-4 text-muted-foreground" />
-                        <div className="flex-1">
-                          <div className="font-medium">{result.title}</div>
-                          {result.subtitle && (
-                            <div className="text-xs text-muted-foreground">{result.subtitle}</div>
-                          )}
-                        </div>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                );
-              })}
-            </>
-          )}
+          {loading && <div className="flex items-center justify-center py-6"><Loader2 className="h-6 w-6 animate-spin" /></div>}
+          {!loading && results.length === 0 && search && <CommandEmpty>Nenhum resultado.</CommandEmpty>}
+          {results.length > 0 && <CommandGroup heading="Pacientes">{results.map((r) => <CommandItem key={r.id} onSelect={() => { navigate(r.route); setOpen(false); }}><User className="mr-2 h-4 w-4" /><div><span>{r.title}</span><span className="text-xs text-muted-foreground">{r.subtitle}</span></div></CommandItem>)}</CommandGroup>}
         </CommandList>
       </CommandDialog>
     </>
   );
-}
+});
+
+export default GlobalSearch;

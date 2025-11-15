@@ -47,14 +47,14 @@ export class CryptoPaymentConfirmedHandler {
       console.error('[CryptoPaymentConfirmedHandler] Error processing event:', error);
       
       // Registrar erro no DB
-      await supabase.from('audit_logs').insert({
+      await supabase.from('audit_logs').insert([{
         clinic_id: event.payload.clinicId,
         action: 'CRYPTO_PAYMENT_PROCESSING_ERROR',
         details: {
-          event,
-          error: error.message,
-        },
-      });
+          transactionId: event.payload.transactionId,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        } as any,
+      }]);
 
       throw error;
     }
@@ -113,7 +113,7 @@ export class CryptoPaymentConfirmedHandler {
   }
 
   private async logAudit(event: CryptoPaymentConfirmedEvent): Promise<void> {
-    await supabase.from('audit_logs').insert({
+    await supabase.from('audit_logs').insert([{
       clinic_id: event.payload.clinicId,
       action: 'CRYPTO_PAYMENT_CONFIRMED',
       action_type: 'FINANCIAL',
@@ -123,9 +123,9 @@ export class CryptoPaymentConfirmedHandler {
         amount: event.payload.amount,
         txHash: event.payload.txHash,
         confirmations: event.payload.confirmations,
-        timestamp: event.occurredAt,
-      },
-    });
+        timestamp: event.occurredAt.toISOString(),
+      } as any,
+    }]);
   }
 }
 
