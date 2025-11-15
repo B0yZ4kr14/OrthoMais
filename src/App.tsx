@@ -22,6 +22,7 @@ import Funcionarios from "./pages/Funcionarios";
 import Procedimentos from "./pages/Procedimentos";
 import Financeiro from "./pages/Financeiro";
 import { FinanceiroPage } from "./modules/financeiro/ui/pages/FinanceiroPage";
+import { MarketingAutoPage } from "./modules/marketing-auto/ui/pages/MarketingAutoPage";
 import Resumo from "./pages/Resumo";
 import AgendaClinica from "./pages/AgendaClinica";
 import Configuracoes from './pages/Configuracoes';
@@ -125,6 +126,8 @@ const App = () => (
                 {/* FINANCEIRO Module - Clean Architecture */}
                 <Route path="/financeiro" element={<ProtectedRoute><AppLayout><FinanceiroPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/financeiro/legacy" element={<ProtectedRoute><AppLayout><Financeiro /></AppLayout></ProtectedRoute>} />
+                {/* MARKETING_AUTO Module - Clean Architecture */}
+                <Route path="/marketing-auto" element={<ProtectedRoute><AppLayout><MarketingAutoPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/financeiro/transacoes" element={<ProtectedRoute><AppLayout><Transacoes /></AppLayout></ProtectedRoute>} />
                 <Route path="/financeiro/contas-receber" element={<ProtectedRoute><AppLayout><ContasReceber /></AppLayout></ProtectedRoute>} />
                 <Route path="/financeiro/contas-pagar" element={<ProtectedRoute><AppLayout><ContasPagar /></AppLayout></ProtectedRoute>} />
