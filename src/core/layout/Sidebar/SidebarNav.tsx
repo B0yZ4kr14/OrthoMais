@@ -16,7 +16,7 @@ export function SidebarNav({ onNavigate }: SidebarNavProps = {}) {
   const collapsed = state === 'collapsed';
 
   return (
-    <div className="space-y-3 pb-4">
+    <div className="space-y-4 pb-6">
       {menuGroups.map((group, index) => (
         <SidebarGroup key={group.label} group={group} index={index} onNavigate={onNavigate} />
       ))}

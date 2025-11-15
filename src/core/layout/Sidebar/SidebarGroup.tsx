@@ -5,6 +5,7 @@ import { useSidebar } from '@/components/ui/sidebar';
 import { useAuth } from '@/contexts/AuthContext';
 import { SidebarMenuItem } from './SidebarMenuItem';
 import { MenuGroup } from './sidebar.config';
+import { Separator } from '@/components/ui/separator';
 
 interface SidebarGroupProps {
   group: MenuGroup;
@@ -34,7 +35,11 @@ export function SidebarGroup({ group, index, onNavigate }: SidebarGroupProps) {
 
   if (group.collapsed) {
     return (
-      <div className={containerStyle} style={{ animationDelay: `${index * 100}ms` }}>
+      <>
+        {index > 0 && index % 3 === 0 && (
+          <Separator className="my-3 bg-sidebar-border/20" />
+        )}
+        <div className={containerStyle} style={{ animationDelay: `${index * 100}ms` }}>
         <Collapsible defaultOpen={false} className="group/collapsible">
           <ShadcnSidebarGroup>
             <CollapsibleTrigger asChild>
@@ -58,17 +63,22 @@ export function SidebarGroup({ group, index, onNavigate }: SidebarGroupProps) {
                     </ShadcnSidebarMenuItem>
                   ))}
                 </SidebarMenu>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </ShadcnSidebarGroup>
-        </Collapsible>
-      </div>
+          </SidebarGroupContent>
+        </CollapsibleContent>
+      </ShadcnSidebarGroup>
+    </Collapsible>
+  </div>
+  </>
     );
   }
 
   return (
-    <div className={containerStyle} style={{ animationDelay: `${index * 100}ms` }}>
-      <ShadcnSidebarGroup>
+    <>
+      {index > 0 && index % 3 === 0 && (
+        <Separator className="my-3 bg-sidebar-border/20" />
+      )}
+      <div className={containerStyle} style={{ animationDelay: `${index * 100}ms` }}>
+        <ShadcnSidebarGroup>
         <SidebarGroupLabel className="text-sm font-bold text-sidebar-foreground px-3 py-2 drop-shadow-md">
           {!collapsed && (
             <span className="tracking-wide transition-opacity duration-300">
@@ -87,5 +97,6 @@ export function SidebarGroup({ group, index, onNavigate }: SidebarGroupProps) {
         </SidebarGroupContent>
       </ShadcnSidebarGroup>
     </div>
+    </>
   );
 }

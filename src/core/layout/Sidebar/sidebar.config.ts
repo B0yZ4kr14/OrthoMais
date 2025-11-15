@@ -58,14 +58,11 @@ import {
   Boxes,
   PackagePlus,
   Coins,
-  BadgeCheck
+  BadgeCheck,
+  Scan,
+  Brain,
+  ScanLine
 } from 'lucide-react';
-
-export interface MenuSubItem {
-  title: string;
-  url: string;
-  icon: LucideIcon;
-}
 
 export interface MenuItem {
   title: string;
@@ -73,7 +70,12 @@ export interface MenuItem {
   icon: LucideIcon;
   moduleKey?: string;
   collapsed?: boolean;
-  subItems?: MenuSubItem[];
+  subItems?: MenuItem[];
+  isSubItem?: boolean;
+  badge?: {
+    count: number | string;
+    variant?: 'default' | 'destructive' | 'outline' | 'secondary';
+  };
 }
 
 export interface MenuGroup {
@@ -124,13 +126,13 @@ export const menuGroups: MenuGroup[] = [
       { 
         title: 'Odontograma Digital', 
         url: '/odontograma', 
-        icon: Activity, 
+        icon: Scan, 
         moduleKey: 'ODONTOGRAMA' 
       },
       { 
         title: 'Planos de Tratamento', 
         url: '/tratamentos', 
-        icon: HeartPulse, 
+        icon: ClipboardPlus, 
         moduleKey: 'PEP' 
       },
       { 

@@ -2,10 +2,14 @@ import { SidebarHeader as ShadcnSidebarHeader } from '@/components/ui/sidebar';
 import { useSidebar } from '@/components/ui/sidebar';
 import orthoLogo from '@/assets/ortho-logo-main.png';
 import { QuickActionsBar } from '@/components/QuickActionsBar';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
 
 export function SidebarHeader() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
+  const [searchFocused, setSearchFocused] = useState(false);
 
   return (
     <ShadcnSidebarHeader className="border-b border-sidebar-border/50 transition-all duration-300">
@@ -27,6 +31,20 @@ export function SidebarHeader() {
             </div>
           )}
         </div>
+        
+        {!collapsed && (
+          <div className="mt-3 px-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground transition-colors duration-200" />
+              <Input 
+                placeholder="Buscar módulo..." 
+                className="pl-9 h-9 bg-sidebar-accent/30 border-sidebar-border/50 focus-visible:ring-primary transition-all duration-200"
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+              />
+            </div>
+          </div>
+        )}
       </div>
       
       {!collapsed && <QuickActionsBar />}
