@@ -75,6 +75,15 @@ export const MODULES_CONFIG: Record<string, ModuleConfig> = {
     category: 'Atendimento Clínico',
     icon: 'Package',
   },
+  
+  CRYPTO_PAYMENTS: {
+    key: 'CRYPTO_PAYMENTS',
+    name: 'Pagamentos em Criptomoedas',
+    description: 'Recebimentos via Bitcoin, USDT, ETH através de BTCPay Server ou exchanges (Binance, Coinbase, Kraken)',
+    category: 'Gestão Financeira',
+    icon: 'Bitcoin',
+    dependencies: ['FINANCEIRO'],
+  },
   PROCEDIMENTOS: {
     key: 'PROCEDIMENTOS',
     name: 'Procedimentos',
