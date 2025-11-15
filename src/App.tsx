@@ -21,6 +21,7 @@ import Dentistas from "./pages/Dentistas";
 import Funcionarios from "./pages/Funcionarios";
 import Procedimentos from "./pages/Procedimentos";
 import Financeiro from "./pages/Financeiro";
+import { FinanceiroPage } from "./modules/financeiro/ui/pages/FinanceiroPage";
 import Resumo from "./pages/Resumo";
 import AgendaClinica from "./pages/AgendaClinica";
 import Configuracoes from './pages/Configuracoes';
@@ -121,7 +122,9 @@ const App = () => (
                 <Route path="/dentistas" element={<ProtectedRoute><AppLayout><Dentistas /></AppLayout></ProtectedRoute>} />
                 <Route path="/funcionarios" element={<ProtectedRoute><AppLayout><Funcionarios /></AppLayout></ProtectedRoute>} />
                 <Route path="/procedimentos" element={<ProtectedRoute><AppLayout><Procedimentos /></AppLayout></ProtectedRoute>} />
-                <Route path="/financeiro" element={<ProtectedRoute><AppLayout><Financeiro /></AppLayout></ProtectedRoute>} />
+                {/* FINANCEIRO Module - Clean Architecture */}
+                <Route path="/financeiro" element={<ProtectedRoute><AppLayout><FinanceiroPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/financeiro/legacy" element={<ProtectedRoute><AppLayout><Financeiro /></AppLayout></ProtectedRoute>} />
                 <Route path="/financeiro/transacoes" element={<ProtectedRoute><AppLayout><Transacoes /></AppLayout></ProtectedRoute>} />
                 <Route path="/financeiro/contas-receber" element={<ProtectedRoute><AppLayout><ContasReceber /></AppLayout></ProtectedRoute>} />
                 <Route path="/financeiro/contas-pagar" element={<ProtectedRoute><AppLayout><ContasPagar /></AppLayout></ProtectedRoute>} />
