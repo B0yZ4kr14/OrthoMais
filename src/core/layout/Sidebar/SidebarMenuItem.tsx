@@ -62,7 +62,7 @@ export function SidebarMenuItem({ item, isSubItem = false, onNavigate }: Sidebar
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
-            {item.subItems.map((subItem) => (
+            {(item.subItems || []).map((subItem) => (
               <SidebarMenuSubItem key={subItem.title}>
                 <SidebarMenuItem item={{ ...subItem, isSubItem: true }} isSubItem onNavigate={onNavigate} />
               </SidebarMenuSubItem>
