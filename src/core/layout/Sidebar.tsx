@@ -128,8 +128,8 @@ const MODULE_ROUTES: Record<string, string> = {
   FINANCEIRO: '/financeiro',
   SPLIT_PAGAMENTO: '/split-pagamento',
   INADIMPLENCIA: '/inadimplencia',
-  CRYPTO: '/crypto-payments',
-  CRM: '/crm',
+  CRYPTO: '/crypto-payment',
+  CRM: '/crm-kanban',
   MARKETING_AUTO: '/marketing',
   BI: '/business-intelligence',
   LGPD: '/lgpd',
@@ -137,7 +137,7 @@ const MODULE_ROUTES: Record<string, string> = {
   TISS: '/tiss',
   TELEODONTO: '/teleodontologia',
   FLUXO_DIGITAL: '/fluxo-digital',
-  IA: '/ia-radiografia',
+  IA: '/radiografia',
 };
 
 export function AppSidebar({ onNavigate }: AppSidebarProps) {
