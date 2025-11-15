@@ -70,6 +70,9 @@ import PortalPaciente from '@/pages/PortalPaciente';
 import Teleodontologia from './pages/Teleodontologia';
 import HistoricoTeleconsultas from './pages/HistoricoTeleconsultas';
 import CRMFunil from '@/pages/CRMFunil';
+import CRMPage from '@/pages/crm';
+import RadiografiaPage from '@/pages/radiografia';
+import CryptoPaymentPage from '@/pages/crypto-payment';
 import SplitPagamento from '@/pages/SplitPagamento';
 import Inadimplencia from '@/pages/Inadimplencia';
 import BI from '@/pages/BI';
@@ -168,6 +171,9 @@ const App = () => (
                 <Route path="/historico-teleconsultas" element={<ProtectedRoute><AppLayout><HistoricoTeleconsultas /></AppLayout></ProtectedRoute>} />
                 <Route path="/ia-radiografia" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando IA..." />}><IARadiografia /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/crm" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando CRM..." />}><CRM /></Suspense></AppLayout></ProtectedRoute>} />
+                <Route path="/crm-kanban" element={<ProtectedRoute><AppLayout><CRMPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/radiografia" element={<ProtectedRoute><AppLayout><RadiografiaPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/crypto-payment" element={<ProtectedRoute><AppLayout><CryptoPaymentPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/bi" element={<ProtectedRoute><AppLayout><BI /></AppLayout></ProtectedRoute>} />
                 <Route path="/lgpd" element={<ProtectedRoute><AppLayout><LGPD /></AppLayout></ProtectedRoute>} />
                 <Route path="/assinatura-digital" element={<ProtectedRoute><AppLayout><AssinaturaICP /></AppLayout></ProtectedRoute>} />
