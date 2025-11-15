@@ -7,8 +7,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
-  Settings, 
+  Settings,
   Loader2, 
+  Eye, 
+  Sparkles, 
+  MapIcon,
   LayoutDashboard,
   Users,
   UserPlus,
@@ -28,9 +31,6 @@ import {
   FileBarChart,
   Briefcase,
   AlertCircle,
-  Eye,
-  Sparkles,
-  MapIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -39,6 +39,7 @@ import { SidebarPreview } from '@/components/modules/SidebarPreview';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 import { ModuleAdoptionRoadmap } from '@/components/modules/ModuleAdoptionRoadmap';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { logger } from '@/lib/logger';
 
 // Mapeamento de ícones por module_key
 const moduleIcons: Record<string, any> = {
@@ -98,7 +99,7 @@ export default function ModulesSimple() {
       if (error) throw error;
       setModules(data?.modules || []);
     } catch (error) {
-      console.error('Erro ao carregar módulos:', error);
+      logger.error('Erro ao carregar módulos', error);
       toast.error('Erro ao carregar módulos');
     } finally {
       setLoading(false);
@@ -128,7 +129,7 @@ export default function ModulesSimple() {
       
       await fetchModules();
     } catch (error: any) {
-      console.error('Erro ao alterar módulo:', error);
+      logger.error('Erro ao alternar módulo', error, { moduleKey });
       toast.error(error.message || 'Erro ao alterar módulo');
     } finally {
       setToggling(null);
@@ -147,7 +148,7 @@ export default function ModulesSimple() {
       setShowRoadmap(true);
       toast.success('Roadmap de adoção gerado com sucesso!');
     } catch (error: any) {
-      console.error('Erro ao gerar roadmap:', error);
+      logger.error('Erro ao gerar roadmap', error);
       toast.error(error.message || 'Erro ao gerar roadmap de adoção');
     } finally {
       setLoadingRoadmap(false);
