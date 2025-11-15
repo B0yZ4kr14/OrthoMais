@@ -31,20 +31,6 @@ export function SidebarHeader() {
             </div>
           )}
         </div>
-        
-        {!collapsed && (
-          <div className="mt-3 px-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground transition-colors duration-200" />
-              <Input 
-                placeholder="Buscar módulo..." 
-                className="pl-9 h-9 bg-sidebar-accent/30 border-sidebar-border/50 focus-visible:ring-primary transition-all duration-200"
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-              />
-            </div>
-          </div>
-        )}
       </div>
       
       {!collapsed && <QuickActionsBar />}

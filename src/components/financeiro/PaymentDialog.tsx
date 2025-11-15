@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CreditCard, QrCode, Loader2 } from 'lucide-react';
+import { CreditCard, QrCode, Loader2, Bitcoin } from 'lucide-react';
+import { CryptoPaymentSelector } from '@/components/crypto/CryptoPaymentSelector';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { ContaReceber } from '@/modules/financeiro/types/financeiro-completo.types';
@@ -21,7 +22,7 @@ interface PaymentDialogProps {
 export function PaymentDialog({ open, onClose, conta, onSuccess }: PaymentDialogProps) {
   const { triggerSuccessConfetti } = useConfetti();
   const [loading, setLoading] = useState(false);
-  const [metodo, setMetodo] = useState<'PIX' | 'CARTAO_CREDITO' | 'CARTAO_DEBITO'>('PIX');
+  const [metodo, setMetodo] = useState<'PIX' | 'CARTAO_CREDITO' | 'CARTAO_DEBITO' | 'CRYPTO'>('PIX');
   const [valor, setValor] = useState((conta.valor - (conta.valor_pago || 0)).toString());
 
   // Campos PIX
@@ -106,7 +107,7 @@ export function PaymentDialog({ open, onClose, conta, onSuccess }: PaymentDialog
           </div>
 
           <Tabs value={metodo} onValueChange={(v) => setMetodo(v as any)}>
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="PIX" className="gap-2">
                 <QrCode className="h-4 w-4" />
                 PIX
@@ -114,6 +115,10 @@ export function PaymentDialog({ open, onClose, conta, onSuccess }: PaymentDialog
               <TabsTrigger value="CARTAO_CREDITO" className="gap-2">
                 <CreditCard className="h-4 w-4" />
                 Cartão
+              </TabsTrigger>
+              <TabsTrigger value="CRYPTO" className="gap-2">
+                <Bitcoin className="h-4 w-4" />
+                Crypto
               </TabsTrigger>
             </TabsList>
 
