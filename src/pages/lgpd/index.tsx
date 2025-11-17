@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, History, Settings } from "lucide-react";
+import { Shield, FileText, History } from "lucide-react";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { LGPDRequests } from "@/modules/lgpd/presentation/components/LGPDRequests";
 import { LGPDConsents } from "@/modules/lgpd/presentation/components/LGPDConsents";
 import { LGPDAuditTrail } from "@/modules/lgpd/presentation/components/LGPDAuditTrail";
@@ -13,18 +14,11 @@ export default function LGPDPage() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">LGPD - Conformidade</h1>
-          <p className="text-muted-foreground">
-            Gestão de privacidade e proteção de dados
-          </p>
-        </div>
-        <Button>
-          <Shield className="mr-2 h-4 w-4" />
-          Nova Solicitação
-        </Button>
-      </div>
+      <PageHeader
+        title="LGPD - Conformidade"
+        description="Gestão de privacidade e proteção de dados"
+        icon={Shield}
+      />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
