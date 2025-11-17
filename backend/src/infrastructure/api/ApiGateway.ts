@@ -10,8 +10,11 @@
  */
 
 import express, { Router, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
 import { IAuthService } from '@/infrastructure/auth/IAuthService';
 import { logger } from '@/infrastructure/logger';
+import { prometheusMetrics } from '@/infrastructure/metrics/PrometheusMetrics';
 
 export interface ModuleRouter {
   moduleName: string;
@@ -32,9 +35,16 @@ export class ApiGateway {
   }
 
   private setupMiddlewares(): void {
+    // Security
+    this.app.use(helmet());
+    this.app.use(cors());
+
     // Body parsing
     this.app.use(express.json({ limit: '10mb' }));
     this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+    // Prometheus metrics middleware
+    this.app.use(prometheusMetrics.middleware());
 
     // Request logging
     this.app.use((req, res, next) => {
@@ -57,8 +67,21 @@ export class ApiGateway {
       res.json({
         status: 'healthy',
         timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
         modules: Array.from(this.moduleRouters.keys()),
       });
+    });
+
+    // Metrics endpoint
+    this.app.get('/metrics', async (req, res) => {
+      try {
+        const metrics = await prometheusMetrics.getMetrics();
+        res.set('Content-Type', 'text/plain');
+        res.send(metrics);
+      } catch (error) {
+        logger.error('Error generating metrics', { error });
+        res.status(500).send('Error generating metrics');
+      }
     });
   }
 
