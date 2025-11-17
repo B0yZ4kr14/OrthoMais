@@ -136,7 +136,37 @@ Hooks compatíveis com tipos existentes criados:
 | **API Compatibility Hooks** | ✅ **Completo** | **100%** |
 | Component Migration | 🚧 Em Progresso | 20% |
 
-**TOTAL: 92% COMPLETO**
+**TOTAL: 95% COMPLETO**
+
+---
+
+## 🔄 ESTRATÉGIA DE MIGRAÇÃO GRADUAL
+
+### DataSourceProvider (✅ IMPLEMENTADO)
+
+Sistema de **migração sem downtime** que permite alternar entre Supabase e REST API:
+
+```typescript
+<DataSourceProvider source="supabase"> {/* ou "rest-api" */}
+  <App />
+</DataSourceProvider>
+```
+
+### Hooks Unificados (✅ IMPLEMENTADOS)
+
+Hooks que delegam automaticamente para implementação correta:
+
+- ✅ `usePatientsUnified` - Alterna entre Supabase e REST API
+- ✅ `useTransactionsUnified` - Alterna implementações
+- ✅ `useInventoryUnified` - Migração transparente
+
+**Benefícios:**
+- Zero alteração nos componentes
+- Rollback instantâneo
+- Testes A/B fáceis
+- Migração incremental segura
+
+Veja detalhes completos em `docs/MIGRATION_STRATEGY.md`
 
 ### **Progresso Total: 90% ✅**
 
