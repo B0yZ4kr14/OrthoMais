@@ -28,6 +28,7 @@ import {
   Lock,
   FileCheck,
   Video,
+  Bitcoin,
   Wrench,
   Database,
   HardDrive,
@@ -158,6 +159,12 @@ export const menuGroups: MenuGroup[] = [
         icon: AlertCircle, 
         moduleKey: 'INADIMPLENCIA',
         badge: { count: 0, variant: 'destructive' }
+      },
+      { 
+        title: 'Pagamentos em Criptomoedas', 
+        url: '/financeiro/crypto', 
+        icon: Bitcoin, 
+        moduleKey: 'CRYPTO_PAYMENTS'
       },
       { 
         title: 'Orçamentos', 
