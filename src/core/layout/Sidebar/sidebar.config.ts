@@ -1,6 +1,6 @@
 /**
- * SIDEBAR CONFIGURATION V5.0 - Ortho+ (OTIMIZADO)
- * Terminologia intuitiva para profissionais de odontologia
+ * SIDEBAR CONFIGURATION V5.0 - Ortho+
+ * 6 Categorias Funcionais | Terminologia Intuitiva | Máximo 2 Níveis
  */
 
 import { 
@@ -10,61 +10,30 @@ import {
   FileText,
   Package,
   Settings,
-  Video,
-  UserCog,
-  AlertCircle,
-  Award,
-  Building2,
-  BookOpen,
-  Database,
-  HardDrive,
-  Wrench,
-  GitBranch,
-  Code2,
-  ScrollText,
-  FileCode,
-  BookText,
-  Github,
-  Terminal,
-  type LucideIcon,
-  Sparkles,
-  BriefcaseBusiness,
-  Receipt,
+  DollarSign,
   ShoppingCart,
-  FileSpreadsheet,
-  Clipboard,
-  ClipboardCheck,
-  ClipboardList,
-  Bell,
-  BarChart3,
-  TrendingDown,
+  Receipt,
   TrendingUp,
-  PieChart,
-  LineChart,
-  Target,
   Megaphone,
-  Mail,
-  Lock,
-  FileCheck,
-  FileSignature,
-  Eye,
-  Workflow,
+  BarChart3,
   Stethoscope,
-  HeartPulse,
-  Pill,
-  Activity,
-  ClipboardPlus,
-  Wallet,
-  ArrowLeftRight,
-  Boxes,
-  PackagePlus,
-  Coins,
-  BadgeCheck,
   Scan,
   Brain,
-  ScanLine,
-  Shield,
-  DollarSign
+  ClipboardPlus,
+  Wallet,
+  FileSpreadsheet,
+  Target,
+  Mail,
+  AlertCircle,
+  Lock,
+  FileCheck,
+  Video,
+  Wrench,
+  Database,
+  HardDrive,
+  Terminal,
+  Github,
+  type LucideIcon
 } from 'lucide-react';
 
 export interface MenuItem {
@@ -83,391 +52,309 @@ export interface MenuItem {
 
 export interface MenuGroup {
   label: string;
-  boundedContext: string; // DDD: Bounded Context identifier
+  boundedContext: string;
   collapsed?: boolean;
   items: MenuItem[];
 }
 
 /**
- * NAVEGAÇÃO MODULAR POR BOUNDED CONTEXTS (DDD)
+ * NAVEGAÇÃO V5.0: 6 BOUNDED CONTEXTS | 38 ITENS TOTAIS
  */
 export const menuGroups: MenuGroup[] = [
-  // ========= DASHBOARD (Visão Geral) =========
+  // ========= 1. DASHBOARD UNIFICADO =========
   {
     label: 'VISÃO GERAL',
-    boundedContext: 'CORE',
+    boundedContext: 'DASHBOARD',
     items: [
       { 
         title: 'Dashboard Executivo', 
         url: '/', 
-        icon: LayoutDashboard 
+        icon: LayoutDashboard,
+        badge: { count: 0, variant: 'default' }
       }
     ]
   },
 
-  // ========= BOUNDED CONTEXT: PACIENTES =========
+  // ========= 2. ATENDIMENTO CLÍNICO =========
   {
-    label: 'PACIENTES',
-    boundedContext: 'PACIENTES',
+    label: 'ATENDIMENTO CLÍNICO',
+    boundedContext: 'CLINICA',
     collapsed: false,
     items: [
       { 
         title: 'Agenda', 
         url: '/agenda', 
         icon: Calendar, 
-        moduleKey: 'AGENDA' 
+        moduleKey: 'AGENDA',
+        badge: { count: 0, variant: 'default' }
       },
       { 
         title: 'Pacientes', 
         url: '/pacientes', 
         icon: Users, 
-        moduleKey: 'PEP' 
+        moduleKey: 'PEP'
       },
       { 
         title: 'Prontuário Eletrônico', 
         url: '/pep', 
         icon: FileText, 
-        moduleKey: 'PEP' 
+        moduleKey: 'PEP'
       },
       { 
-        title: 'Odontograma Digital', 
+        title: 'Odontograma', 
         url: '/odontograma', 
         icon: Scan, 
-        moduleKey: 'ODONTOGRAMA' 
+        moduleKey: 'ODONTOGRAMA'
       },
       { 
         title: 'Planos de Tratamento', 
         url: '/tratamentos', 
         icon: ClipboardPlus, 
-        moduleKey: 'PEP' 
+        moduleKey: 'PEP'
       },
       {
-        title: 'Diagnóstico Avançado',
+        title: 'Diagnóstico com IA',
+        url: '/ia-radiografia',
         icon: Brain,
-        moduleKey: 'IA',
-        collapsed: true,
-        subItems: [
-          { title: 'IA para Diagnóstico', url: '/ia-radiografia', icon: Brain },
-          { title: 'Fluxo Digital (CAD/CAM)', url: '/fluxo-digital', icon: Scan }
-        ]
-      }
-    ]
-  },
-
-  // ========= BOUNDED CONTEXT: PEP (Prontuário Eletrônico) =========
-  {
-    label: 'PRONTUÁRIO ELETRÔNICO',
-    boundedContext: 'PEP',
-    collapsed: false,
-    items: [
-      { 
-        title: 'Dentistas e Auxiliares',
-        icon: Stethoscope,
-        moduleKey: 'PEP',
-        collapsed: true,
-        subItems: [
-          { title: 'Profissionais', url: '/dentistas', icon: Stethoscope },
-          { title: 'Auxiliares', url: '/funcionarios', icon: UserCog }
-        ]
+        moduleKey: 'IA'
       },
-      { 
-        title: 'Tabela de Procedimentos', 
-        url: '/procedimentos', 
-        icon: ClipboardList, 
-        moduleKey: 'PEP' 
+      {
+        title: 'Fluxo Digital (CAD/CAM)',
+        url: '/fluxo-digital',
+        icon: Scan,
+        moduleKey: 'FLUXO_DIGITAL'
+      },
+      {
+        title: 'Teleodontologia',
+        url: '/teleodonto',
+        icon: Video,
+        moduleKey: 'TELEODONTO'
       }
     ]
   },
 
-  // ========= BOUNDED CONTEXT: FINANCEIRO =========
+  // ========= 3. FINANCEIRO & FISCAL =========
   {
-    label: 'FINANCEIRO',
+    label: 'FINANCEIRO & FISCAL',
     boundedContext: 'FINANCEIRO',
     collapsed: false,
     items: [
       { 
-        title: 'Dashboard Financeiro',
-        url: '/financeiro',
-        icon: PieChart,
+        title: 'Fluxo de Caixa', 
+        url: '/financeiro', 
+        icon: Wallet, 
         moduleKey: 'FINANCEIRO'
       },
       { 
-        title: 'Receitas e Despesas',
-        icon: ArrowLeftRight,
+        title: 'Contas a Receber', 
+        url: '/financeiro/receber', 
+        icon: TrendingUp, 
         moduleKey: 'FINANCEIRO',
-        collapsed: true,
-        subItems: [
-          { title: 'Contas a Receber', url: '/financeiro/contas-receber', icon: TrendingUp },
-          { title: 'Contas a Pagar', url: '/financeiro/contas-pagar', icon: TrendingDown },
-          { title: 'Transações', url: '/financeiro/transacoes', icon: Activity },
-          { title: 'Conciliação', url: '/financeiro/conciliacao', icon: BadgeCheck }
-        ]
+        badge: { count: 0, variant: 'destructive' }
       },
       { 
-        title: 'Fluxo de Caixa', 
-        url: '/fluxo-caixa', 
-        icon: LineChart, 
-        moduleKey: 'FINANCEIRO' 
+        title: 'Inadimplência', 
+        url: '/inadimplencia', 
+        icon: AlertCircle, 
+        moduleKey: 'INADIMPLENCIA',
+        badge: { count: 0, variant: 'destructive' }
       },
       { 
         title: 'Orçamentos', 
         url: '/orcamentos', 
         icon: FileSpreadsheet, 
-        moduleKey: 'ORCAMENTOS' 
+        moduleKey: 'ORCAMENTOS'
       },
-      { 
-        title: 'Contratos', 
-        url: '/contratos', 
-        icon: FileCheck, 
-        moduleKey: 'ORCAMENTOS' 
+      {
+        title: 'Notas Fiscais (NFe/NFCe)',
+        url: '/financeiro/fiscal/notas',
+        icon: Receipt,
+        moduleKey: 'FISCAL'
       },
-      { 
-        title: 'PDV', 
-        url: '/pdv', 
-        icon: ShoppingCart, 
-        moduleKey: 'FINANCEIRO' 
+      {
+        title: 'Conciliação Bancária',
+        url: '/financeiro/conciliacao',
+        icon: FileCheck,
+        moduleKey: 'FINANCEIRO'
       },
-      { 
-        title: 'Notas Fiscais', 
-        url: '/notas-fiscais', 
-        icon: Receipt, 
-        moduleKey: 'TISS' 
+      {
+        title: 'Split de Pagamentos',
+        url: '/split-pagamento',
+        icon: DollarSign,
+        moduleKey: 'SPLIT_PAGAMENTO'
       },
-      { 
-        title: 'Pagamentos Avançados',
-        icon: Wallet,
-        moduleKey: 'SPLIT_PAGAMENTO',
-        collapsed: true,
-        subItems: [
-          { title: 'Split de Pagamento', url: '/split-pagamento', icon: Coins },
-          { title: 'Inadimplência', url: '/inadimplencia', icon: AlertCircle }
-        ]
+      {
+        title: 'Faturamento TISS',
+        url: '/faturamento-tiss',
+        icon: FileText,
+        moduleKey: 'TISS'
       }
     ]
   },
 
-  // ========= BOUNDED CONTEXT: INVENTÁRIO =========
+  // ========= 4. OPERAÇÕES =========
   {
-    label: 'INVENTÁRIO',
-    boundedContext: 'INVENTARIO',
+    label: 'OPERAÇÕES',
+    boundedContext: 'OPERACOES',
     collapsed: false,
     items: [
       { 
-        title: 'Controle de Estoque',
-        icon: Boxes,
-        moduleKey: 'ESTOQUE',
-        collapsed: true,
-        subItems: [
-          { title: 'Dashboard', url: '/estoque/dashboard', icon: BarChart3 },
-          { title: 'Produtos', url: '/estoque/cadastros', icon: PackagePlus },
-          { title: 'Requisições', url: '/estoque/requisicoes', icon: Clipboard },
-          { title: 'Inventário', url: '/estoque/inventario', icon: ClipboardCheck },
-          { title: 'Scanner Mobile', url: '/estoque/scanner-mobile', icon: ScanLine }
-        ]
-      }
-    ]
-  },
-
-  // ========= BOUNDED CONTEXT: MARKETING & CRM =========
-  {
-    label: 'MARKETING & CRM',
-    boundedContext: 'MARKETING',
-    collapsed: true,
-    items: [
-      {
-        title: 'CRM e Relacionamento',
-        icon: Users,
-        moduleKey: 'CRM',
-        collapsed: true,
-        subItems: [
-          { title: 'CRM Odontológico', url: '/crm', icon: Users },
-          { title: 'Funil de Captação', url: '/crm/funil', icon: Target },
-          { title: 'Programa de Fidelidade', url: '/programa-fidelidade', icon: Award }
-        ]
+        title: 'PDV (Ponto de Venda)', 
+        url: '/pdv', 
+        icon: ShoppingCart, 
+        moduleKey: 'PDV'
+      },
+      { 
+        title: 'Estoque', 
+        url: '/estoque', 
+        icon: Package, 
+        moduleKey: 'ESTOQUE'
       },
       {
-        title: 'Marketing e Comunicação',
-        icon: Megaphone,
-        moduleKey: 'MARKETING_AUTO',
-        collapsed: true,
-        subItems: [
-          { title: 'Campanhas de Marketing', url: '/marketing-auto', icon: Megaphone },
-          { title: 'Automação de E-mails', url: '/email-marketing', icon: Mail }
-        ]
+        title: 'Scanner Mobile',
+        url: '/estoque/scanner',
+        icon: Scan,
+        moduleKey: 'ESTOQUE'
       }
     ]
   },
 
-  // ========= BOUNDED CONTEXT: BUSINESS INTELLIGENCE =========
+  // ========= 5. CAPTAÇÃO & FIDELIZAÇÃO =========
   {
-    label: 'BUSINESS INTELLIGENCE',
+    label: 'CAPTAÇÃO & FIDELIZAÇÃO',
+    boundedContext: 'CRESCIMENTO',
+    collapsed: false,
+    items: [
+      { 
+        title: 'CRM (Funil de Vendas)', 
+        url: '/crm', 
+        icon: Target, 
+        moduleKey: 'CRM'
+      },
+      { 
+        title: 'Campanhas de Marketing', 
+        url: '/marketing-auto', 
+        icon: Megaphone, 
+        moduleKey: 'MARKETING_AUTO'
+      },
+      { 
+        title: 'Recall Automático', 
+        url: '/recall', 
+        icon: Mail, 
+        moduleKey: 'MARKETING_AUTO',
+        badge: { count: 0, variant: 'default' }
+      },
+      {
+        title: 'Comunicação (SMS/WhatsApp)',
+        url: '/comunicacao',
+        icon: Mail,
+        moduleKey: 'AGENDA'
+      }
+    ]
+  },
+
+  // ========= 6. ANÁLISES & RELATÓRIOS =========
+  {
+    label: 'ANÁLISES & RELATÓRIOS',
     boundedContext: 'BI',
-    collapsed: true,
+    collapsed: false,
     items: [
       { 
         title: 'Business Intelligence', 
         url: '/bi', 
         icon: BarChart3, 
-        moduleKey: 'BI' 
+        moduleKey: 'BI'
       },
       {
-        title: 'Dashboards por Categoria',
-        icon: LayoutDashboard,
-        collapsed: true,
-        subItems: [
-          { title: 'Dashboard Clínico', url: '/dashboards/clinica', icon: Activity },
-          { title: 'Dashboard Financeiro', url: '/dashboards/financeiro', icon: DollarSign },
-          { title: 'Dashboard Comercial', url: '/dashboards/comercial', icon: Target }
-        ]
+        title: 'Dashboard Comercial',
+        url: '/dashboards/comercial',
+        icon: TrendingUp,
+        moduleKey: 'BI'
       }
     ]
   },
 
-  // ========= BOUNDED CONTEXT: COMPLIANCE =========
+  // ========= 7. CONFIGURAÇÕES =========
   {
-    label: 'COMPLIANCE & REGULAMENTAÇÃO',
-    boundedContext: 'COMPLIANCE',
-    collapsed: true,
-    items: [
-      { 
-        title: 'LGPD e Privacidade', 
-        url: '/lgpd', 
-        icon: Lock, 
-        moduleKey: 'LGPD' 
-      },
-      { 
-        title: 'Assinatura Digital ICP', 
-        url: '/assinatura-digital', 
-        icon: FileSignature, 
-        moduleKey: 'ASSINATURA_ICP' 
-      },
-      { 
-        title: 'Faturamento TISS', 
-        url: '/tiss', 
-        icon: FileText, 
-        moduleKey: 'TISS' 
-      },
-      { 
-        title: 'Auditoria e Logs', 
-        url: '/auditoria', 
-        icon: Eye, 
-        moduleKey: 'LGPD' 
-      },
-      { 
-        title: 'Teleodontologia', 
-        url: '/teleodonto', 
-        icon: Video, 
-        moduleKey: 'TELEODONTO' 
-      }
-    ]
-  },
-
-  // ========= BOUNDED CONTEXT: ADMIN_DEVOPS (Administração e DevOps) =========
-  {
-    label: 'ADMIN & DEVOPS',
-    boundedContext: 'ADMIN_DEVOPS',
+    label: 'CONFIGURAÇÕES',
+    boundedContext: 'CONFIGURACOES',
     collapsed: false,
     items: [
-      { 
-        title: 'Database Admin', 
-        url: '/admin/database', 
-        icon: Database, 
-        moduleKey: 'DATABASE_ADMIN' 
+      {
+        title: 'Meus Módulos',
+        url: '/configuracoes/modulos',
+        icon: Settings,
+        moduleKey: 'ADMIN_ONLY'
       },
-      { 
-        title: 'Backups Avançados', 
-        url: '/admin/backups', 
-        icon: HardDrive, 
-        moduleKey: 'BACKUPS' 
+      {
+        title: 'Dentistas',
+        url: '/dentistas',
+        icon: Stethoscope
       },
-      { 
-        title: 'Crypto Config', 
-        url: '/admin/crypto', 
-        icon: Wallet, 
-        moduleKey: 'CRYPTO_CONFIG' 
+      {
+        title: 'Funcionários',
+        url: '/funcionarios',
+        icon: Users
       },
-      { 
-        title: 'GitHub Tools', 
-        url: '/admin/github', 
-        icon: Github, 
-        moduleKey: 'GITHUB_TOOLS' 
+      {
+        title: 'Procedimentos',
+        url: '/procedimentos',
+        icon: ClipboardPlus
       },
-      { 
-        title: 'Terminal Web', 
-        url: '/admin/terminal', 
-        icon: Code2, 
-        moduleKey: 'TERMINAL' 
-      }
-    ]
-  },
-
-  // ========= SUPORTE =========
-  {
-    label: 'SUPORTE',
-    boundedContext: 'SUPPORT',
-    items: [
-      { 
-        title: 'Central de Ajuda', 
-        url: '/ajuda', 
-        icon: BookOpen 
+      {
+        title: 'Conformidade LGPD',
+        url: '/lgpd',
+        icon: Lock,
+        moduleKey: 'LGPD'
+      },
+      {
+        title: 'Assinatura Digital',
+        url: '/assinatura-icp',
+        icon: FileCheck,
+        moduleKey: 'ASSINATURA_ICP'
+      },
+      {
+        title: 'Configurações Gerais',
+        url: '/configuracoes',
+        icon: Settings
       }
     ]
   }
 ];
 
 /**
- * MENU ADMINISTRAÇÃO (ADMIN ONLY) - OTIMIZADO
+ * ADMIN-ONLY MENU ITEMS
+ * Exibido apenas para usuários com role ADMIN
  */
 export const adminMenuItems: MenuItem[] = [
   {
-    title: "Clínicas",
-    url: "/clinicas",
-    icon: Building2,
-  },
-  {
-    title: "Usuários",
-    url: "/usuarios",
-    icon: Users,
-  },
-  {
-    title: "Módulos",
-    url: "/configuracoes/modulos",
-    icon: Package,
-  },
-  {
-    title: "Infraestrutura",
-    icon: Wrench,
-    collapsed: false,
-    subItems: [
-      { title: "GitHub", url: "/admin/github", icon: Github },
-      { title: "Autenticação", url: "/admin/authentication", icon: Shield },
-      { title: "Modelos de IA", url: "/admin/ai-models", icon: Brain },
-      { title: "Pagamentos Digitais", url: "/configuracoes/crypto", icon: Wallet }
-    ]
-  },
-  {
-    title: "Dados & Backups",
+    title: 'Administração de Banco',
+    url: '/admin/database',
     icon: Database,
-    collapsed: false,
-    subItems: [
-      { title: "Backups", url: "/admin/backups", icon: HardDrive },
-      { title: "Manutenção DB", url: "/admin/database-maintenance", icon: Wrench },
-      { title: "Migrations", url: "/admin/migrations", icon: GitBranch },
-      { title: "SQL Query", url: "/admin/sql-query", icon: Code2 }
-    ]
+    moduleKey: 'DATABASE_ADMIN'
   },
   {
-    title: "Documentação",
-    icon: BookText,
-    collapsed: false,
-    subItems: [
-      { title: "Decisões (ADR)", url: "/admin/adrs", icon: ScrollText },
-      { title: "Código Fonte", url: "/admin/codebase", icon: FileCode }
-    ]
+    title: 'Backups & Restauração',
+    url: '/admin/backups',
+    icon: HardDrive,
+    moduleKey: 'BACKUPS'
   },
   {
-    title: "Configurações",
-    url: "/configuracoes",
-    icon: Settings,
+    title: 'Ferramentas DevOps',
+    url: '/admin/devops',
+    icon: Wrench,
+    moduleKey: 'TERMINAL'
+  },
+  {
+    title: 'GitHub Tools',
+    url: '/admin/github',
+    icon: Github,
+    moduleKey: 'GITHUB_TOOLS'
+  },
+  {
+    title: 'Terminal Web',
+    url: '/admin/terminal',
+    icon: Terminal,
+    moduleKey: 'TERMINAL'
   }
 ];

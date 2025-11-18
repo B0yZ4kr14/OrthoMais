@@ -165,8 +165,8 @@ const App = () => (
                 <Route path="/reset-password" element={<ResetPassword />} />
                 
                 {/* Protected Routes with Layout */}
-                <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
-                <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+                <Route path="/" element={<ProtectedRoute><AppLayout><DashboardUnified /></AppLayout></ProtectedRoute>} />
+                <Route path="/dashboard" element={<ProtectedRoute><AppLayout><DashboardUnified /></AppLayout></ProtectedRoute>} />
                 <Route path="/resumo" element={<ProtectedRoute><AppLayout><Resumo /></AppLayout></ProtectedRoute>} />
                 <Route path="/pacientes" element={<ProtectedRoute><AppLayout><Pacientes /></AppLayout></ProtectedRoute>} />
                 <Route path="/pacientes/novo" element={<ProtectedRoute><AppLayout><PatientForm /></AppLayout></ProtectedRoute>} />
