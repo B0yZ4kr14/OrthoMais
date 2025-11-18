@@ -99,15 +99,13 @@ test.describe('Navegação Modular V5.0', () => {
     await page.waitForTimeout(500);
   });
 
-  test('deve navegar para módulos de criptomoedas', async ({ page }) => {
-    // Expandir submenu Criptomoedas
-    await page.click('text=Criptomoedas');
-    await page.waitForTimeout(500);
+  test('deve navegar para módulo de pagamentos em criptomoedas', async ({ page }) => {
+    // Verificar link de Pagamentos em Criptomoedas
+    await expect(page.locator('text=Pagamentos em Criptomoedas')).toBeVisible();
     
-    // Verificar subitems
-    await expect(page.locator('text=Pagamentos')).toBeVisible();
-    await expect(page.locator('text=Exchanges')).toBeVisible();
-    await expect(page.locator('text=Carteiras')).toBeVisible();
+    // Navegar para a página
+    await page.click('text=Pagamentos em Criptomoedas');
+    await expect(page).toHaveURL(/\/financeiro\/crypto/);
   });
 
   test('deve navegar para módulos administrativos', async ({ page }) => {
