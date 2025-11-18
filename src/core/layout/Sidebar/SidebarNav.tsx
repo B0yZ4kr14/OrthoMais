@@ -5,6 +5,8 @@ import { SidebarGroup } from './SidebarGroup';
 import { SidebarMenuItem } from './SidebarMenuItem';
 import { menuGroups, adminMenuItems } from './sidebar.config';
 import { Separator } from '@/components/ui/separator';
+import { useSidebarBadges } from '@/hooks/useSidebarBadges';
+import { useEffect } from 'react';
 
 interface SidebarNavProps {
   onNavigate?: () => void;
@@ -14,6 +16,27 @@ export function SidebarNav({ onNavigate }: SidebarNavProps = {}) {
   const { state } = useSidebar();
   const { isAdmin } = useAuth();
   const collapsed = state === 'collapsed';
+  const { data: badges } = useSidebarBadges();
+
+  // Atualizar badges dinamicamente nos menuGroups
+  useEffect(() => {
+    if (!badges) return;
+    
+    // Atualizar badges nos itens do menu conforme os dados da API
+    menuGroups.forEach(group => {
+      group.items.forEach(item => {
+        if (item.url === '/agenda') {
+          item.badge = { count: badges.appointments, variant: 'default' };
+        } else if (item.url === '/financeiro/receber') {
+          item.badge = { count: badges.overdue, variant: 'destructive' };
+        } else if (item.url === '/inadimplencia') {
+          item.badge = { count: badges.defaulters, variant: 'destructive' };
+        } else if (item.url === '/recall') {
+          item.badge = { count: badges.recalls, variant: 'default' };
+        }
+      });
+    });
+  }, [badges]);
 
   return (
     <div className="space-y-4 pb-6">
