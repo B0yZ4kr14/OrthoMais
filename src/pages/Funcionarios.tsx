@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useFuncionariosStore } from '@/modules/funcionarios/hooks/useFuncionariosStore';
+import { useFuncionariosSupabase } from '@/modules/funcionarios/hooks/useFuncionariosSupabase';
 import { FuncionariosList } from '@/modules/funcionarios/components/FuncionariosList';
 import { FuncionarioForm } from '@/modules/funcionarios/components/FuncionarioForm';
 import { FuncionarioDetails } from '@/modules/funcionarios/components/FuncionarioDetails';
@@ -15,7 +15,7 @@ import { Users } from 'lucide-react';
 type ViewMode = 'list' | 'form' | 'details';
 
 export default function Funcionarios() {
-  const { funcionarios, loading, addFuncionario, updateFuncionario, deleteFuncionario } = useFuncionariosStore();
+  const { funcionarios, loading, addFuncionario, updateFuncionario, deleteFuncionario } = useFuncionariosSupabase();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | undefined>();
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -3435,6 +3435,92 @@ export type Database = {
           },
         ]
       }
+      funcionarios: {
+        Row: {
+          avatar_url: string | null
+          cargo: string
+          celular: string
+          clinic_id: string
+          cpf: string
+          created_at: string
+          data_admissao: string
+          data_nascimento: string
+          dias_trabalho: number[]
+          email: string
+          endereco: Json
+          horario_trabalho: Json
+          id: string
+          nome: string
+          observacoes: string | null
+          permissoes: Json
+          rg: string | null
+          salario: number
+          sexo: string
+          status: string
+          telefone: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          cargo: string
+          celular: string
+          clinic_id: string
+          cpf: string
+          created_at?: string
+          data_admissao: string
+          data_nascimento: string
+          dias_trabalho: number[]
+          email: string
+          endereco: Json
+          horario_trabalho: Json
+          id?: string
+          nome: string
+          observacoes?: string | null
+          permissoes?: Json
+          rg?: string | null
+          salario?: number
+          sexo: string
+          status?: string
+          telefone: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          cargo?: string
+          celular?: string
+          clinic_id?: string
+          cpf?: string
+          created_at?: string
+          data_admissao?: string
+          data_nascimento?: string
+          dias_trabalho?: number[]
+          email?: string
+          endereco?: Json
+          horario_trabalho?: Json
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          permissoes?: Json
+          rg?: string | null
+          salario?: number
+          sexo?: string
+          status?: string
+          telefone?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funcionarios_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       github_events: {
         Row: {
           clinic_id: string
