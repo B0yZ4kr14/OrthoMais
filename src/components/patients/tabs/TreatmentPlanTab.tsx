@@ -7,24 +7,39 @@ import { ClipboardPlus, Plus, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+interface Treatment {
+  id: string;
+  titulo: string;
+  dente_codigo?: string;
+  status: string;
+  data_inicio?: string;
+  data_conclusao?: string;
+  valor_estimado?: number;
+  descricao?: string;
+  observacoes?: string;
+}
+
 interface TreatmentPlanTabProps {
   patientId: string;
 }
 
 export function TreatmentPlanTab({ patientId }: TreatmentPlanTabProps) {
-  const { data: treatments, isLoading } = useQuery<any[]>({
+  const { data, isLoading } = useQuery({
     queryKey: ['patient-treatments', patientId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const result = (supabase as any)
         .from('pep_tratamentos')
         .select('*')
         .eq('patient_id', patientId)
         .order('created_at', { ascending: false });
       
+      const { data: rawData, error } = await result;
       if (error) throw error;
-      return data || [];
+      return (rawData || []) as Treatment[];
     }
   });
+
+  const treatments = (data || []) as Treatment[];
 
   const getStatusIcon = (status: string) => {
     switch (status) {
