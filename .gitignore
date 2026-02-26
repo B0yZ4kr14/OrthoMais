@@ -12,6 +12,21 @@ dist
 dist-ssr
 *.local
 
+# Environment variables (never commit real credentials)
+.env
+.env.local
+.env.production
+backend/.env
+
+# Package manager lock files (using npm only)
+bun.lockb
+yarn.lock
+pnpm-lock.yaml
+
+# Test artifacts
+playwright-report/
+test-results/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

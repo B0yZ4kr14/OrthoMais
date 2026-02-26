@@ -101,7 +101,6 @@ const TeleodontoPage = lazy(() => import('@/pages/teleodonto'));
 const SplitPagamentoPage = lazy(() => import('@/pages/split-pagamento'));
 const InadimplenciaPage = lazy(() => import('@/pages/inadimplencia'));
 const BIDashboardPage = lazy(() => import('@/pages/bi-dashboard'));
-const LGPDPage = lazy(() => import('@/pages/lgpd'));
 const TISSPage = lazy(() => import('@/pages/tiss'));
 const MarketingAuto = lazy(() => import('@/pages/MarketingAuto'));
 const AssinaturaICP = lazy(() => import('@/pages/AssinaturaICP'));
@@ -212,7 +211,6 @@ const App = () => (
                 <Route path="/estoque/inventario" element={<ProtectedRoute><AppLayout><EstoqueInventarioPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/estoque/inventario/dashboard" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando dashboard..." />}><EstoqueInventarioDashboard /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/estoque/inventario/historico" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando histórico..." />}><EstoqueInventarioHistorico /></Suspense></AppLayout></ProtectedRoute>} />
-                <Route path="/orcamentos" element={<ProtectedRoute><AppLayout><Orcamentos /></AppLayout></ProtectedRoute>} />
                 
                 {/* V5.3 COHERENCE: New routes with module permission guards */}
                 <Route path="/contratos" element={<ProtectedRoute moduleKey="CONTRATOS"><AppLayout><ContratosPage /></AppLayout></ProtectedRoute>} />
@@ -229,10 +227,8 @@ const App = () => (
                 <Route path="/crypto-payment" element={<ProtectedRoute><AppLayout><CryptoPaymentPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/teleodonto" element={<ProtectedRoute><AppLayout><TeleodontoPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/bi-dashboard" element={<ProtectedRoute><AppLayout><BIDashboardPage /></AppLayout></ProtectedRoute>} />
-                <Route path="/lgpd" element={<ProtectedRoute><AppLayout><LGPDPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/tiss" element={<ProtectedRoute><AppLayout><TISSPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/assinatura-digital" element={<ProtectedRoute><AppLayout><AssinaturaICP /></AppLayout></ProtectedRoute>} />
-                <Route path="/marketing-auto" element={<ProtectedRoute><AppLayout><MarketingAuto /></AppLayout></ProtectedRoute>} />
                 <Route path="/crm-funil" element={<ProtectedRoute><AppLayout><CRMFunil /></AppLayout></ProtectedRoute>} />
                 <Route path="/split-pagamento" element={<ProtectedRoute><AppLayout><SplitPagamentoPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/inadimplencia" element={<ProtectedRoute><AppLayout><InadimplenciaPage /></AppLayout></ProtectedRoute>} />
