@@ -65,7 +65,6 @@ const ModulesAdmin = lazy(() => import('./pages/settings/ModulesAdmin'));
 const ModulesSimple = lazy(() => import('./pages/settings/ModulesSimple'));
 const ProfileSettings = lazy(() => import('./pages/settings/ProfileSettings'));
 const CRM = lazy(() => import('./pages/crm'));
-const Teleodontologia = lazy(() => import('./pages/teleodonto'));
 const EstoqueInventarioHistorico = lazy(() => import('@/pages/estoque/EstoqueInventarioHistorico'));
 const EstoqueInventarioDashboard = lazy(() => import('@/pages/estoque/EstoqueInventarioDashboard'));
 const ReportTemplates = lazy(() => import('@/pages/ReportTemplates'));
@@ -189,7 +188,6 @@ const App = () => (
                 {/* V4.0 New Routes */}
                 <Route path="/fluxo-digital" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando..." />}><FluxoDigital /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/dashboards/comercial-roi" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando..." />}><DashboardComercialROI /></Suspense></AppLayout></ProtectedRoute>} />
-                <Route path="/pdv/metas" element={<ProtectedRoute><AppLayout><MetasGamificacao /></AppLayout></ProtectedRoute>} />
                 <Route path="/agenda" element={<ProtectedRoute><AppLayout><AgendaPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/relatorios" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando relatórios..." />}><Relatorios /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/business-intelligence" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando BI..." />}><BusinessIntelligence /></Suspense></AppLayout></ProtectedRoute>} />
@@ -219,13 +217,12 @@ const App = () => (
                 <Route path="/portal-paciente" element={<ProtectedRoute moduleKey="PORTAL_PACIENTE"><AppLayout><PortalPacientePage /></AppLayout></ProtectedRoute>} />
                 
                 <Route path="/teleodonto" element={<ProtectedRoute><AppLayout><TeleodontoPage /></AppLayout></ProtectedRoute>} />
-                <Route path="/teleodontologia" element={<ProtectedRoute><AppLayout><Teleodontologia /></AppLayout></ProtectedRoute>} />
+                <Route path="/teleodontologia" element={<ProtectedRoute><AppLayout><TeleodontoPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/ia-radiografia" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando IA..." />}><IARadiografia /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/crm" element={<ProtectedRoute><AppLayout><Suspense fallback={<LoadingState size="lg" message="Carregando CRM..." />}><CRM /></Suspense></AppLayout></ProtectedRoute>} />
                 <Route path="/crm-kanban" element={<ProtectedRoute><AppLayout><CRMPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/radiografia" element={<ProtectedRoute><AppLayout><RadiografiaPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/crypto-payment" element={<ProtectedRoute><AppLayout><CryptoPaymentPage /></AppLayout></ProtectedRoute>} />
-                <Route path="/teleodonto" element={<ProtectedRoute><AppLayout><TeleodontoPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/bi-dashboard" element={<ProtectedRoute><AppLayout><BIDashboardPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/tiss" element={<ProtectedRoute><AppLayout><TISSPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/assinatura-digital" element={<ProtectedRoute><AppLayout><AssinaturaICP /></AppLayout></ProtectedRoute>} />
